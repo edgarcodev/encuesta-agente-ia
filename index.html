@@ -321,10 +321,10 @@
             'use strict';
 
             // ================================================================
-            //  CONFIGURACIÓN DE SUPABASE (CAMBIAR AQUÍ)
+            //  CONFIGURACIÓN DE SUPABASE (LA INTEGRACIÓN)
             // ================================================================
-            const SUPABASE_URL = 'URL_DE_SUPABASE';          // Ej: https://xxxxxxxxxxxx.supabase.co
-            const SUPABASE_ANON_KEY = 'CLAVE_ANON_DE_SUPABASE'; // Tu clave anónima
+            const SUPABASE_URL = 'https://ftppbncvrkygiuladcbx.supabase.co';          
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0cHBibmN2cmt5Z2l1bGFkY2J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjU4ODksImV4cCI6MjEwMzUwMTg4OX0.5Ceke0GGQcpXvcGWdu9ZW0pHE0vgz1qqCrrpj_P7rsc';
 
             // ================================================================
 
@@ -758,7 +758,7 @@
             }
 
             // ------------------------------------------------------------
-            // 3. ENVÍO A SUPABASE
+            // 3. ENVÍO A SUPABASE (SISTEMATIZACIÓN DE DATOS)
             // ------------------------------------------------------------
             function enviarRespuestas() {
                 // Construir objeto con todas las respuestas (sin claves vacías)
@@ -769,30 +769,33 @@
                     }
                 }
 
-                // Enviar a Supabase
+                // Enviar a Supabase mediante la API REST nativa
                 return fetch(`${SUPABASE_URL}/rest/v1/respuestas_encuesta`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Prefer': 'return=minimal' // Optimiza la respuesta del servidor al no devolver la carga completa
                     },
-                    body: JSON.stringify({ datos: dataToSend })
+                    // Se asume que en PostgreSQL tienes una columna tipo JSONB llamada 'datos'
+                    body: JSON.stringify({ datos: dataToSend }) 
                 })
                 .then(response => {
                     if (!response.ok) {
                         return response.text().then(text => {
-                            throw new Error(`Error ${response.status}: ${text}`);
+                            throw new Error(`Error de integración ${response.status}: ${text}`);
                         });
                     }
-                    return response.json();
+                    // Si el servidor responde correctamente (código 20X)
+                    return { success: true };
                 })
                 .then(data => {
                     datosEnviados = true;
-                    return { success: true, data };
+                    return data;
                 })
                 .catch(error => {
-                    console.error('Error al enviar a Supabase:', error);
+                    console.error('Fallo en la sistematización de la encuesta:', error);
                     return { success: false, error: error.message };
                 });
             }
