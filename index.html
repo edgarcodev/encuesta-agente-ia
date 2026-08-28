@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Remates · Encuesta Compradores v1.1</title>
+    <!-- Integración del cliente de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Estilos iguales que antes, se mantienen */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
             background: #f4f7fc;
@@ -29,253 +26,54 @@
             padding: 32px 28px;
             transition: all 0.2s;
         }
-        .survey-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .survey-header h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a2634;
-            letter-spacing: -0.3px;
-        }
-        .survey-header .step-counter {
-            font-size: 14px;
-            font-weight: 500;
-            color: #5b6f82;
-            background: #eef2f7;
-            padding: 4px 14px;
-            border-radius: 40px;
-        }
-        .progress-bar-container {
-            width: 100%;
-            height: 6px;
-            background: #e6ecf3;
-            border-radius: 10px;
-            margin-bottom: 28px;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f97316, #f59e0b);
-            border-radius: 10px;
-            transition: width 0.35s ease;
-            width: 0%;
-        }
-        .question-area {
-            min-height: 240px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .question-text {
-            font-size: 20px;
-            font-weight: 600;
-            color: #0b1a2a;
-            line-height: 1.4;
-            margin-bottom: 20px;
-        }
-        .question-text .sub-label {
-            font-weight: 400;
-            font-size: 14px;
-            color: #5b6f82;
-            display: block;
-            margin-top: 4px;
-        }
-        .options-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
+        .survey-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .survey-header h1 { font-size: 20px; font-weight: 700; color: #1a2634; letter-spacing: -0.3px; }
+        .survey-header .step-counter { font-size: 14px; font-weight: 500; color: #5b6f82; background: #eef2f7; padding: 4px 14px; border-radius: 40px; }
+        .progress-bar-container { width: 100%; height: 6px; background: #e6ecf3; border-radius: 10px; margin-bottom: 28px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #f97316, #f59e0b); border-radius: 10px; transition: width 0.35s ease; width: 0%; }
+        .question-area { min-height: 240px; display: flex; flex-direction: column; justify-content: space-between; }
+        .question-text { font-size: 20px; font-weight: 600; color: #0b1a2a; line-height: 1.4; margin-bottom: 20px; }
+        .question-text .sub-label { font-weight: 400; font-size: 14px; color: #5b6f82; display: block; margin-top: 4px; }
+        .options-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
         .options-group label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 16px;
-            color: #1e2a36;
-            padding: 10px 14px;
-            background: #f8faff;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.15s;
-            flex-wrap: wrap;
+            display: flex; align-items: center; gap: 12px; font-size: 16px; color: #1e2a36;
+            padding: 10px 14px; background: #f8faff; border: 1.5px solid #e2e8f0; border-radius: 14px; cursor: pointer; transition: all 0.15s; flex-wrap: wrap;
         }
-        .options-group label:hover {
-            background: #f0f4fe;
-            border-color: #cbd5e1;
-        }
-        .options-group input[type="radio"],
-        .options-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #f97316;
-            flex-shrink: 0;
-            cursor: pointer;
-        }
-        .options-group label.selected {
-            background: #fef3e8;
-            border-color: #f97316;
-            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
-        }
-        .text-input {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 16px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 14px;
-            background: #fafcff;
-            transition: 0.15s;
-            font-family: inherit;
-            resize: vertical;
-        }
-        .text-input:focus {
-            outline: none;
-            border-color: #f97316;
-            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
-        }
-        .text-input.textarea {
-            min-height: 90px;
-        }
-        .otro-input {
-            flex: 1;
-            min-width: 120px;
-            padding: 6px 12px;
-            border: 1.5px solid #dce2ec;
-            border-radius: 40px;
-            font-size: 14px;
-            background: white;
-            transition: 0.15s;
-        }
-        .otro-input:focus {
-            border-color: #f97316;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
-        }
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: 28px;
-            padding-top: 20px;
-            border-top: 1px solid #e9eef4;
-        }
-        .btn {
-            padding: 12px 28px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #f1f4f9;
-            color: #1e2a36;
-            flex: 1;
-            text-align: center;
-        }
-        .btn-primary {
-            background: #f97316;
-            color: white;
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
-        }
-        .btn-primary:hover {
-            background: #ea5a0a;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
-        }
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        .btn-secondary {
-            background: #eef2f7;
-        }
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
-        .btn-secondary:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        .btn-success {
-            background: #22a65e;
-            color: white;
-            box-shadow: 0 4px 12px rgba(34, 166, 94, 0.25);
-        }
-        .btn-success:hover {
-            background: #1a8a4e;
-            transform: translateY(-2px);
-        }
-        .btn-success:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .summary {
-            padding: 8px 0;
-        }
-        .summary-item {
-            padding: 14px 0;
-            border-bottom: 1px solid #eef2f7;
-        }
-        .summary-item:last-child {
-            border-bottom: none;
-        }
-        .summary-item strong {
-            display: block;
-            font-weight: 600;
-            color: #1a2634;
-            margin-bottom: 4px;
-        }
-        .summary-item .answer {
-            color: #2d3f52;
-            background: #f5f8fe;
-            padding: 6px 14px;
-            border-radius: 40px;
-            display: inline-block;
-            font-size: 14px;
-        }
-        .summary-item .answer.multi {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .summary-item .answer.multi span {
-            background: #f5f8fe;
-            padding: 4px 14px;
-            border-radius: 40px;
-        }
-        .alert {
-            background: #fef3e8;
-            border-radius: 16px;
-            padding: 16px 20px;
-            color: #8a4a0a;
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
-        .hidden {
-            display: none !important;
-        }
+        .options-group label:hover { background: #f0f4fe; border-color: #cbd5e1; }
+        .options-group input[type="radio"], .options-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: #f97316; flex-shrink: 0; cursor: pointer; }
+        .options-group label.selected { background: #fef3e8; border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15); }
+        .text-input { width: 100%; padding: 14px 16px; font-size: 16px; border: 1.5px solid #e2e8f0; border-radius: 14px; background: #fafcff; transition: 0.15s; font-family: inherit; resize: vertical; }
+        .text-input:focus { outline: none; border-color: #f97316; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12); }
+        .text-input.textarea { min-height: 90px; }
+        .otro-input { flex: 1; min-width: 120px; padding: 6px 12px; border: 1.5px solid #dce2ec; border-radius: 40px; font-size: 14px; background: white; transition: 0.15s; }
+        .otro-input:focus { border-color: #f97316; outline: none; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12); }
+        .navigation { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #e9eef4; }
+        .btn { padding: 12px 28px; border: none; border-radius: 40px; font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.2s; background: #f1f4f9; color: #1e2a36; flex: 1; text-align: center; }
+        .btn-primary { background: #f97316; color: white; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25); }
+        .btn-primary:hover { background: #ea5a0a; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary { background: #eef2f7; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-success { background: #22a65e; color: white; box-shadow: 0 4px 12px rgba(34, 166, 94, 0.25); }
+        .btn-success:hover { background: #1a8a4e; transform: translateY(-2px); }
+        .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .summary { padding: 8px 0; }
+        .summary-item { padding: 14px 0; border-bottom: 1px solid #eef2f7; }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item strong { display: block; font-weight: 600; color: #1a2634; margin-bottom: 4px; }
+        .summary-item .answer { color: #2d3f52; background: #f5f8fe; padding: 6px 14px; border-radius: 40px; display: inline-block; font-size: 14px; }
+        .summary-item .answer.multi { display: flex; flex-wrap: wrap; gap: 6px; }
+        .summary-item .answer.multi span { background: #f5f8fe; padding: 4px 14px; border-radius: 40px; }
+        .alert { background: #fef3e8; border-radius: 16px; padding: 16px 20px; color: #8a4a0a; margin-bottom: 16px; font-weight: 500; }
+        .loading-screen { text-align: center; padding: 40px 20px; }
+        .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #f97316; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 16px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @media (max-width: 480px) {
-            .survey-container {
-                padding: 20px 16px;
-            }
-            .question-text {
-                font-size: 18px;
-            }
-            .btn {
-                padding: 12px 18px;
-                font-size: 15px;
-            }
-            .options-group label {
-                padding: 10px 12px;
-                font-size: 15px;
-            }
+            .survey-container { padding: 20px 16px; }
+            .question-text { font-size: 18px; }
+            .btn { padding: 12px 18px; font-size: 15px; }
+            .options-group label { padding: 10px 12px; font-size: 15px; }
         }
     </style>
 </head>
@@ -295,406 +93,87 @@
         (function() {
             'use strict';
 
+            // --- CONFIGURACIÓN DE SUPABASE (LA INTEGRACIÓN) ---
+            const supabaseUrl = 'ftppbncvrkygiuladcbx'; 
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0cHBibmN2cmt5Z2l1bGFkY2J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjU4ODksImV4cCI6MjEwMzUwMTg4OX0.5Ceke0GGQcpXvcGWdu9ZW0pHE0vgz1qqCrrpj_P7rsc';
+            const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
             // ------------------------------------------------------------
-            // 1. DEFINICIÓN DE PASOS (19 preguntas + subpreguntas condicionales)
+            // 1. DEFINICIÓN DE PASOS 
             // ------------------------------------------------------------
             const steps = [];
 
-            // Helper para crear opciones (array de objetos {label, value})
             function opts(arr) {
                 return arr.map(label => ({ label, value: label }));
             }
 
-            // Respuestas almacenadas
             const answers = {};
 
-            // ---------- BLOQUE A: PERFIL ----------
             // P1
-            steps.push({
-                id: 'p1',
-                question: '1. ¿Qué compras habitualmente? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Alimentos y bebidas', 'Ropa y calzado', 'Tecnología/celulares',
-                    'Productos para el hogar', 'Repuestos/automotriz', 'Construcción/herramientas',
-                    'Belleza/salud', 'Productos para mi negocio', 'Productos para revender',
-                    'Servicios', 'Productos digitales', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p1', question: '1. ¿Qué compras habitualmente?', type: 'checkbox', options: opts(['Alimentos y bebidas', 'Ropa y calzado', 'Tecnología/celulares', 'Productos para el hogar', 'Repuestos/automotriz', 'Construcción/herramientas', 'Belleza/salud', 'Productos para mi negocio', 'Productos para revender', 'Servicios', 'Productos digitales', 'Otro']), allowOther: true, condition: () => true });
             // P2
-            steps.push({
-                id: 'p2',
-                question: '2. ¿Para quién compras principalmente?',
-                type: 'radio',
-                options: opts([
-                    'Para mí', 'Para mi familia', 'Para mi negocio',
-                    'Para revender', 'Para una empresa/institución', 'Para otra persona',
-                    'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p2', question: '2. ¿Para quién compras principalmente?', type: 'radio', options: opts(['Para mí', 'Para mi familia', 'Para mi negocio', 'Para revender', 'Para una empresa/institución', 'Para otra persona', 'Otro']), allowOther: true, condition: () => true });
             // P3
-            steps.push({
-                id: 'p3',
-                question: '3. ¿Con qué frecuencia realizas compras de productos o servicios?',
-                type: 'radio',
-                options: opts([
-                    'Todos los días', 'Varias veces por semana', 'Una vez por semana',
-                    'Varias veces al mes', 'Una vez al mes', 'Menos de una vez al mes'
-                ]),
-                condition: () => true
-            });
-
-            // ---------- BLOQUE B: COMPORTAMIENTO REAL ----------
+            steps.push({ id: 'p3', question: '3. ¿Con qué frecuencia realizas compras?', type: 'radio', options: opts(['Todos los días', 'Varias veces por semana', 'Una vez por semana', 'Varias veces al mes', 'Una vez al mes', 'Menos de una vez al mes']), condition: () => true });
             // P4
-            steps.push({
-                id: 'p4',
-                question: '4. Pensando en tu última compra, ¿qué compraste? (respuesta abierta)',
-                type: 'textarea',
-                placeholder: 'Describe el producto o servicio...',
-                condition: () => true
-            });
-
+            steps.push({ id: 'p4', question: '4. Pensando en tu última compra, ¿qué compraste?', type: 'textarea', placeholder: 'Describe el producto o servicio...', condition: () => true });
             // P5
-            steps.push({
-                id: 'p5',
-                question: '5. ¿Dónde realizaste esa compra?',
-                type: 'radio',
-                options: opts([
-                    'Tienda/mercado físico', 'Facebook/Marketplace', 'WhatsApp',
-                    'Instagram/TikTok', 'Página web', 'Aplicación',
-                    'Recomendación de una persona', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p5', question: '5. ¿Dónde realizaste esa compra?', type: 'radio', options: opts(['Tienda/mercado físico', 'Facebook/Marketplace', 'WhatsApp', 'Instagram/TikTok', 'Página web', 'Aplicación', 'Recomendación de una persona', 'Otro']), allowOther: true, condition: () => true });
             // P6
-            steps.push({
-                id: 'p6',
-                question: '6. Aproximadamente, ¿cuánto gastaste en esa compra?',
-                type: 'radio',
-                options: opts([
-                    'Menos de S/20', 'S/20–50', 'S/51–100', 'S/101–300',
-                    'S/301–500', 'S/501–1,000', 'Más de S/1,000', 'Prefiero no responder'
-                ]),
-                condition: () => true
-            });
-
+            steps.push({ id: 'p6', question: '6. Aproximadamente, ¿cuánto gastaste en esa compra?', type: 'radio', options: opts(['Menos de S/20', 'S/20–50', 'S/51–100', 'S/101–300', 'S/301–500', 'S/501–1,000', 'Más de S/1,000', 'Prefiero no responder']), condition: () => true });
             // P7
-            steps.push({
-                id: 'p7',
-                question: '7. ¿Cómo realizaste el pago? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Efectivo', 'Yape', 'Plin', 'Transferencia bancaria',
-                    'Tarjeta', 'PayPal', 'Fiado', 'Cuotas',
-                    'Adelanto + saldo', 'Letras', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p7', question: '7. ¿Cómo realizaste el pago?', type: 'checkbox', options: opts(['Efectivo', 'Yape', 'Plin', 'Transferencia bancaria', 'Tarjeta', 'PayPal', 'Fiado', 'Cuotas', 'Adelanto + saldo', 'Letras', 'Otro']), allowOther: true, condition: () => true });
             // P8
-            steps.push({
-                id: 'p8',
-                question: '8. ¿Por qué elegiste ese vendedor, negocio o proveedor? (respuesta abierta)',
-                type: 'textarea',
-                placeholder: 'Cuéntanos tu motivo...',
-                condition: () => true
-            });
-
-            // ---------- BLOQUE C: OFERTAS, REMATES Y CONFIANZA ----------
+            steps.push({ id: 'p8', question: '8. ¿Por qué elegiste ese vendedor?', type: 'textarea', placeholder: 'Cuéntanos tu motivo...', condition: () => true });
             // P9
-            steps.push({
-                id: 'p9',
-                question: '9. Cuando buscas una buena oferta, ¿qué haces normalmente?',
-                type: 'radio',
-                options: opts([
-                    'Comparo precios', 'Pregunto a familiares/amigos',
-                    'Busco en Facebook/Marketplace', 'Pregunto por WhatsApp',
-                    'Busco en Instagram/TikTok', 'Visito tiendas o mercados',
-                    'Busco promociones', 'Busco remates/liquidaciones',
-                    'Espero ofertas', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p9', question: '9. Cuando buscas una buena oferta, ¿qué haces normalmente?', type: 'radio', options: opts(['Comparo precios', 'Pregunto a familiares/amigos', 'Busco en Facebook/Marketplace', 'Pregunto por WhatsApp', 'Busco en Instagram/TikTok', 'Visito tiendas o mercados', 'Busco promociones', 'Busco remates/liquidaciones', 'Espero ofertas', 'Otro']), allowOther: true, condition: () => true });
             // P10
-            steps.push({
-                id: 'p10',
-                question: '10. ¿Has comprado alguna vez un producto o servicio en remate, liquidación u oferta especial?',
-                type: 'radio',
-                options: opts(['Sí', 'No']),
-                condition: () => true
-            });
-
-            // P10 - Sí (sub)
-            steps.push({
-                id: 'p10_si',
-                question: '¿Qué compraste y cómo fue la experiencia? (respuesta abierta)',
-                type: 'textarea',
-                placeholder: 'Cuéntanos...',
-                condition: () => answers.p10 === 'Sí'
-            });
-
-            // P10 - No (sub)
-            steps.push({
-                id: 'p10_no',
-                question: '¿Qué te ha impedido comprar en remates o liquidaciones? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Desconfianza', 'No sé dónde encontrarlos',
-                    'No sé si el descuento es real', 'Miedo a productos defectuosos',
-                    'Miedo a estafas', 'No conozco bien cómo funcionan',
-                    'Nunca lo he necesitado', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => answers.p10 === 'No'
-            });
-
+            steps.push({ id: 'p10', question: '10. ¿Has comprado alguna vez un producto o servicio en remate, liquidación u oferta especial?', type: 'radio', options: opts(['Sí', 'No']), condition: () => true });
+            steps.push({ id: 'p10_si', question: '¿Qué compraste y cómo fue la experiencia?', type: 'textarea', placeholder: 'Cuéntanos...', condition: () => answers.p10 === 'Sí' });
+            steps.push({ id: 'p10_no', question: '¿Qué te ha impedido comprar en remates o liquidaciones?', type: 'checkbox', options: opts(['Desconfianza', 'No sé dónde encontrarlos', 'No sé si el descuento es real', 'Miedo a productos defectuosos', 'Miedo a estafas', 'No conozco bien cómo funcionan', 'Nunca lo he necesitado', 'Otro']), allowOther: true, condition: () => answers.p10 === 'No' });
             // P11
-            steps.push({
-                id: 'p11',
-                question: '11. ¿Qué es lo que más te preocupa cuando compras a alguien que no conoces? (selecciona hasta 3)',
-                type: 'checkbox',
-                options: opts([
-                    'Que sea una estafa', 'Que el producto sea diferente al anunciado',
-                    'Que esté defectuoso', 'Que sea falsificado',
-                    'Que esté vencido', 'Que no me entreguen el producto',
-                    'No poder recuperar mi dinero', 'Que el precio real sea diferente al anunciado',
-                    'Que mis datos sean utilizados indebidamente', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p11', question: '11. ¿Qué es lo que más te preocupa cuando compras a alguien que no conoces?', type: 'checkbox', options: opts(['Que sea una estafa', 'Que el producto sea diferente al anunciado', 'Que esté defectuoso', 'Que sea falsificado', 'Que esté vencido', 'Que no me entreguen el producto', 'No poder recuperar mi dinero', 'Que el precio real sea diferente al anunciado', 'Que mis datos sean utilizados indebidamente', 'Otro']), allowOther: true, condition: () => true });
             // P12
-            steps.push({
-                id: 'p12',
-                question: '12. ¿Has tenido alguna mala experiencia comprando por Internet o redes sociales?',
-                type: 'radio',
-                options: opts(['Sí', 'No']),
-                condition: () => true
-            });
-
-            // P12 - Sí (sub)
-            steps.push({
-                id: 'p12_si',
-                question: '¿Qué ocurrió? (describe brevemente)',
-                type: 'textarea',
-                placeholder: 'Cuéntanos tu experiencia...',
-                condition: () => answers.p12 === 'Sí'
-            });
-
-            // ---------- BLOQUE D: CALIDAD, CRÉDITO, COMPRA GRUPAL ----------
+            steps.push({ id: 'p12', question: '12. ¿Has tenido alguna mala experiencia comprando por Internet o redes sociales?', type: 'radio', options: opts(['Sí', 'No']), condition: () => true });
+            steps.push({ id: 'p12_si', question: '¿Qué ocurrió? (describe brevemente)', type: 'textarea', placeholder: 'Cuéntanos tu experiencia...', condition: () => answers.p12 === 'Sí' });
             // P13
-            steps.push({
-                id: 'p13',
-                question: '13. Cuando compras alimentos, bebidas, cosméticos, productos de salud u otros productos sensibles, ¿qué verificas? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Fecha de vencimiento', 'Procedencia', 'Marca',
-                    'Estado del envase', 'Registro/certificación cuando corresponde',
-                    'Recomendaciones o reputación del vendedor',
-                    'Condiciones de almacenamiento', 'No suelo verificar', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p13', question: '13. Cuando compras productos sensibles, ¿qué verificas?', type: 'checkbox', options: opts(['Fecha de vencimiento', 'Procedencia', 'Marca', 'Estado del envase', 'Registro/certificación cuando corresponde', 'Recomendaciones o reputación del vendedor', 'Condiciones de almacenamiento', 'No suelo verificar', 'Otro']), allowOther: true, condition: () => true });
             // P14
-            steps.push({
-                id: 'p14',
-                question: '14. ¿Alguna vez has comprado algo pagando una parte primero y el resto después?',
-                type: 'radio',
-                options: opts(['Sí', 'No']),
-                condition: () => true
-            });
-
-            // P14 - Sí (sub: cómo fue)
-            steps.push({
-                id: 'p14_si_como',
-                question: '¿Cómo fue? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Fiado', 'Cuotas', 'Adelanto + saldo', 'Letras',
-                    'Crédito de tienda', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => answers.p14 === 'Sí'
-            });
-
-            // P14 - Sí (sub: qué fue bueno/malo)
-            steps.push({
-                id: 'p14_si_exp',
-                question: '¿Qué fue lo bueno o malo de esa experiencia? (respuesta abierta)',
-                type: 'textarea',
-                placeholder: 'Cuéntanos...',
-                condition: () => answers.p14 === 'Sí'
-            });
-
+            steps.push({ id: 'p14', question: '14. ¿Alguna vez has comprado algo pagando una parte primero y el resto después?', type: 'radio', options: opts(['Sí', 'No']), condition: () => true });
+            steps.push({ id: 'p14_si_como', question: '¿Cómo fue?', type: 'checkbox', options: opts(['Fiado', 'Cuotas', 'Adelanto + saldo', 'Letras', 'Crédito de tienda', 'Otro']), allowOther: true, condition: () => answers.p14 === 'Sí' });
+            steps.push({ id: 'p14_si_exp', question: '¿Qué fue lo bueno o malo de esa experiencia?', type: 'textarea', placeholder: 'Cuéntanos...', condition: () => answers.p14 === 'Sí' });
             // P15
-            steps.push({
-                id: 'p15',
-                question: '15. ¿Alguna vez te has juntado con otras personas para comprar algo a un mejor precio?',
-                type: 'radio',
-                options: opts(['Sí', 'No']),
-                condition: () => true
-            });
-
-            // P15 - Sí (sub)
-            steps.push({
-                id: 'p15_si',
-                question: '¿Qué compraron y aproximadamente cuántas personas participaron? (respuesta abierta)',
-                type: 'textarea',
-                placeholder: 'Ej. compramos ropa, 5 personas...',
-                condition: () => answers.p15 === 'Sí'
-            });
-
-            // ---------- BLOQUE E: DOLOR Y JOB ----------
+            steps.push({ id: 'p15', question: '15. ¿Alguna vez te has juntado con otras personas para comprar algo a un mejor precio?', type: 'radio', options: opts(['Sí', 'No']), condition: () => true });
+            steps.push({ id: 'p15_si', question: '¿Qué compraron y cuántas personas participaron?', type: 'textarea', placeholder: 'Ej. compramos ropa, 5 personas...', condition: () => answers.p15 === 'Sí' });
             // P16
-            steps.push({
-                id: 'p16',
-                question: '16. Pensando en tus compras actuales, ¿qué es lo que más te cuesta o te incomoda? (selecciona hasta 3)',
-                type: 'checkbox',
-                options: opts([
-                    'Encontrar buenos precios', 'Saber si realmente estoy obteniendo una oferta',
-                    'Encontrar vendedores confiables', 'Saber si el producto es auténtico',
-                    'Saber si está en buen estado', 'Saber si está vencido',
-                    'Comparar alternativas', 'Conseguir crédito/cuotas/fiado',
-                    'Recibir o recoger el producto', 'Encontrar buenos servicios',
-                    'Comprar en pequeñas cantidades', 'Comprar por volumen', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => true
-            });
-
+            steps.push({ id: 'p16', question: '16. Pensando en tus compras actuales, ¿qué es lo que más te cuesta o te incomoda?', type: 'checkbox', options: opts(['Encontrar buenos precios', 'Saber si realmente estoy obteniendo una oferta', 'Encontrar vendedores confiables', 'Saber si el producto es auténtico', 'Saber si está en buen estado', 'Saber si está vencido', 'Comparar alternativas', 'Conseguir crédito/cuotas/fiado', 'Recibir o recoger el producto', 'Encontrar buenos servicios', 'Comprar en pequeñas cantidades', 'Comprar por volumen', 'Otro']), allowOther: true, condition: () => true });
             // P17
-            steps.push({
-                id: 'p17',
-                question: '17. ¿Qué producto o servicio te gustaría conseguir más barato, con mayor confianza o de una manera más fácil de lo que actualmente lo consigues? (respuesta abierta)',
-                type: 'textarea',
-                placeholder: 'Cuéntanos qué necesitas...',
-                condition: () => true
-            });
-
-            // ---------- BLOQUE F: RESILIENCIA ----------
+            steps.push({ id: 'p17', question: '17. ¿Qué te gustaría conseguir más barato o con mayor confianza?', type: 'textarea', placeholder: 'Cuéntanos qué necesitas...', condition: () => true });
             // P18
-            steps.push({
-                id: 'p18',
-                question: '18. Seguridad e inseguridad: En tu actividad de compra, venta, trabajo o negocio, ¿la inseguridad, robos, amenazas o extorsiones han cambiado la manera en que compras, vendes, cobras, entregas o recibes productos/servicios?',
-                type: 'radio',
-                options: opts(['Sí, mucho', 'Sí, algo', 'No', 'No aplica', 'Prefiero no responder']),
-                condition: () => true
-            });
-
-            // P18 - Sí (sub)
-            steps.push({
-                id: 'p18_si',
-                question: '¿Qué ha cambiado principalmente? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Evito determinados lugares u horarios', 'Prefiero lugares seguros para entregar/recoger',
-                    'Evito publicar determinada información', 'Cambié mi forma de pago',
-                    'Dejé de realizar determinadas actividades', 'Aumentaron mis costos',
-                    'Otro'
-                ]),
-                allowOther: true,
-                condition: () => (answers.p18 === 'Sí, mucho' || answers.p18 === 'Sí, algo')
-            });
-
+            steps.push({ id: 'p18', question: '18. ¿La inseguridad, robos, amenazas o extorsiones han cambiado la manera en que compras o vendes?', type: 'radio', options: opts(['Sí, mucho', 'Sí, algo', 'No', 'No aplica', 'Prefiero no responder']), condition: () => true });
+            steps.push({ id: 'p18_si', question: '¿Qué ha cambiado principalmente?', type: 'checkbox', options: opts(['Evito determinados lugares u horarios', 'Prefiero lugares seguros para entregar/recoger', 'Evito publicar determinada información', 'Cambié mi forma de pago', 'Dejé de realizar determinadas actividades', 'Aumentaron mis costos', 'Otro']), allowOther: true, condition: () => (answers.p18 === 'Sí, mucho' || answers.p18 === 'Sí, algo') });
             // P19
-            steps.push({
-                id: 'p19',
-                question: '19. Fenómenos climáticos y otras interrupciones: En los últimos años, ¿algún fenómeno climático —lluvias, inundaciones, huaicos, oleajes, calor extremo u otro— ha afectado tus compras, ventas, transporte, abastecimiento o ingresos?',
-                type: 'radio',
-                options: opts(['Sí, mucho', 'Sí, algo', 'No', 'No recuerdo', 'No aplica']),
-                condition: () => true
-            });
-
-            // P19 - Sí (sub)
-            steps.push({
-                id: 'p19_si',
-                question: '¿Qué fue lo más afectado? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Transporte/entrega', 'Abastecimiento', 'Disponibilidad de productos',
-                    'Precios', 'Local/infraestructura', 'Trabajo/ingresos',
-                    'Compras de los clientes', 'Otro'
-                ]),
-                allowOther: true,
-                condition: () => (answers.p19 === 'Sí, mucho' || answers.p19 === 'Sí, algo')
-            });
-
-            // ---------- PASO FINAL: PARTICIPACIÓN VOLUNTARIA (no numerada) ----------
-            steps.push({
-                id: 'participacion',
-                question: '¿Quieres participar en futuras pruebas comerciales? Estamos investigando nuevas formas de encontrar productos, servicios y ofertas con mejores condiciones y mayor confianza.',
-                type: 'radio',
-                options: opts([
-                    'Sí, quiero participar',
-                    'Quiero recibir información',
-                    'No por ahora'
-                ]),
-                condition: () => true,
-                isFinal: true // marcamos para mostrar campos adicionales en el resumen
-            });
-
-            // Subpasos para participación (si dice Sí o Quiero recibir información)
-            steps.push({
-                id: 'part_datos',
-                question: 'Para contactarte, por favor ingresa tu WhatsApp o correo (opcional):',
-                type: 'text',
-                placeholder: 'Ej. 987654321 o correo@ejemplo.com',
-                condition: () => (answers.participacion === 'Sí, quiero participar' || answers.participacion === 'Quiero recibir información')
-            });
-
-            steps.push({
-                id: 'part_categoria',
-                question: '¿Qué categorías te interesan? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Alimentos', 'Tecnología', 'Ropa', 'Hogar',
-                    'Repuestos', 'Construcción', 'Belleza/salud',
-                    'Productos para negocio', 'Servicios', 'Otros'
-                ]),
-                allowOther: true,
-                condition: () => (answers.participacion === 'Sí, quiero participar' || answers.participacion === 'Quiero recibir información')
-            });
-
-            // ------------------------------------------------------------
-            // 2. LÓGICA DE NAVEGACIÓN Y RENDERIZADO (similar a antes, con mejoras)
-            // ------------------------------------------------------------
+            steps.push({ id: 'p19', question: '19. ¿Algún fenómeno climático ha afectado tus compras o abastecimiento?', type: 'radio', options: opts(['Sí, mucho', 'Sí, algo', 'No', 'No recuerdo', 'No aplica']), condition: () => true });
+            steps.push({ id: 'p19_si', question: '¿Qué fue lo más afectado?', type: 'checkbox', options: opts(['Transporte/entrega', 'Abastecimiento', 'Disponibilidad de productos', 'Precios', 'Local/infraestructura', 'Trabajo/ingresos', 'Compras de los clientes', 'Otro']), allowOther: true, condition: () => (answers.p19 === 'Sí, mucho' || answers.p19 === 'Sí, algo') });
+            // PARTICIPACION
+            steps.push({ id: 'participacion', question: '¿Quieres participar en futuras pruebas comerciales?', type: 'radio', options: opts(['Sí, quiero participar', 'Quiero recibir información', 'No por ahora']), condition: () => true, isFinal: true });
+            steps.push({ id: 'part_datos', question: 'Para contactarte, por favor ingresa tu WhatsApp o correo (opcional):', type: 'text', placeholder: 'Ej. 987654321 o correo@ejemplo.com', condition: () => (answers.participacion === 'Sí, quiero participar' || answers.participacion === 'Quiero recibir información') });
+            steps.push({ id: 'part_categoria', question: '¿Qué categorías te interesan?', type: 'checkbox', options: opts(['Alimentos', 'Tecnología', 'Ropa', 'Hogar', 'Repuestos', 'Construcción', 'Belleza/salud', 'Productos para negocio', 'Servicios', 'Otros']), allowOther: true, condition: () => (answers.participacion === 'Sí, quiero participar' || answers.participacion === 'Quiero recibir información') });
 
             let currentStepIndex = 0;
 
-            function getVisibleSteps() {
-                return steps.filter(step => step.condition());
-            }
-
+            function getVisibleSteps() { return steps.filter(step => step.condition()); }
             function getCurrentVisibleIndex() {
                 const visible = getVisibleSteps();
-                if (currentStepIndex >= visible.length) {
-                    currentStepIndex = visible.length - 1;
-                }
+                if (currentStepIndex >= visible.length) currentStepIndex = visible.length - 1;
                 if (currentStepIndex < 0) currentStepIndex = 0;
                 return currentStepIndex;
             }
-
             function getCurrentStep() {
                 const visible = getVisibleSteps();
-                const idx = getCurrentVisibleIndex();
-                return visible[idx] || null;
+                return visible[getCurrentVisibleIndex()] || null;
             }
 
-            // Guardar respuesta
             function saveCurrentAnswer() {
                 const step = getCurrentStep();
                 if (!step) return;
@@ -707,13 +186,10 @@
                 } else if (step.type === 'checkbox') {
                     const checkboxes = el.querySelectorAll('input[type="checkbox"]:checked');
                     value = Array.from(checkboxes).map(cb => cb.value);
-                    // Si hay "Otro" con texto, lo añadimos
                     const otroInput = el.querySelector('.otro-input');
                     if (otroInput && otroInput.value.trim() !== '') {
-                        // Si "Otro" está seleccionado, reemplazamos o agregamos el valor
                         const otroCheck = el.querySelector('input[type="checkbox"][value="Otro"]');
                         if (otroCheck && otroCheck.checked) {
-                            // Reemplazar "Otro" por el texto
                             value = value.filter(v => v !== 'Otro');
                             value.push('Otro: ' + otroInput.value.trim());
                         }
@@ -722,9 +198,7 @@
                     const input = el.querySelector('input, textarea');
                     value = input ? input.value : '';
                 }
-                if (value !== undefined) {
-                    answers[step.id] = value;
-                }
+                if (value !== undefined) answers[step.id] = value;
             }
 
             function loadAnswer(step) {
@@ -738,17 +212,12 @@
                 } else if (step.type === 'checkbox') {
                     const checks = el.querySelectorAll('input[type="checkbox"]');
                     checks.forEach(cb => {
-                        if (Array.isArray(val)) {
-                            cb.checked = val.some(v => v === cb.value || v.startsWith(cb.value + ':'));
-                        }
+                        if (Array.isArray(val)) cb.checked = val.some(v => v === cb.value || v.startsWith(cb.value + ':'));
                     });
-                    // Cargar texto de "Otro" si existe
                     const otroInput = el.querySelector('.otro-input');
                     if (otroInput && Array.isArray(val)) {
                         const otroVal = val.find(v => v.startsWith('Otro:'));
-                        if (otroVal) {
-                            otroInput.value = otroVal.replace('Otro: ', '');
-                        }
+                        if (otroVal) otroInput.value = otroVal.replace('Otro: ', '');
                     }
                 } else if (step.type === 'text' || step.type === 'textarea') {
                     const input = el.querySelector('input, textarea');
@@ -756,14 +225,38 @@
                 }
             }
 
-            // Renderizar paso
+            // FUNCIÓN PARA ENVIAR DATOS A SUPABASE
+            async function submitDataToDatabase() {
+                saveCurrentAnswer();
+                const area = document.getElementById('dynamicArea');
+                
+                // Mostrar pantalla de carga
+                area.innerHTML = `
+                    <div class="loading-screen">
+                        <div class="loading-spinner"></div>
+                        <h3 style="color:#0b1a2a;">Guardando respuestas...</h3>
+                        <p style="color:#5b6f82; margin-top:8px;">Por favor espera un momento.</p>
+                    </div>
+                `;
+
+                // Sistematización en PostgreSQL
+                const { data, error } = await supabaseClient
+                    .from('respuestas_encuesta')
+                    .insert([{ datos: answers }]);
+
+                if (error) {
+                    console.error("Error al guardar en Supabase:", error);
+                    alert("Ocurrió un problema al guardar tus respuestas. Por favor, intenta de nuevo.");
+                    renderStep(); // Volver al paso anterior si falla
+                } else {
+                    showSummary(); // Mostrar el resumen de éxito
+                }
+            }
+
             function renderStep() {
                 const step = getCurrentStep();
                 const area = document.getElementById('dynamicArea');
-                if (!step) {
-                    showSummary();
-                    return;
-                }
+                if (!step) { showSummary(); return; }
 
                 const visible = getVisibleSteps();
                 const idx = getCurrentVisibleIndex();
@@ -773,22 +266,14 @@
 
                 let html = `<div class="question-area" data-step-id="${step.id}">`;
                 html += `<div class="question-text">${step.question}`;
-                if (step.type === 'text' || step.type === 'textarea') {
-                    html += ` <span class="sub-label">(respuesta corta)</span>`;
-                }
+                if (step.type === 'text' || step.type === 'textarea') html += ` <span class="sub-label">(respuesta corta)</span>`;
                 html += `</div>`;
 
                 if (step.type === 'radio' || step.type === 'checkbox') {
                     html += `<div class="options-group">`;
-                    const inputType = step.type;
-                    const name = step.id;
                     step.options.forEach(opt => {
-                        const value = opt.value;
-                        html += `<label>`;
-                        html += `<input type="${inputType}" name="${name}" value="${value}">`;
-                        html += `<span>${opt.label}</span>`;
-                        // Si es "Otro" y allowOther, mostramos input
-                        if (opt.label === 'Otro' || opt.label === 'Otros' && step.allowOther) {
+                        html += `<label><input type="${step.type}" name="${step.id}" value="${opt.value}"><span>${opt.label}</span>`;
+                        if ((opt.label === 'Otro' || opt.label === 'Otros') && step.allowOther) {
                             html += `<input type="text" class="otro-input" placeholder="Especifica..." style="margin-left:8px;">`;
                         }
                         html += `</label>`;
@@ -807,114 +292,55 @@
                 } else {
                     html += `<button class="btn btn-primary" id="nextBtn">Siguiente →</button>`;
                 }
-                html += `</div>`;
-                html += `</div>`;
+                html += `</div></div>`;
                 area.innerHTML = html;
 
                 loadAnswer(step);
 
-                // Event listeners
-                const nextBtn = document.getElementById('nextBtn');
-                const prevBtn = document.getElementById('prevBtn');
-
-                const inputs = area.querySelectorAll('input, textarea');
-                inputs.forEach(inp => {
-                    inp.addEventListener('change', () => {
-                        saveCurrentAnswer();
-                        // Para radio que afecta condiciones, re-renderizar
-                        if (step.type === 'radio') {
-                            const conditionalParents = ['p10', 'p12', 'p14', 'p15', 'p18', 'p19', 'participacion'];
-                            if (conditionalParents.includes(step.id)) {
-                                const visibleNow = getVisibleSteps();
-                                const currentId = step.id;
-                                const newIdx = visibleNow.findIndex(s => s.id === currentId);
-                                if (newIdx !== -1) {
-                                    currentStepIndex = newIdx;
-                                }
-                                renderStep();
-                            }
-                        }
-                    });
-                    if (inp.tagName === 'INPUT' || inp.tagName === 'TEXTAREA') {
-                        inp.addEventListener('blur', saveCurrentAnswer);
-                    }
-                });
-
-                // Botón Siguiente
-                nextBtn.addEventListener('click', function(e) {
+                document.getElementById('nextBtn').addEventListener('click', function(e) {
                     e.preventDefault();
                     saveCurrentAnswer();
                     const stepNow = getCurrentStep();
-                    if (!stepNow) return;
-                    // Validaciones básicas
-                    if (stepNow.type === 'radio') {
+                    
+                    if (stepNow.type === 'radio' && !answers[stepNow.id]) { alert('Por favor selecciona una opción.'); return; }
+                    if (stepNow.type === 'checkbox') {
                         const val = answers[stepNow.id];
-                        if (!val) {
-                            alert('Por favor selecciona una opción.');
-                            return;
-                        }
-                    } else if (stepNow.type === 'checkbox') {
-                        const val = answers[stepNow.id];
-                        if (!val || (Array.isArray(val) && val.length === 0)) {
-                            alert('Selecciona al menos una opción.');
-                            return;
-                        }
-                    } else if (stepNow.type === 'text' || stepNow.type === 'textarea') {
-                        const val = answers[stepNow.id];
-                        if (!val || val.trim() === '') {
-                            alert('Por favor escribe tu respuesta.');
-                            return;
-                        }
+                        if (!val || val.length === 0) { alert('Selecciona al menos una opción.'); return; }
+                    }
+                    if ((stepNow.type === 'text' || stepNow.type === 'textarea') && (!answers[stepNow.id] || answers[stepNow.id].trim() === '')) {
+                        alert('Por favor escribe tu respuesta.'); return;
                     }
 
                     const visibleNow = getVisibleSteps();
                     if (currentStepIndex === visibleNow.length - 1) {
-                        showSummary();
-                        return;
-                    }
-                    const nextIdx = currentStepIndex + 1;
-                    if (nextIdx < visibleNow.length) {
-                        currentStepIndex = nextIdx;
+                        // AQUÍ CONECTAMOS EL ENVÍO A LA BASE DE DATOS
+                        submitDataToDatabase();
+                    } else {
+                        currentStepIndex++;
                         renderStep();
                     }
                 });
 
-                prevBtn.addEventListener('click', function(e) {
+                document.getElementById('prevBtn').addEventListener('click', function(e) {
                     e.preventDefault();
-                    if (currentStepIndex > 0) {
-                        currentStepIndex--;
-                        renderStep();
-                    }
+                    if (currentStepIndex > 0) { currentStepIndex--; renderStep(); }
                 });
             }
 
-            // ------------------------------------------------------------
-            // 3. RESUMEN FINAL
-            // ------------------------------------------------------------
             function showSummary() {
                 const area = document.getElementById('dynamicArea');
-                saveCurrentAnswer();
-                const allAnswers = { ...answers };
                 const visibleSteps = getVisibleSteps();
 
                 let html = `<div class="summary">`;
-                html += `<div class="alert">✅ ¡Encuesta completada! Muchas gracias por tu tiempo.</div>`;
+                html += `<div class="alert">✅ ¡Encuesta completada y guardada exitosamente! Muchas gracias por tu tiempo.</div>`;
                 html += `<h3 style="margin-bottom:16px; font-weight:600; color:#0b1a2a;">Resumen de tus respuestas</h3>`;
 
                 visibleSteps.forEach(step => {
-                    const val = allAnswers[step.id];
-                    if (val === undefined || val === null || (Array.isArray(val) && val.length === 0) || (typeof val ===
-                            'string' && val.trim() === '')) {
-                        return;
-                    }
-                    html += `<div class="summary-item">`;
-                    html += `<strong>${step.question}</strong>`;
+                    const val = answers[step.id];
+                    if (val === undefined || val === null || (Array.isArray(val) && val.length === 0) || (typeof val === 'string' && val.trim() === '')) return;
+                    html += `<div class="summary-item"><strong>${step.question}</strong>`;
                     if (Array.isArray(val)) {
-                        html += `<div class="answer multi">`;
-                        val.forEach(v => {
-                            html += `<span>${v}</span>`;
-                        });
-                        html += `</div>`;
+                        html += `<div class="answer multi">${val.map(v => `<span>${v}</span>`).join('')}</div>`;
                     } else {
                         html += `<div class="answer">${val}</div>`;
                     }
@@ -922,40 +348,21 @@
                 });
 
                 html += `<div style="margin-top:24px; display:flex; gap:12px;">`;
-                html += `<button class="btn btn-secondary" id="backBtn">← Volver</button>`;
                 html += `<button class="btn btn-primary" id="restartBtn" style="flex:1;">🔁 Nueva encuesta</button>`;
-                html += `</div>`;
-                html += `</div>`;
+                html += `</div></div>`;
                 area.innerHTML = html;
 
                 document.getElementById('progressFill').style.width = '100%';
                 document.getElementById('stepCounter').textContent = '¡Completado!';
 
-                document.getElementById('backBtn').addEventListener('click', function() {
-                    const visible = getVisibleSteps();
-                    if (visible.length > 0) {
-                        currentStepIndex = visible.length - 1;
-                        renderStep();
-                    }
-                });
-
                 document.getElementById('restartBtn').addEventListener('click', function() {
-                    for (let key in answers) {
-                        delete answers[key];
-                    }
+                    for (let key in answers) delete answers[key];
                     currentStepIndex = 0;
                     renderStep();
                 });
             }
 
-            // ------------------------------------------------------------
-            // 4. INICIO
-            // ------------------------------------------------------------
-            function init() {
-                currentStepIndex = 0;
-                renderStep();
-            }
-
+            function init() { currentStepIndex = 0; renderStep(); }
             window.addEventListener('load', init);
 
         })();
