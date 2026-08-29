@@ -834,14 +834,16 @@
                     plataforma: navigator.platform || 'desconocida'
                 };
 
-                // Agregar metadatos y geo al objeto final
                 dataToSend._metadata = metadata;
                 if (geo) {
                     dataToSend._geo = geo;
                 }
 
-                // Enviar a Supabase
-                return fetch(`${SUPABASE_URL}/rest/v1/respuestas_encuesta`, {
+                const url = `${SUPABASE_URL}/rest/v1/respuestas_encuesta`;
+                console.log('📤 Enviando a:', url);
+                console.log('📦 Datos:', dataToSend);
+
+                return fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -851,23 +853,34 @@
                     body: JSON.stringify({ datos: dataToSend })
                 })
                 .then(response => {
+                    console.log('📬 Respuesta HTTP:', response.status, response.statusText);
                     if (!response.ok) {
+                        // Leer el cuerpo como texto para saber el error real
                         return response.text().then(text => {
-                            throw new Error(`Error ${response.status}: ${text}`);
+                            console.error('❌ Cuerpo del error:', text);
+                            throw new Error(`Error ${response.status}: ${text || response.statusText}`);
                         });
                     }
-                    return response.json();
+                    // Si es exitoso, intentar parsear JSON (puede ser vacío)
+                    return response.text().then(text => {
+                        if (!text) return {}; // Respuesta vacía, Supabase devuelve 201 sin cuerpo a veces
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.warn('⚠️ Respuesta no JSON:', text);
+                            return { success: true, raw: text };
+                        }
+                    });
                 })
                 .then(data => {
                     datosEnviados = true;
-                    // Guardar en localStorage para evitar duplicados
                     try {
                         localStorage.setItem(STORAGE_KEY, 'true');
                     } catch (e) { /* ignore */ }
                     return { success: true, data };
                 })
                 .catch(error => {
-                    console.error('Error al enviar a Supabase:', error);
+                    console.error('❌ Error al enviar a Supabase:', error);
                     return { success: false, error: error.message };
                 });
             }
