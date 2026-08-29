@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Remates · Encuesta Compradores v1.1</title>
+    <title>Mega Remates · Encuesta Compradores v1.2</title>
     <style>
-        /* Estilos (sin cambios) */
+        /* Estilos (sin cambios respecto a la versión anterior) */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -321,18 +321,32 @@
             'use strict';
 
             // ================================================================
-            //  CONFIGURACIÓN DE SUPABASE (LA INTEGRACIÓN)
+            //  CONFIGURACIÓN DE SUPABASE (CAMBIAR AQUÍ)
             // ================================================================
-            const SUPABASE_URL = 'https://ftppbncvrkygiuladcbx.supabase.co';          
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0cHBibmN2cmt5Z2l1bGFkY2J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjU4ODksImV4cCI6MjEwMzUwMTg4OX0.5Ceke0GGQcpXvcGWdu9ZW0pHE0vgz1qqCrrpj_P7rsc';
-
+            const SUPABASE_URL = 'URL_DE_SUPABASE';          // Ej: https://xxxxxxxxxxxx.supabase.co
+            const SUPABASE_ANON_KEY = 'CLAVE_ANON_DE_SUPABASE'; // Tu clave anónima
             // ================================================================
 
-            // Variable para controlar si ya se enviaron los datos
+            // Clave para localStorage (evitar duplicados)
+            const STORAGE_KEY = 'megaremates_encuesta_enviada';
+
+            // Variables de control
             let datosEnviados = false;
+            let geoData = null; // guardará IP y ubicación
+
+            // --- Variables de comportamiento ---
+            const inicioEncuesta = new Date();
+            const tiemposPorPregunta = {}; // clave: id_pregunta, valor: segundos
+            let preguntaActualId = null;
+            let inicioPregunta = null;
+
+            // Metadatos
+            let fuente = 'desconocida';
+            let dispositivo = 'desktop';
+            let conexion = {};
 
             // ------------------------------------------------------------
-            // 1. DEFINICIÓN DE PASOS (19 preguntas + subpreguntas condicionales)
+            // 1. DEFINICIÓN DE PASOS (26 preguntas + condicionales)
             // ------------------------------------------------------------
             const steps = [];
 
@@ -342,7 +356,7 @@
 
             const answers = {};
 
-            // ---------- BLOQUE A ----------
+            // --- BLOQUE A: PERFIL (1-3) ---
             steps.push({
                 id: 'p1',
                 question: '1. ¿Qué compras habitualmente? (puedes seleccionar varias)',
@@ -351,7 +365,7 @@
                     'Alimentos y bebidas', 'Ropa y calzado', 'Tecnología/celulares',
                     'Productos para el hogar', 'Repuestos/automotriz', 'Construcción/herramientas',
                     'Belleza/salud', 'Productos para mi negocio', 'Productos para revender',
-                    'Servicios', 'Productos digitales', 'Otro'
+                    'Servicios', 'Productos digitales', 'Otros'
                 ]),
                 allowOther: true,
                 condition: () => true
@@ -381,7 +395,7 @@
                 condition: () => true
             });
 
-            // ---------- BLOQUE B ----------
+            // --- BLOQUE B: COMPORTAMIENTO REAL (4-8) ---
             steps.push({
                 id: 'p4',
                 question: '4. Pensando en tu última compra, ¿qué compraste? (respuesta abierta)',
@@ -392,8 +406,8 @@
 
             steps.push({
                 id: 'p5',
-                question: '5. ¿Dónde realizaste esa compra?',
-                type: 'radio',
+                question: '5. ¿Dónde realizaste esa compra? (puedes seleccionar varias)',
+                type: 'checkbox',
                 options: opts([
                     'Tienda/mercado físico', 'Facebook/Marketplace', 'WhatsApp',
                     'Instagram/TikTok', 'Página web', 'Aplicación',
@@ -435,11 +449,11 @@
                 condition: () => true
             });
 
-            // ---------- BLOQUE C ----------
+            // --- BLOQUE C: OFERTAS, REMATES Y CONFIANZA (9-12) ---
             steps.push({
                 id: 'p9',
-                question: '9. Cuando buscas una buena oferta, ¿qué haces normalmente?',
-                type: 'radio',
+                question: '9. Cuando buscas una buena oferta, ¿qué haces normalmente? (puedes seleccionar varias)',
+                type: 'checkbox',
                 options: opts([
                     'Comparo precios', 'Pregunto a familiares/amigos',
                     'Busco en Facebook/Marketplace', 'Pregunto por WhatsApp',
@@ -512,7 +526,7 @@
                 condition: () => answers.p12 === 'Sí'
             });
 
-            // ---------- BLOQUE D ----------
+            // --- BLOQUE D: CALIDAD, CRÉDITO, COMPRA GRUPAL (13-15) ---
             steps.push({
                 id: 'p13',
                 question: '13. Cuando compras alimentos, bebidas, cosméticos, productos de salud u otros productos sensibles, ¿qué verificas? (puedes seleccionar varias)',
@@ -571,7 +585,7 @@
                 condition: () => answers.p15 === 'Sí'
             });
 
-            // ---------- BLOQUE E ----------
+            // --- BLOQUE E: DESCUBRIMIENTO DEL JOB (16-17) ---
             steps.push({
                 id: 'p16',
                 question: '16. Pensando en tus compras actuales, ¿qué es lo que más te cuesta o te incomoda? (selecciona hasta 3)',
@@ -596,7 +610,7 @@
                 condition: () => true
             });
 
-            // ---------- BLOQUE F ----------
+            // --- BLOQUE F: RESILIENCIA Y CONTEXTO (18-19) ---
             steps.push({
                 id: 'p18',
                 question: '18. Seguridad e inseguridad: En tu actividad de compra, venta, trabajo o negocio, ¿la inseguridad, robos, amenazas o extorsiones han cambiado la manera en que compras, vendes, cobras, entregas o recibes productos/servicios?',
@@ -640,43 +654,226 @@
                 condition: () => (answers.p19 === 'Sí, mucho' || answers.p19 === 'Sí, algo')
             });
 
-            // ---------- BLOQUE VOLUNTARIO (participación) ----------
+            // --- BLOQUE G: LOCALIZACIÓN Y MOVILIDAD (20-23) ---
             steps.push({
-                id: 'participacion',
-                question: '¿Quieres participar en futuras pruebas comerciales? Estamos investigando nuevas formas de encontrar productos, servicios y ofertas con mejores condiciones y mayor confianza.',
+                id: 'p20',
+                question: '20. ¿En qué localidad o zona realizas principalmente tus compras?',
                 type: 'radio',
                 options: opts([
-                    'Sí, quiero participar',
-                    'Quiero recibir información',
-                    'No por ahora'
-                ]),
-                condition: () => true,
-                isFinal: true
-            });
-
-            steps.push({
-                id: 'part_datos',
-                question: 'Para contactarte, por favor ingresa tu WhatsApp o correo (opcional):',
-                type: 'text',
-                placeholder: 'Ej. 987654321 o correo@ejemplo.com',
-                condition: () => (answers.participacion === 'Sí, quiero participar' || answers.participacion === 'Quiero recibir información')
-            });
-
-            steps.push({
-                id: 'part_categoria',
-                question: '¿Qué categorías te interesan? (puedes seleccionar varias)',
-                type: 'checkbox',
-                options: opts([
-                    'Alimentos', 'Tecnología', 'Ropa', 'Hogar',
-                    'Repuestos', 'Construcción', 'Belleza/salud',
-                    'Productos para negocio', 'Servicios', 'Otros'
+                    'Chimbote', 'Nuevo Chimbote', 'Coishco', 'Santa',
+                    'Nepeña', 'Casma', 'Huarmey', 'Otra localidad', 'Prefiero no responder'
                 ]),
                 allowOther: true,
-                condition: () => (answers.participacion === 'Sí, quiero participar' || answers.participacion === 'Quiero recibir información')
+                condition: () => true
+            });
+
+            steps.push({
+                id: 'p21',
+                question: '21. ¿En qué localidad o zona realizas principalmente tu actividad comercial o de trabajo?',
+                type: 'radio',
+                options: opts([
+                    'Chimbote', 'Nuevo Chimbote', 'Coishco', 'Santa',
+                    'Nepeña', 'Casma', 'Huarmey', 'Otra localidad', 'No aplica', 'Prefiero no responder'
+                ]),
+                allowOther: true,
+                condition: () => true
+            });
+
+            steps.push({
+                id: 'p22',
+                question: '22. ¿Cómo prefieres recibir o completar una compra?',
+                type: 'radio',
+                options: opts([
+                    'Entrega a domicilio', 'Recoger en el negocio',
+                    'Recoger en un punto acordado', 'Encontrarme con el vendedor',
+                    'Depende del producto', 'Otro'
+                ]),
+                allowOther: true,
+                condition: () => true
+            });
+
+            steps.push({
+                id: 'p23',
+                question: '23. ¿Hasta qué distancia estarías dispuesto a desplazarte para conseguir una buena oferta?',
+                type: 'radio',
+                options: opts([
+                    'Menos de 1 km', '1–3 km', '3–5 km', '5–10 km',
+                    'Más de 10 km', 'Depende del producto o del ahorro'
+                ]),
+                condition: () => true
+            });
+
+            // --- BLOQUE H: PARTICIPACIÓN FUTURA (24-26) ---
+            steps.push({
+                id: 'p24',
+                question: '24. ¿Te gustaría participar en futuras pruebas de nuevas formas de comprar productos, servicios u ofertas?',
+                type: 'radio',
+                options: opts(['Sí', 'Tal vez', 'No']),
+                condition: () => true
+            });
+
+            steps.push({
+                id: 'p25',
+                question: '25. ¿Qué te interesaría probar? (puedes seleccionar varias)',
+                type: 'checkbox',
+                options: opts([
+                    'Encontrar productos en oferta/remate', 'Comprar directamente a vendedores',
+                    'Comprar por volumen', 'Compra grupal', 'Servicios',
+                    'Comparar precios', 'Ofertas de negocios locales',
+                    'Entrega/recojo', 'Otro'
+                ]),
+                allowOther: true,
+                condition: () => (answers.p24 === 'Sí' || answers.p24 === 'Tal vez')
+            });
+
+            steps.push({
+                id: 'p26',
+                question: '26. Si deseas participar, déjanos un medio de contacto (WhatsApp o Email) – opcional:',
+                type: 'text',
+                placeholder: 'Ej. 987654321 o correo@ejemplo.com',
+                condition: () => (answers.p24 === 'Sí' || answers.p24 === 'Tal vez')
             });
 
             // ------------------------------------------------------------
-            // 2. LÓGICA DE NAVEGACIÓN Y RENDERIZADO
+            // 2. FUNCIONES AUXILIARES (geolocalización, metadatos, envío)
+            // ------------------------------------------------------------
+
+            // Detectar dispositivo
+            function detectarDispositivo() {
+                const ua = navigator.userAgent;
+                if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
+                if (/mobile|iphone|ipod|android|blackberry|windows phone/i.test(ua)) return 'celular';
+                return 'laptop/PC';
+            }
+
+            // Obtener fuente (canal) desde URL params o referrer
+            function obtenerFuente() {
+                const params = new URLSearchParams(window.location.search);
+                const utmSource = params.get('utm_source');
+                if (utmSource) return utmSource;
+
+                // Intentar con referrer
+                try {
+                    const ref = document.referrer || '';
+                    if (ref.includes('facebook.com')) return 'Facebook';
+                    if (ref.includes('messenger.com')) return 'Messenger';
+                    if (ref.includes('whatsapp.com')) return 'WhatsApp';
+                    if (ref.includes('instagram.com')) return 'Instagram';
+                    if (ref.includes('tiktok.com')) return 'TikTok';
+                    if (ref.includes('youtube.com')) return 'YouTube';
+                    if (ref.includes('google.com')) return 'Google';
+                    if (ref.includes('twitter.com')) return 'Twitter';
+                    if (ref.includes('linkedin.com')) return 'LinkedIn';
+                    if (ref.includes('megaremates.com')) return 'Web directa';
+                    return 'directo';
+                } catch (e) {
+                    return 'desconocida';
+                }
+            }
+
+            // Obtener IP y ubicación aproximada desde ipapi.co
+            function obtenerGeoData() {
+                return fetch('https://ipapi.co/json/')
+                    .then(res => {
+                        if (!res.ok) throw new Error('Error al obtener geolocalización');
+                        return res.json();
+                    })
+                    .then(data => {
+                        return {
+                            ip: data.ip || 'desconocida',
+                            ciudad: data.city || '',
+                            region: data.region || '',
+                            pais: data.country_name || '',
+                            lat: data.latitude || null,
+                            lon: data.longitude || null
+                        };
+                    })
+                    .catch(err => {
+                        console.warn('No se pudo obtener geolocalización:', err);
+                        return null;
+                    });
+            }
+
+            // Obtener datos de conexión
+            function obtenerConexion() {
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                if (conn) {
+                    return {
+                        effectiveType: conn.effectiveType || 'unknown',
+                        downlink: conn.downlink || null,
+                        rtt: conn.rtt || null
+                    };
+                }
+                return {};
+            }
+
+            // Enviar a Supabase con los datos + geolocalización + metadatos
+            function enviarRespuestas(geo) {
+                // Construir objeto con todas las respuestas
+                const dataToSend = {};
+                for (const key in answers) {
+                    if (answers[key] !== undefined && answers[key] !== null && answers[key] !== '') {
+                        dataToSend[key] = answers[key];
+                    }
+                }
+
+                // Calcular tiempo total
+                const finEncuesta = new Date();
+                const tiempoTotalSeg = Math.round((finEncuesta - inicioEncuesta) / 1000);
+
+                // Construir metadatos
+                const metadata = {
+                    fuente: fuente,
+                    dispositivo: dispositivo,
+                    inicio: inicioEncuesta.toISOString(),
+                    fin: finEncuesta.toISOString(),
+                    tiempo_total_segundos: tiempoTotalSeg,
+                    tiempos_por_pregunta: tiemposPorPregunta,
+                    conexion: conexion,
+                    navegador: navigator.userAgent,
+                    plataforma: navigator.platform || 'desconocida'
+                };
+
+                // Agregar metadatos y geo al objeto final
+                dataToSend._metadata = metadata;
+                if (geo) {
+                    dataToSend._geo = geo;
+                }
+
+                // Enviar a Supabase
+                return fetch(`${SUPABASE_URL}/rest/v1/respuestas_encuesta`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ datos: dataToSend })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`Error ${response.status}: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    datosEnviados = true;
+                    // Guardar en localStorage para evitar duplicados
+                    try {
+                        localStorage.setItem(STORAGE_KEY, 'true');
+                    } catch (e) { /* ignore */ }
+                    return { success: true, data };
+                })
+                .catch(error => {
+                    console.error('Error al enviar a Supabase:', error);
+                    return { success: false, error: error.message };
+                });
+            }
+
+            // ------------------------------------------------------------
+            // 3. LÓGICA DE NAVEGACIÓN Y RENDERIZADO
             // ------------------------------------------------------------
 
             let currentStepIndex = 0;
@@ -716,8 +913,8 @@
                     if (otroInput && otroInput.value.trim() !== '') {
                         const otroCheck = el.querySelector('input[type="checkbox"][value="Otro"]');
                         if (otroCheck && otroCheck.checked) {
-                            value = value.filter(v => v !== 'Otro');
-                            value.push('Otro: ' + otroInput.value.trim());
+                            value = value.filter(v => v !== 'Otro' && v !== 'Otros' && v !== 'Otra localidad' && v !== 'Otros');
+                            value.push(otroInput.value.trim());
                         }
                     }
                 } else if (step.type === 'text' || step.type === 'textarea') {
@@ -746,9 +943,9 @@
                     });
                     const otroInput = el.querySelector('.otro-input');
                     if (otroInput && Array.isArray(val)) {
-                        const otroVal = val.find(v => v.startsWith('Otro:'));
-                        if (otroVal) {
-                            otroInput.value = otroVal.replace('Otro: ', '');
+                        const otroVal = val.find(v => !v.startsWith('Otro') && !v.startsWith('Otros') && !v.startsWith('Otra') && !v.startsWith('No aplica') && !v.startsWith('Prefiero') && !v.startsWith('Depende') && !v.startsWith('Más de') && !v.startsWith('Menos de'));
+                        if (otroVal && !step.options.some(o => o.value === otroVal)) {
+                            otroInput.value = otroVal;
                         }
                     }
                 } else if (step.type === 'text' || step.type === 'textarea') {
@@ -757,52 +954,16 @@
                 }
             }
 
-            // ------------------------------------------------------------
-            // 3. ENVÍO A SUPABASE (SISTEMATIZACIÓN DE DATOS)
-            // ------------------------------------------------------------
-            function enviarRespuestas() {
-                // Construir objeto con todas las respuestas (sin claves vacías)
-                const dataToSend = {};
-                for (const key in answers) {
-                    if (answers[key] !== undefined && answers[key] !== null && answers[key] !== '') {
-                        dataToSend[key] = answers[key];
-                    }
+            // Registrar tiempo por pregunta al cambiar de paso
+            function registrarTiempoPregunta(stepId) {
+                if (preguntaActualId && inicioPregunta) {
+                    const duracion = Math.round((new Date() - inicioPregunta) / 1000);
+                    tiemposPorPregunta[preguntaActualId] = duracion;
                 }
-
-                // Enviar a Supabase mediante la API REST nativa
-                return fetch(`${SUPABASE_URL}/rest/v1/respuestas_encuesta`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Prefer': 'return=minimal' // Optimiza la respuesta del servidor al no devolver la carga completa
-                    },
-                    // Se asume que en PostgreSQL tienes una columna tipo JSONB llamada 'datos'
-                    body: JSON.stringify({ datos: dataToSend }) 
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.text().then(text => {
-                            throw new Error(`Error de integración ${response.status}: ${text}`);
-                        });
-                    }
-                    // Si el servidor responde correctamente (código 20X)
-                    return { success: true };
-                })
-                .then(data => {
-                    datosEnviados = true;
-                    return data;
-                })
-                .catch(error => {
-                    console.error('Fallo en la sistematización de la encuesta:', error);
-                    return { success: false, error: error.message };
-                });
+                // Iniciar nueva pregunta
+                preguntaActualId = stepId;
+                inicioPregunta = new Date();
             }
-
-            // ------------------------------------------------------------
-            // 4. RENDERIZADO Y NAVEGACIÓN
-            // ------------------------------------------------------------
 
             function renderStep() {
                 const step = getCurrentStep();
@@ -810,6 +971,11 @@
                 if (!step) {
                     showSummary();
                     return;
+                }
+
+                // Registrar tiempo de la pregunta anterior y actual
+                if (step.id !== preguntaActualId) {
+                    registrarTiempoPregunta(step.id);
                 }
 
                 const visible = getVisibleSteps();
@@ -834,7 +1000,7 @@
                         html += `<label>`;
                         html += `<input type="${inputType}" name="${name}" value="${value}">`;
                         html += `<span>${opt.label}</span>`;
-                        if ((opt.label === 'Otro' || opt.label === 'Otros') && step.allowOther) {
+                        if ((opt.label === 'Otro' || opt.label === 'Otros' || opt.label === 'Otra localidad') && step.allowOther) {
                             html += `<input type="text" class="otro-input" placeholder="Especifica..." style="margin-left:8px;">`;
                         }
                         html += `</label>`;
@@ -868,7 +1034,7 @@
                     inp.addEventListener('change', () => {
                         saveCurrentAnswer();
                         if (step.type === 'radio') {
-                            const conditionalParents = ['p10', 'p12', 'p14', 'p15', 'p18', 'p19', 'participacion'];
+                            const conditionalParents = ['p10', 'p12', 'p14', 'p15', 'p18', 'p19', 'p24'];
                             if (conditionalParents.includes(step.id)) {
                                 const visibleNow = getVisibleSteps();
                                 const currentId = step.id;
@@ -914,20 +1080,37 @@
                     }
 
                     const visibleNow = getVisibleSteps();
-                    // Si es el último paso (enviar)
                     if (currentStepIndex === visibleNow.length - 1) {
-                        // Deshabilitar botón para evitar doble envío
+                        // Enviar
                         nextBtn.disabled = true;
                         nextBtn.textContent = 'Enviando...';
-                        // Enviar datos
-                        enviarRespuestas().then(result => {
-                            // Mostrar resumen con el resultado
-                            showSummary(result);
-                        });
+
+                        // Registrar tiempo de la última pregunta (antes de enviar)
+                        registrarTiempoPregunta(stepNow.id);
+
+                        // Obtener geolocalización si no se obtuvo antes
+                        if (!geoData) {
+                            obtenerGeoData().then(geo => {
+                                geoData = geo;
+                                enviarRespuestas(geo).then(result => {
+                                    showSummary(result);
+                                });
+                            }).catch(() => {
+                                enviarRespuestas(null).then(result => {
+                                    showSummary(result);
+                                });
+                            });
+                        } else {
+                            enviarRespuestas(geoData).then(result => {
+                                showSummary(result);
+                            });
+                        }
                         return;
                     }
 
-                    // Sino, avanzar
+                    // Registrar tiempo antes de avanzar
+                    registrarTiempoPregunta(stepNow.id);
+
                     const nextIdx = currentStepIndex + 1;
                     if (nextIdx < visibleNow.length) {
                         currentStepIndex = nextIdx;
@@ -938,6 +1121,9 @@
                 prevBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     if (currentStepIndex > 0) {
+                        // Registrar tiempo antes de retroceder
+                        const stepNow = getCurrentStep();
+                        if (stepNow) registrarTiempoPregunta(stepNow.id);
                         currentStepIndex--;
                         renderStep();
                     }
@@ -945,11 +1131,10 @@
             }
 
             // ------------------------------------------------------------
-            // 5. RESUMEN FINAL CON ESTADO DE ENVÍO
+            // 4. RESUMEN FINAL CON ESTADO DE ENVÍO
             // ------------------------------------------------------------
             function showSummary(envioResult) {
                 const area = document.getElementById('dynamicArea');
-                // Asegurar que todas las respuestas estén guardadas
                 saveCurrentAnswer();
 
                 const allAnswers = { ...answers };
@@ -957,7 +1142,6 @@
 
                 let html = `<div class="summary">`;
 
-                // Mensaje según resultado del envío
                 if (envioResult) {
                     if (envioResult.success) {
                         html += `<div class="alert alert-success">✅ ¡Encuesta enviada correctamente! Muchas gracias por tu tiempo.</div>`;
@@ -965,7 +1149,6 @@
                         html += `<div class="alert alert-error">❌ Error al enviar los datos: ${envioResult.error || 'intenta de nuevo más tarde'}.<br> Tus respuestas se han guardado localmente, pero no se enviaron al servidor.</div>`;
                     }
                 } else {
-                    // Si se muestra el resumen sin haber enviado (por ejemplo, al volver atrás)
                     if (!datosEnviados) {
                         html += `<div class="alert alert-info">⚠️ Aún no has enviado los datos. Puedes volver atrás y hacer clic en "Enviar respuestas".</div>`;
                     } else {
@@ -1019,14 +1202,51 @@
                     }
                     datosEnviados = false;
                     currentStepIndex = 0;
+                    // Limpiar localStorage para permitir nueva respuesta
+                    try {
+                        localStorage.removeItem(STORAGE_KEY);
+                    } catch (e) { /* ignore */ }
                     renderStep();
                 });
             }
 
             // ------------------------------------------------------------
-            // 6. INICIO
+            // 5. INICIO CON VERIFICACIÓN DE DUPLICADO Y CAPTURA DE METADATOS
             // ------------------------------------------------------------
             function init() {
+                // Verificar si ya se envió desde este dispositivo
+                try {
+                    const yaEnviado = localStorage.getItem(STORAGE_KEY);
+                    if (yaEnviado === 'true') {
+                        const area = document.getElementById('dynamicArea');
+                        area.innerHTML = `
+                            <div class="alert alert-info" style="margin-top:40px; text-align:center; font-size:18px;">
+                                <p>✅ Ya has completado esta encuesta anteriormente.</p>
+                                <p style="margin-top:12px; font-size:16px; color:#5b6f82;">Gracias por tu participación.</p>
+                            </div>
+                        `;
+                        document.getElementById('stepCounter').textContent = 'Completado';
+                        document.getElementById('progressFill').style.width = '100%';
+                        return;
+                    }
+                } catch (e) { /* ignorar */ }
+
+                // Capturar metadatos
+                fuente = obtenerFuente();
+                dispositivo = detectarDispositivo();
+                conexion = obtenerConexion();
+
+                // Obtener geolocalización al inicio (en segundo plano)
+                obtenerGeoData().then(geo => {
+                    geoData = geo;
+                }).catch(() => {
+                    geoData = null;
+                });
+
+                // Inicializar tiempos
+                preguntaActualId = null;
+                inicioPregunta = new Date();
+
                 currentStepIndex = 0;
                 datosEnviados = false;
                 renderStep();
