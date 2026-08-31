@@ -4,24 +4,18 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  // Obtener datos del body
   const { datos, token } = req.body;
 
-  // 1. Validar token simple (nonce) - lo generamos en el cliente
-  if (!token || token !== process.env.SECRET_NONCE) {
+  // Validar token: debe ser un string de entre 20 y 50 caracteres (generado por el cliente)
+  if (!token || typeof token !== 'string' || token.length < 20 || token.length > 50) {
     return res.status(401).json({ error: 'Token inválido' });
   }
 
-  // 2. (Opcional) Rate limiting básico por IP
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  // Aquí podrías implementar un contador en memoria o usar Redis/Vercel KV
-
-  // 3. Validar que los datos tengan al menos algunas claves (evitar spam vacío)
+  // Validar datos mínimos (evitar spam vacío)
   if (!datos || typeof datos !== 'object' || Object.keys(datos).length < 3) {
     return res.status(400).json({ error: 'Datos insuficientes' });
   }
 
-  // 4. Insertar en Supabase usando la clave de servicio (NUNCA expuesta al cliente)
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
