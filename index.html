@@ -1241,71 +1241,92 @@
 
                 let html = `<div class="summary">`;
 
-                if (envioResult) {
-                    if (envioResult.success) {
-                        html += `<div class="alert alert-success">✅ ¡Encuesta enviada correctamente! Muchas gracias por tu tiempo.</div>`;
-                    } else {
-                        html += `<div class="alert alert-error">❌ Error al enviar los datos: ${envioResult.error || 'intenta de nuevo más tarde'}.<br> Tus respuestas se han guardado localmente, pero no se enviaron al servidor.</div>`;
-                    }
+                const exito = envioResult && envioResult.success;
+
+                if (exito) {
+                    // Mensaje de éxito y sin botones interactivos
+                    html += `<div class="alert alert-success" style="text-align:center; font-size:18px;">
+                                ✅ ¡Encuesta enviada correctamente! Muchas gracias por tu tiempo.
+                                <p style="margin-top:12px; font-size:16px; color:#5b6f82;">Tus respuestas han sido registradas.</p>
+                            </div>`;
+                    // No mostramos el resumen de respuestas para evitar interacción extra
+                    // Puedes mostrarlo si quieres, pero sin botones
                 } else {
-                    if (!datosEnviados) {
-                        html += `<div class="alert alert-info">⚠️ Aún no has enviado los datos. Puedes volver atrás y hacer clic en "Enviar respuestas".</div>`;
+                    // Mensaje de error o pendiente
+                    if (envioResult) {
+                        html += `<div class="alert alert-error">❌ Error al enviar los datos: ${envioResult.error || 'intenta de nuevo más tarde'}.<br> Tus respuestas se han guardado localmente, pero no se enviaron al servidor.</div>`;
                     } else {
-                        html += `<div class="alert alert-success">✅ Encuesta completada y enviada correctamente.</div>`;
+                        if (!datosEnviados) {
+                            html += `<div class="alert alert-info">⚠️ Aún no has enviado los datos. Puedes volver atrás y hacer clic en "Enviar respuestas".</div>`;
+                        } else {
+                            html += `<div class="alert alert-success">✅ Encuesta completada y enviada correctamente.</div>`;
+                        }
                     }
+
+                    // Mostrar resumen de respuestas solo si no hubo éxito (o si lo hubo, pero no lo mostramos)
+                    html += `<h3 style="margin-bottom:16px; font-weight:600; color:#0b1a2a;">Resumen de tus respuestas</h3>`;
+                    visibleSteps.forEach(step => {
+                        const val = allAnswers[step.id];
+                        if (val === undefined || val === null || (Array.isArray(val) && val.length === 0) || (typeof val ===
+                                'string' && val.trim() === '')) {
+                            return;
+                        }
+                        html += `<div class="summary-item">`;
+                        html += `<strong>${step.question}</strong>`;
+                        if (Array.isArray(val)) {
+                            html += `<div class="answer multi">`;
+                            val.forEach(v => {
+                                html += `<span>${v}</span>`;
+                            });
+                            html += `</div>`;
+                        } else {
+                            html += `<div class="answer">${val}</div>`;
+                        }
+                        html += `</div>`;
+                    });
+
+                    // Botones de navegación (solo si no hubo éxito)
+                    html += `<div style="margin-top:24px; display:flex; gap:12px;">`;
+                    html += `<button class="btn btn-secondary" id="backBtn">← Volver</button>`;
+                    html += `<button class="btn btn-primary" id="restartBtn" style="flex:1;">🔁 Nueva encuesta</button>`;
+                    html += `</div>`;
                 }
 
-                html += `<h3 style="margin-bottom:16px; font-weight:600; color:#0b1a2a;">Resumen de tus respuestas</h3>`;
-
-                visibleSteps.forEach(step => {
-                    const val = allAnswers[step.id];
-                    if (val === undefined || val === null || (Array.isArray(val) && val.length === 0) || (typeof val ===
-                            'string' && val.trim() === '')) {
-                        return;
-                    }
-                    html += `<div class="summary-item">`;
-                    html += `<strong>${step.question}</strong>`;
-                    if (Array.isArray(val)) {
-                        html += `<div class="answer multi">`;
-                        val.forEach(v => {
-                            html += `<span>${v}</span>`;
-                        });
-                        html += `</div>`;
-                    } else {
-                        html += `<div class="answer">${val}</div>`;
-                    }
-                    html += `</div>`;
-                });
-
-                html += `<div style="margin-top:24px; display:flex; gap:12px;">`;
-                html += `<button class="btn btn-secondary" id="backBtn">← Volver</button>`;
-                html += `<button class="btn btn-primary" id="restartBtn" style="flex:1;">🔁 Nueva encuesta</button>`;
-                html += `</div>`;
                 html += `</div>`;
                 area.innerHTML = html;
 
                 document.getElementById('progressFill').style.width = '100%';
-                document.getElementById('stepCounter').textContent = '¡Completado!';
+                document.getElementById('stepCounter').textContent = exito ? '¡Completado!' : 'Resumen';
 
-                document.getElementById('backBtn').addEventListener('click', function() {
-                    const visible = getVisibleSteps();
-                    if (visible.length > 0) {
-                        currentStepIndex = visible.length - 1;
-                        renderStep();
-                    }
-                });
+                // Solo agregar event listeners si los botones existen (cuando no es éxito)
+                if (!exito) {
+                    const backBtn = document.getElementById('backBtn');
+                    const restartBtn = document.getElementById('restartBtn');
 
-                document.getElementById('restartBtn').addEventListener('click', function() {
-                    for (let key in answers) {
-                        delete answers[key];
+                    if (backBtn) {
+                        backBtn.addEventListener('click', function() {
+                            const visible = getVisibleSteps();
+                            if (visible.length > 0) {
+                                currentStepIndex = visible.length - 1;
+                                renderStep();
+                            }
+                        });
                     }
-                    datosEnviados = false;
-                    currentStepIndex = 0;
-                    try {
-                        localStorage.removeItem(STORAGE_KEY);
-                    } catch (e) { /* ignore */ }
-                    renderStep();
-                });
+
+                    if (restartBtn) {
+                        restartBtn.addEventListener('click', function() {
+                            for (let key in answers) {
+                                delete answers[key];
+                            }
+                            datosEnviados = false;
+                            currentStepIndex = 0;
+                            try {
+                                localStorage.removeItem(STORAGE_KEY);
+                            } catch (e) { /* ignore */ }
+                            renderStep();
+                        });
+                    }
+                }
             }
 
             // ------------------------------------------------------------
