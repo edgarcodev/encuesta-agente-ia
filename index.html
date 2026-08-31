@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mega Remates · Encuesta Compradores v1.2</title>
     <style>
-        /* Estilos (sin cambios respecto a la versión anterior) */
+        /* Estilos (sin cambios) */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -321,10 +321,19 @@
             'use strict';
 
             // ================================================================
-            //  CONFIGURACIÓN DE SUPABASE (CAMBIAR AQUÍ)
+            //  GENERACIÓN DE NONCE (token de sesión)
             // ================================================================
-            const SUPABASE_URL = 'https://ftppbncvrkygiuladcbx.supabase.co';          // Ej: https://xxxxxxxxxxxx.supabase.co
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0cHBibmN2cmt5Z2l1bGFkY2J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjU4ODksImV4cCI6MjEwMzUwMTg4OX0.5Ceke0GGQcpXvcGWdu9ZW0pHE0vgz1qqCrrpj_P7rsc'; // Tu clave anónima
+            const NONCE = (() => {
+                let n = sessionStorage.getItem('encuesta_nonce');
+                if (!n) {
+                    n = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    sessionStorage.setItem('encuesta_nonce', n);
+                }
+                return n;
+            })();
+
+            // ================================================================
+            //  CONFIGURACIÓN (ya no se necesitan claves en el cliente)
             // ================================================================
 
             // Clave para localStorage (evitar duplicados)
@@ -332,11 +341,11 @@
 
             // Variables de control
             let datosEnviados = false;
-            let geoData = null; // guardará IP y ubicación
+            let geoData = null;
 
             // --- Variables de comportamiento ---
             const inicioEncuesta = new Date();
-            const tiemposPorPregunta = {}; // clave: id_pregunta, valor: segundos
+            const tiemposPorPregunta = {};
             let preguntaActualId = null;
             let inicioPregunta = null;
 
@@ -752,7 +761,6 @@
                 const utmSource = params.get('utm_source');
                 if (utmSource) return utmSource;
 
-                // Intentar con referrer
                 try {
                     const ref = document.referrer || '';
                     if (ref.includes('facebook.com')) return 'Facebook';
@@ -807,7 +815,9 @@
                 return {};
             }
 
-            // Enviar a Supabase con los datos + geolocalización + metadatos
+            // ------------------------------------------------------------
+            // 3. ENVÍO A TRAVÉS DEL PROXY DE VERCEL (SEGURO)
+            // ------------------------------------------------------------
             function enviarRespuestas(geo) {
                 // Construir objeto con todas las respuestas
                 const dataToSend = {};
@@ -839,38 +849,37 @@
                     dataToSend._geo = geo;
                 }
 
-                const url = `${SUPABASE_URL}/rest/v1/respuestas_encuesta`;
-                console.log('📤 Enviando a:', url);
-                console.log('📦 Datos:', dataToSend);
-
-                return fetch(url, {
+                // Enviar al proxy de Vercel (sin exponer claves)
+                return fetch('/api/encuesta', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ datos: dataToSend })
+                    body: JSON.stringify({
+                        datos: dataToSend,
+                        token: NONCE
+                    })
                 })
-                .then(response => {
-                    console.log('📬 Respuesta HTTP:', response.status, response.statusText);
-                    if (!response.ok) {
-                        // Leer el cuerpo como texto para saber el error real
-                        return response.text().then(text => {
-                            console.error('❌ Cuerpo del error:', text);
-                            throw new Error(`Error ${response.status}: ${text || response.statusText}`);
-                        });
-                    }
-                    // Si es exitoso, intentar parsear JSON (puede ser vacío)
-                    return response.text().then(text => {
-                        if (!text) return {}; // Respuesta vacía, Supabase devuelve 201 sin cuerpo a veces
+                .then(async res => {
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        let errorMsg;
                         try {
-                            return JSON.parse(text);
+                            const errorJson = JSON.parse(errorText);
+                            errorMsg = errorJson.error || `Error ${res.status}`;
                         } catch (e) {
-                            console.warn('⚠️ Respuesta no JSON:', text);
-                            return { success: true, raw: text };
+                            errorMsg = `Error ${res.status}: ${errorText || res.statusText}`;
                         }
-                    });
+                        throw new Error(errorMsg);
+                    }
+                    // Intentar parsear JSON (puede ser vacío)
+                    const text = await res.text();
+                    if (!text) return {};
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        return { success: true, raw: text };
+                    }
                 })
                 .then(data => {
                     datosEnviados = true;
@@ -880,15 +889,14 @@
                     return { success: true, data };
                 })
                 .catch(error => {
-                    console.error('❌ Error al enviar a Supabase:', error);
+                    console.error('❌ Error al enviar:', error);
                     return { success: false, error: error.message };
                 });
             }
 
             // ------------------------------------------------------------
-            // 3. LÓGICA DE NAVEGACIÓN Y RENDERIZADO
+            // 4. LÓGICA DE NAVEGACIÓN Y RENDERIZADO (sin cambios)
             // ------------------------------------------------------------
-
             let currentStepIndex = 0;
 
             function getVisibleSteps() {
@@ -967,13 +975,11 @@
                 }
             }
 
-            // Registrar tiempo por pregunta al cambiar de paso
             function registrarTiempoPregunta(stepId) {
                 if (preguntaActualId && inicioPregunta) {
                     const duracion = Math.round((new Date() - inicioPregunta) / 1000);
                     tiemposPorPregunta[preguntaActualId] = duracion;
                 }
-                // Iniciar nueva pregunta
                 preguntaActualId = stepId;
                 inicioPregunta = new Date();
             }
@@ -986,7 +992,6 @@
                     return;
                 }
 
-                // Registrar tiempo de la pregunta anterior y actual
                 if (step.id !== preguntaActualId) {
                     registrarTiempoPregunta(step.id);
                 }
@@ -1038,7 +1043,6 @@
 
                 loadAnswer(step);
 
-                // Event listeners
                 const nextBtn = document.getElementById('nextBtn');
                 const prevBtn = document.getElementById('prevBtn');
 
@@ -1064,14 +1068,12 @@
                     }
                 });
 
-                // Botón Siguiente / Enviar
                 nextBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     saveCurrentAnswer();
                     const stepNow = getCurrentStep();
                     if (!stepNow) return;
 
-                    // Validaciones básicas
                     if (stepNow.type === 'radio') {
                         const val = answers[stepNow.id];
                         if (!val) {
@@ -1094,14 +1096,10 @@
 
                     const visibleNow = getVisibleSteps();
                     if (currentStepIndex === visibleNow.length - 1) {
-                        // Enviar
                         nextBtn.disabled = true;
                         nextBtn.textContent = 'Enviando...';
-
-                        // Registrar tiempo de la última pregunta (antes de enviar)
                         registrarTiempoPregunta(stepNow.id);
 
-                        // Obtener geolocalización si no se obtuvo antes
                         if (!geoData) {
                             obtenerGeoData().then(geo => {
                                 geoData = geo;
@@ -1121,9 +1119,7 @@
                         return;
                     }
 
-                    // Registrar tiempo antes de avanzar
                     registrarTiempoPregunta(stepNow.id);
-
                     const nextIdx = currentStepIndex + 1;
                     if (nextIdx < visibleNow.length) {
                         currentStepIndex = nextIdx;
@@ -1134,7 +1130,6 @@
                 prevBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     if (currentStepIndex > 0) {
-                        // Registrar tiempo antes de retroceder
                         const stepNow = getCurrentStep();
                         if (stepNow) registrarTiempoPregunta(stepNow.id);
                         currentStepIndex--;
@@ -1144,7 +1139,7 @@
             }
 
             // ------------------------------------------------------------
-            // 4. RESUMEN FINAL CON ESTADO DE ENVÍO
+            // 5. RESUMEN FINAL (sin cambios)
             // ------------------------------------------------------------
             function showSummary(envioResult) {
                 const area = document.getElementById('dynamicArea');
@@ -1215,7 +1210,6 @@
                     }
                     datosEnviados = false;
                     currentStepIndex = 0;
-                    // Limpiar localStorage para permitir nueva respuesta
                     try {
                         localStorage.removeItem(STORAGE_KEY);
                     } catch (e) { /* ignore */ }
@@ -1224,10 +1218,10 @@
             }
 
             // ------------------------------------------------------------
-            // 5. INICIO CON VERIFICACIÓN DE DUPLICADO Y CAPTURA DE METADATOS
+            // 6. INICIO
             // ------------------------------------------------------------
             function init() {
-                // Verificar si ya se envió desde este dispositivo
+                // Verificar duplicado
                 try {
                     const yaEnviado = localStorage.getItem(STORAGE_KEY);
                     if (yaEnviado === 'true') {
@@ -1244,19 +1238,16 @@
                     }
                 } catch (e) { /* ignorar */ }
 
-                // Capturar metadatos
                 fuente = obtenerFuente();
                 dispositivo = detectarDispositivo();
                 conexion = obtenerConexion();
 
-                // Obtener geolocalización al inicio (en segundo plano)
                 obtenerGeoData().then(geo => {
                     geoData = geo;
                 }).catch(() => {
                     geoData = null;
                 });
 
-                // Inicializar tiempos
                 preguntaActualId = null;
                 inicioPregunta = new Date();
 
