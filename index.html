@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Remates · Encuesta Compradores v1.2</title>
+    <title>Mega Remates · Encuesta Compradores v1.3</title>
     <style>
         /* Estilos (sin cambios) */
         * {
@@ -664,25 +664,75 @@
             });
 
             // --- BLOQUE G: LOCALIZACIÓN Y MOVILIDAD (20-23) ---
+            // P20 actualizada con nueva estructura geográfica
             steps.push({
                 id: 'p20',
                 question: '20. ¿En qué localidad o zona realizas principalmente tus compras?',
                 type: 'radio',
                 options: opts([
-                    'Chimbote', 'Nuevo Chimbote', 'Coishco', 'Santa',
-                    'Nepeña', 'Casma', 'Huarmey', 'Otra localidad', 'Prefiero no responder'
+                    'Lima Metropolitana / Callao',
+                    'Arequipa',
+                    'Trujillo',
+                    'Piura',
+                    'Chiclayo',
+                    'Cusco',
+                    'Ica',
+                    'Huaraz',
+                    // Núcleo Chimbote
+                    'Chimbote',
+                    'Nuevo Chimbote',
+                    'Coishco',
+                    'Santa',
+                    'Nepeña',
+                    'Moro',
+                    'Casma',
+                    'Huarmey',
+                    'Chao',
+                    'Virú',
+                    // Expansión
+                    'Otra ciudad/localidad de Áncash',
+                    'Otra ciudad/localidad de la costa peruana',
+                    'Otra ciudad/localidad de la sierra peruana',
+                    'Otra ciudad/localidad de la selva peruana',
+                    'Principalmente compro por Internet, sin una localidad específica',
+                    'Otra:' // esta opción tendrá campo de texto
                 ]),
-                allowOther: true,
+                allowOther: true, // para que "Otra:" muestre campo de texto
                 condition: () => true
             });
 
+            // P21 actualizada con nueva estructura geográfica
             steps.push({
                 id: 'p21',
                 question: '21. ¿En qué localidad o zona realizas principalmente tu actividad comercial o de trabajo?',
                 type: 'radio',
                 options: opts([
-                    'Chimbote', 'Nuevo Chimbote', 'Coishco', 'Santa',
-                    'Nepeña', 'Casma', 'Huarmey', 'Otra localidad', 'No aplica', 'Prefiero no responder'
+                    'Lima Metropolitana / Callao',
+                    'Arequipa',
+                    'Trujillo',
+                    'Piura',
+                    'Chiclayo',
+                    'Cusco',
+                    'Ica',
+                    'Huaraz',
+                    // Núcleo Chimbote
+                    'Chimbote',
+                    'Nuevo Chimbote',
+                    'Coishco',
+                    'Santa',
+                    'Nepeña',
+                    'Moro',
+                    'Casma',
+                    'Huarmey',
+                    'Chao',
+                    'Virú',
+                    // Expansión
+                    'Otra ciudad/localidad de Áncash',
+                    'Otra ciudad/localidad de la costa peruana',
+                    'Otra ciudad/localidad de la sierra peruana',
+                    'Otra ciudad/localidad de la selva peruana',
+                    'Principalmente trabajo/comercializo por Internet, sin una localidad específica',
+                    'Otra:'
                 ]),
                 allowOther: true,
                 condition: () => true
@@ -895,7 +945,7 @@
             }
 
             // ------------------------------------------------------------
-            // 4. LÓGICA DE NAVEGACIÓN Y RENDERIZADO (sin cambios)
+            // 4. LÓGICA DE NAVEGACIÓN Y RENDERIZADO (con ajuste para "Otra:")
             // ------------------------------------------------------------
             let currentStepIndex = 0;
 
@@ -926,7 +976,21 @@
                 let value;
                 if (step.type === 'radio') {
                     const checked = el.querySelector('input[type="radio"]:checked');
-                    value = checked ? checked.value : null;
+                    if (checked) {
+                        value = checked.value;
+                        // Si es "Otra:", tomar el texto del input asociado
+                        if (value === 'Otra:') {
+                            const label = checked.closest('label');
+                            if (label) {
+                                const textInput = label.querySelector('.otro-input');
+                                if (textInput && textInput.value.trim() !== '') {
+                                    value = 'Otra: ' + textInput.value.trim();
+                                }
+                            }
+                        }
+                    } else {
+                        value = null;
+                    }
                 } else if (step.type === 'checkbox') {
                     const checkboxes = el.querySelectorAll('input[type="checkbox"]:checked');
                     value = Array.from(checkboxes).map(cb => cb.value);
@@ -936,6 +1000,12 @@
                         if (otroCheck && otroCheck.checked) {
                             value = value.filter(v => v !== 'Otro' && v !== 'Otros' && v !== 'Otra localidad' && v !== 'Otros');
                             value.push(otroInput.value.trim());
+                        }
+                        // También manejar "Otra:" en checkbox (por si acaso)
+                        const otraCheck = el.querySelector('input[type="checkbox"][value="Otra:"]');
+                        if (otraCheck && otraCheck.checked) {
+                            value = value.filter(v => v !== 'Otra:');
+                            value.push('Otra: ' + otroInput.value.trim());
                         }
                     }
                 } else if (step.type === 'text' || step.type === 'textarea') {
@@ -954,7 +1024,27 @@
                 if (val === undefined) return;
                 if (step.type === 'radio') {
                     const radios = el.querySelectorAll('input[type="radio"]');
-                    radios.forEach(r => { r.checked = (r.value === val); });
+                    let found = false;
+                    radios.forEach(r => {
+                        if (r.value === val) {
+                            r.checked = true;
+                            found = true;
+                        }
+                        // Si el valor guardado es "Otra: ..." y no coincide con ninguna opción
+                        if (!found && val && typeof val === 'string' && val.startsWith('Otra:')) {
+                            if (r.value === 'Otra:') {
+                                r.checked = true;
+                                const label = r.closest('label');
+                                if (label) {
+                                    const textInput = label.querySelector('.otro-input');
+                                    if (textInput) {
+                                        textInput.value = val.replace('Otra: ', '').trim();
+                                    }
+                                }
+                                found = true;
+                            }
+                        }
+                    });
                 } else if (step.type === 'checkbox') {
                     const checks = el.querySelectorAll('input[type="checkbox"]');
                     checks.forEach(cb => {
@@ -1018,7 +1108,8 @@
                         html += `<label>`;
                         html += `<input type="${inputType}" name="${name}" value="${value}">`;
                         html += `<span>${opt.label}</span>`;
-                        if ((opt.label === 'Otro' || opt.label === 'Otros' || opt.label === 'Otra localidad') && step.allowOther) {
+                        // Mostrar campo de texto para "Otro", "Otros", "Otra localidad" o "Otra:"
+                        if ((opt.label === 'Otro' || opt.label === 'Otros' || opt.label === 'Otra localidad' || opt.label === 'Otra:') && step.allowOther) {
                             html += `<input type="text" class="otro-input" placeholder="Especifica..." style="margin-left:8px;">`;
                         }
                         html += `</label>`;
