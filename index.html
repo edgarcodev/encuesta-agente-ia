@@ -100,12 +100,8 @@
             background: #f97316; color: white;
             box-shadow: 0 4px 12px rgba(249,115,22,0.25);
         }
-        .btn-primary:hover {
-            background: #ea5a0a; transform: translateY(-2px);
-        }
-        .btn-primary:disabled {
-            opacity: 0.5; cursor: not-allowed; transform: none;
-        }
+        .btn-primary:hover { background: #ea5a0a; transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .btn-secondary { background: #eef2f7; }
         .btn-secondary:hover { background: #e2e8f0; }
         .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -116,25 +112,16 @@
         .btn-success:hover { background: #1a8a4e; transform: translateY(-2px); }
         .btn-success:disabled { opacity: 0.5; cursor: not-allowed; }
         .summary { padding: 8px 0; }
-        .summary-item {
-            padding: 14px 0; border-bottom: 1px solid #eef2f7;
-        }
+        .summary-item { padding: 14px 0; border-bottom: 1px solid #eef2f7; }
         .summary-item:last-child { border-bottom: none; }
-        .summary-item strong {
-            display: block; font-weight: 600; color: #1a2634;
-            margin-bottom: 4px;
-        }
+        .summary-item strong { display: block; font-weight: 600; color: #1a2634; margin-bottom: 4px; }
         .summary-item .answer {
             color: #2d3f52; background: #f5f8fe;
             padding: 6px 14px; border-radius: 40px;
             display: inline-block; font-size: 14px;
         }
-        .summary-item .answer.multi {
-            display: flex; flex-wrap: wrap; gap: 6px;
-        }
-        .summary-item .answer.multi span {
-            background: #f5f8fe; padding: 4px 14px; border-radius: 40px;
-        }
+        .summary-item .answer.multi { display: flex; flex-wrap: wrap; gap: 6px; }
+        .summary-item .answer.multi span { background: #f5f8fe; padding: 4px 14px; border-radius: 40px; }
         .alert {
             border-radius: 16px; padding: 16px 20px;
             margin-bottom: 16px; font-weight: 500;
@@ -142,6 +129,11 @@
         .alert-success { background: #e6f7e6; color: #0e5e2e; }
         .alert-error { background: #fde8e8; color: #a12b2b; }
         .alert-info { background: #fef3e8; color: #8a4a0a; }
+        .info-hint {
+            font-size: 14px; color: #5b6f82; background: #f1f5fa;
+            padding: 10px 14px; border-radius: 12px; margin-bottom: 14px;
+            border-left: 3px solid #f97316;
+        }
         @media (max-width: 480px) {
             .survey-container { padding: 20px 16px; }
             .question-text { font-size: 18px; }
@@ -166,9 +158,6 @@
         (function() {
             'use strict';
 
-            // ================================================================
-            //  NONCE (token de sesión)
-            // ================================================================
             const NONCE = (() => {
                 let n = sessionStorage.getItem('encuesta_nonce');
                 if (!n) {
@@ -182,12 +171,10 @@
 
             let datosEnviados = false;
             let geoData = null;
-
             const inicioEncuesta = new Date();
             const tiemposPorPregunta = {};
             let preguntaActualId = null;
             let inicioPregunta = null;
-
             let fuente = 'desconocida';
             let dispositivo = 'desktop';
             let conexion = {};
@@ -197,7 +184,7 @@
             const answers = {};
 
             // ============================================================
-            // BLOQUE 1 — PERFIL GENERAL DE COMPRA
+            // BLOQUE 1
             // ============================================================
             steps.push({
                 id: 'p1',
@@ -250,7 +237,7 @@
             });
 
             // ============================================================
-            // BLOQUE 2 — COMPORTAMIENTO DIGITAL
+            // BLOQUE 2
             // ============================================================
             steps.push({
                 id: 'p4',
@@ -295,7 +282,7 @@
             });
 
             // ============================================================
-            // BLOQUE 3 — PRECIO Y OPORTUNIDADES
+            // BLOQUE 3
             // ============================================================
             steps.push({
                 id: 'p7',
@@ -359,7 +346,7 @@
             });
 
             // ============================================================
-            // BLOQUE 4 — PROPÓSITO ECONÓMICO
+            // BLOQUE 4
             // ============================================================
             steps.push({
                 id: 'p10',
@@ -379,7 +366,7 @@
             });
 
             // ============================================================
-            // BLOQUE 5 — CONDICIONES DE VIDA Y COMPRA
+            // BLOQUE 5
             // ============================================================
             steps.push({
                 id: 'p11',
@@ -453,7 +440,7 @@
             });
 
             // ============================================================
-            // BLOQUE 7 — PAGOS
+            // BLOQUE 7
             // ============================================================
             steps.push({
                 id: 'p14',
@@ -488,7 +475,7 @@
             });
 
             // ============================================================
-            // BLOQUE 8 — ENTREGA Y LOGÍSTICA
+            // BLOQUE 8
             // ============================================================
             steps.push({
                 id: 'p16',
@@ -526,7 +513,7 @@
             });
 
             // ============================================================
-            // BLOQUE 9 — RESILIENCIA
+            // BLOQUE 9
             // ============================================================
             steps.push({
                 id: 'p18',
@@ -561,7 +548,7 @@
             });
 
             // ============================================================
-            // BLOQUE 10 — DEPENDENCIA DE PLATAFORMAS
+            // BLOQUE 10
             // ============================================================
             steps.push({
                 id: 'p20',
@@ -580,7 +567,7 @@
             });
 
             // ============================================================
-            // BLOQUE 11 — GEOGRAFÍA
+            // BLOQUE 11 — GEOGRAFÍA (con lógica dinámica)
             // ============================================================
             steps.push({
                 id: 'p21',
@@ -610,24 +597,29 @@
                 'Principalmente compro por Internet'
             ];
 
+            // P22 — dinámica según país
             steps.push({
                 id: 'p22',
                 question: '22. ¿En qué localidad, ciudad o zona realizas principalmente tus compras?',
-                type: 'radio',
-                getOptions: () => {
+                getDefinition: () => {
                     if (answers.p21 === 'Perú') {
-                        return opts([...peruLocalidades, 'Otra:']);
+                        return {
+                            type: 'radio',
+                            hint: 'Selecciona la zona donde compras habitualmente.',
+                            options: opts([...peruLocalidades, 'Otra:']),
+                            allowOther: true
+                        };
                     }
-                    return opts([
-                        'Escribo mi ciudad/localidad en "Otra:"',
-                        'Principalmente compro por Internet',
-                        'Otra:'
-                    ]);
+                    return {
+                        type: 'text',
+                        hint: `Escribe el nombre de tu ciudad o localidad (fuera de Perú).`,
+                        placeholder: 'Ej. Santiago, Bogotá, São Paulo, Madrid...'
+                    };
                 },
-                allowOther: true,
                 condition: () => true
             });
 
+            // P23 — país de actividad
             steps.push({
                 id: 'p23',
                 question: '23. ¿En qué país realizas principalmente tu actividad laboral, comercial o profesional?',
@@ -643,27 +635,35 @@
                 condition: () => true
             });
 
+            // P24 — dinámica + condicional
             steps.push({
                 id: 'p24',
                 question: '24. ¿En qué localidad, ciudad o zona realizas principalmente esa actividad?',
-                type: 'radio',
-                getOptions: () => {
+                getDefinition: () => {
                     const v = answers.p23;
-                    if (v === 'En el mismo país donde realizo mis compras' ||
-                        v === 'Mi actividad se desarrolla principalmente por Internet') {
-                        return opts([...peruLocalidades, 'Otra:']);
+                    // Si es Perú (compras) y actividad en el mismo país o por internet
+                    if (answers.p21 === 'Perú' && (v === 'En el mismo país donde realizo mis compras' || v === 'Mi actividad se desarrolla principalmente por Internet')) {
+                        return {
+                            type: 'radio',
+                            hint: 'Selecciona la zona donde realizas tu actividad.',
+                            options: opts([...peruLocalidades, 'Otra:']),
+                            allowOther: true
+                        };
                     }
-                    return opts([
-                        'Escribo mi ciudad/localidad en "Otra:"',
-                        'Otra:'
-                    ]);
+                    return {
+                        type: 'text',
+                        hint: 'Escribe la ciudad o localidad donde realizas tu actividad.',
+                        placeholder: 'Ej. Santiago, Bogotá, São Paulo, Madrid...'
+                    };
                 },
-                allowOther: true,
-                condition: () => true
+                condition: () => {
+                    // Saltar si indicó que no realiza actividad
+                    return answers.p23 !== 'Actualmente no realizo una actividad laboral/comercial';
+                }
             });
 
             // ============================================================
-            // BLOQUE 12 — COMERCIO INTERNACIONAL
+            // BLOQUE 12
             // ============================================================
             steps.push({
                 id: 'p25',
@@ -712,7 +712,7 @@
             });
 
             // ============================================================
-            // BLOQUE 13 — MONEDA E IDIOMA
+            // BLOQUE 13
             // ============================================================
             steps.push({
                 id: 'p28',
@@ -740,7 +740,7 @@
             });
 
             // ============================================================
-            // BLOQUE 14 — LOCAL VS DISTANCIA
+            // BLOQUE 14
             // ============================================================
             steps.push({
                 id: 'p30',
@@ -758,7 +758,7 @@
             });
 
             // ============================================================
-            // BLOQUE 15 — NECESIDAD PRIORITARIA
+            // BLOQUE 15
             // ============================================================
             steps.push({
                 id: 'p31',
@@ -777,7 +777,7 @@
             });
 
             // ============================================================
-            // BLOQUE 16 — OPORTUNIDADES COMERCIALES
+            // BLOQUE 16
             // ============================================================
             steps.push({
                 id: 'p33',
@@ -819,7 +819,7 @@
             });
 
             // ============================================================
-            // BLOQUE 17 — EVALUACIÓN DE CONCEPTO
+            // BLOQUE 17
             // ============================================================
             steps.push({
                 id: 'p35',
@@ -862,7 +862,7 @@
             });
 
             // ============================================================
-            // BLOQUE 18 — PARTICIPACIÓN FUTURA
+            // BLOQUE 18
             // ============================================================
             steps.push({
                 id: 'p37',
@@ -890,8 +890,17 @@
             });
 
             // ================================================================
-            // FUNCIONES AUXILIARES
+            // HELPERS
             // ================================================================
+            function resolveStep(step) {
+                if (!step) return null;
+                if (typeof step.getDefinition === 'function') {
+                    const def = step.getDefinition();
+                    return Object.assign({}, step, def);
+                }
+                return step;
+            }
+
             function detectarDispositivo() {
                 const ua = navigator.userAgent;
                 if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
@@ -996,7 +1005,7 @@
             }
 
             // ================================================================
-            // NAVEGACIÓN Y RENDER
+            // NAVEGACIÓN
             // ================================================================
             let currentStepIndex = 0;
 
@@ -1017,29 +1026,32 @@
                 if (!step) return;
                 const el = document.querySelector(`[data-step-id="${step.id}"]`);
                 if (!el) return;
+
+                const effective = resolveStep(step);
                 let value;
-                if (step.type === 'radio') {
+
+                if (effective.type === 'radio') {
                     const c = el.querySelector('input[type="radio"]:checked');
                     if (c) {
                         value = c.value;
-                        if (value === 'Otra:' || value === 'Otro') {
+                        if (value === 'Otra:' || value === 'Otro' || value === 'Otro país') {
                             const lbl = c.closest('label');
                             if (lbl) {
                                 const ti = lbl.querySelector('.otro-input');
                                 if (ti && ti.value.trim() !== '') {
-                                    value = (value === 'Otra:' ? 'Otra: ' : 'Otro: ') + ti.value.trim();
+                                    value = value + ' ' + ti.value.trim();
                                 }
                             }
                         }
                     } else value = null;
-                } else if (step.type === 'checkbox') {
+                } else if (effective.type === 'checkbox') {
                     const cbs = el.querySelectorAll('input[type="checkbox"]:checked');
                     value = Array.from(cbs).map(cb => cb.value);
                     const otroInput = el.querySelector('.otro-input');
                     if (otroInput && otroInput.value.trim() !== '') {
-                        const hasOtro = value.includes('Otro') || value.includes('Otra');
+                        const hasOtro = value.includes('Otro') || value.includes('Otra') || value.includes('Otros');
                         if (hasOtro) {
-                            value = value.filter(v => v !== 'Otro' && v !== 'Otra');
+                            value = value.filter(v => v !== 'Otro' && v !== 'Otra' && v !== 'Otros');
                             value.push(otroInput.value.trim());
                         }
                     }
@@ -1055,32 +1067,42 @@
                 if (!el) return;
                 const val = answers[step.id];
                 if (val === undefined) return;
-                if (step.type === 'radio') {
+
+                const effective = resolveStep(step);
+
+                if (effective.type === 'radio') {
                     const radios = el.querySelectorAll('input[type="radio"]');
                     let found = false;
                     radios.forEach(r => {
                         if (r.value === val) { r.checked = true; found = true; }
-                        if (!found && typeof val === 'string' && (val.startsWith('Otra: ') || val.startsWith('Otro: '))) {
-                            const base = val.startsWith('Otra: ') ? 'Otra:' : 'Otro';
-                            if (r.value === base || r.value === 'Otra:' || r.value === 'Otro') {
-                                r.checked = true;
-                                const lbl = r.closest('label');
-                                if (lbl) {
-                                    const ti = lbl.querySelector('.otro-input');
-                                    if (ti) ti.value = val.replace(/^O(?:tra|tro): /, '').trim();
-                                }
-                                found = true;
-                            }
-                        }
                     });
-                } else if (step.type === 'checkbox') {
+                    // Reconstruir valor compuesto (ej. "Otra: Lima")
+                    if (!found && typeof val === 'string') {
+                        const match = val.match(/^(Otra:|Otro|Otro país)\s+(.+)$/);
+                        if (match) {
+                            const base = match[1];
+                            const resto = match[2];
+                            radios.forEach(r => {
+                                if (r.value === base && !found) {
+                                    r.checked = true;
+                                    const lbl = r.closest('label');
+                                    if (lbl) {
+                                        const ti = lbl.querySelector('.otro-input');
+                                        if (ti) ti.value = resto;
+                                    }
+                                    found = true;
+                                }
+                            });
+                        }
+                    }
+                } else if (effective.type === 'checkbox') {
                     const cbs = el.querySelectorAll('input[type="checkbox"]');
                     cbs.forEach(cb => {
                         if (Array.isArray(val)) cb.checked = val.some(v => v === cb.value || (typeof v === 'string' && v.startsWith(cb.value)));
                     });
                     const otroInput = el.querySelector('.otro-input');
                     if (otroInput && Array.isArray(val)) {
-                        const otroVal = val.find(v => typeof v === 'string' && !step.options.some(o => o.value === v));
+                        const otroVal = val.find(v => typeof v === 'string' && !effective.options.some(o => o.value === v));
                         if (otroVal) otroInput.value = otroVal;
                     }
                 } else {
@@ -1102,6 +1124,8 @@
                 const area = document.getElementById('dynamicArea');
                 if (!step) { showSummary(); return; }
 
+                const effective = resolveStep(step);
+
                 if (step.id !== preguntaActualId) registrarTiempoPregunta(step.id);
 
                 const visible = getVisibleSteps();
@@ -1112,28 +1136,32 @@
 
                 let html = `<div class="question-area" data-step-id="${step.id}">`;
                 html += `<div class="question-text">${step.question}`;
-                if (step.type === 'text' || step.type === 'textarea') html += ` <span class="sub-label">(respuesta corta)</span>`;
-                if (step.maxSelections) html += ` <span class="sub-label">(máximo ${step.maxSelections})</span>`;
+                if (effective.type === 'text' || effective.type === 'textarea') html += ` <span class="sub-label">(respuesta corta)</span>`;
+                if (effective.maxSelections) html += ` <span class="sub-label">(máximo ${effective.maxSelections})</span>`;
                 html += `</div>`;
 
-                const options = step.getOptions ? step.getOptions() : (step.options || []);
+                if (effective.hint) {
+                    html += `<div class="info-hint">${effective.hint}</div>`;
+                }
 
-                if (step.type === 'radio' || step.type === 'checkbox') {
+                const options = effective.options || [];
+
+                if (effective.type === 'radio' || effective.type === 'checkbox') {
                     html += `<div class="options-group">`;
                     options.forEach(opt => {
                         html += `<label>`;
-                        html += `<input type="${step.type}" name="${step.id}" value="${opt.value}">`;
+                        html += `<input type="${effective.type}" name="${step.id}" value="${opt.value}">`;
                         html += `<span>${opt.label}</span>`;
-                        if ((opt.label === 'Otro' || opt.label === 'Otra' || opt.label === 'Otra:' || opt.label === 'Otro país') && step.allowOther) {
+                        if ((opt.label === 'Otro' || opt.label === 'Otra' || opt.label === 'Otra:' || opt.label === 'Otro país') && effective.allowOther) {
                             html += `<input type="text" class="otro-input" placeholder="Especifica...">`;
                         }
                         html += `</label>`;
                     });
                     html += `</div>`;
-                } else if (step.type === 'text') {
-                    html += `<input type="text" class="text-input" placeholder="${step.placeholder || ''}">`;
-                } else if (step.type === 'textarea') {
-                    html += `<textarea class="text-input textarea" placeholder="${step.placeholder || ''}"></textarea>`;
+                } else if (effective.type === 'text') {
+                    html += `<input type="text" class="text-input" placeholder="${effective.placeholder || ''}">`;
+                } else if (effective.type === 'textarea') {
+                    html += `<textarea class="text-input textarea" placeholder="${effective.placeholder || ''}"></textarea>`;
                 }
 
                 html += `<div class="navigation">`;
@@ -1152,7 +1180,7 @@
                 area.querySelectorAll('input, textarea').forEach(inp => {
                     inp.addEventListener('change', () => {
                         saveCurrentAnswer();
-                        if (step.type === 'radio') {
+                        if (effective.type === 'radio') {
                             const condicionantes = ['p9','p13','p21','p23','p25','p37'];
                             if (condicionantes.includes(step.id)) {
                                 const vis = getVisibleSteps();
@@ -1170,14 +1198,15 @@
                     saveCurrentAnswer();
                     const s = getCurrentStep();
                     if (!s) return;
+                    const eff = resolveStep(s);
 
-                    if (s.type === 'radio' && !answers[s.id]) { alert('Selecciona una opción.'); return; }
-                    if (s.type === 'checkbox') {
+                    if (eff.type === 'radio' && !answers[s.id]) { alert('Selecciona una opción.'); return; }
+                    if (eff.type === 'checkbox') {
                         const v = answers[s.id];
                         if (!v || !Array.isArray(v) || v.length === 0) { alert('Selecciona al menos una opción.'); return; }
-                        if (s.maxSelections && v.length > s.maxSelections) { alert(`Máximo ${s.maxSelections} opciones.`); return; }
+                        if (eff.maxSelections && v.length > eff.maxSelections) { alert(`Máximo ${eff.maxSelections} opciones.`); return; }
                     }
-                    if ((s.type === 'text' || s.type === 'textarea') && (!answers[s.id] || answers[s.id].trim() === '')) {
+                    if ((eff.type === 'text' || eff.type === 'textarea') && (!answers[s.id] || String(answers[s.id]).trim() === '')) {
                         alert('Escribe tu respuesta.'); return;
                     }
 
@@ -1209,7 +1238,7 @@
             }
 
             // ================================================================
-            // RESUMEN FINAL
+            // RESUMEN
             // ================================================================
             function showSummary(envioResult) {
                 const area = document.getElementById('dynamicArea');
