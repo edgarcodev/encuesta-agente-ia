@@ -1,23 +1,27 @@
 export default async function handler(req, res) {
-  // Solo aceptar POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
   const { datos, token } = req.body;
 
-  // Validar token: debe ser un string de entre 20 y 50 caracteres (generado por el cliente)
+  // Validar token
   if (!token || typeof token !== 'string' || token.length < 20 || token.length > 50) {
     return res.status(401).json({ error: 'Token inválido' });
   }
 
-  // Validar datos mínimos (evitar spam vacío)
-  if (!datos || typeof datos !== 'object' || Object.keys(datos).length < 3) {
+  // Validar datos mínimos (esta encuesta tiene muchas preguntas)
+  if (!datos || typeof datos !== 'object' || Object.keys(datos).length < 10) {
     return res.status(400).json({ error: 'Datos insuficientes' });
   }
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+    console.error('Variables de entorno faltantes');
+    return res.status(500).json({ error: 'Configuración del servidor incompleta' });
+  }
 
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/respuestas_encuesta`, {
