@@ -5,12 +5,10 @@ export default async function handler(req, res) {
 
   const { datos, token } = req.body;
 
-  // Validar token
   if (!token || typeof token !== 'string' || token.length < 20 || token.length > 50) {
     return res.status(401).json({ error: 'Token inválido' });
   }
 
-  // Validar datos mínimos (esta encuesta tiene muchas preguntas)
   if (!datos || typeof datos !== 'object' || Object.keys(datos).length < 10) {
     return res.status(400).json({ error: 'Datos insuficientes' });
   }
