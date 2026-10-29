@@ -5,7 +5,13 @@ export default async function handler(req, res) {
 
   const { datos, token } = req.body;
 
-  if (!token || typeof token !== 'string' || token.length < 20 || token.length > 50) {
+  const SECRET_NONCE = process.env.SECRET_NONCE;
+  if (!SECRET_NONCE || typeof SECRET_NONCE !== 'string') {
+    console.error('Variable de entorno faltante: SECRET_NONCE');
+    return res.status(500).json({ error: 'Configuración del servidor incompleta' });
+  }
+
+  if (!token || typeof token !== 'string' || token !== SECRET_NONCE) {
     return res.status(401).json({ error: 'Token inválido' });
   }
 
