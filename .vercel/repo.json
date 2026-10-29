@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_g5vr9FhOYzhw4gTBdAnDT5l93K0f",
+      "name": "encuesta-agente-ia",
+      "directory": ".",
+      "orgId": "team_x5PcNEsQtxeREo3okOWQPAzM"
+    }
+  ]
+}
