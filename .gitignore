@@ -1,2 +1,6 @@
 .env
 auditoria/
+references/
+plan/
+.vercel
+.env*
