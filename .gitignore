@@ -4,3 +4,5 @@ references/
 plan/
 .vercel
 .env*
+# Config local de OpenCode (contiene la API key de context7)
+opencode.jsonc
