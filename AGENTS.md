@@ -35,7 +35,7 @@ This intercepts `/api/encuesta` and serves `index.html` instead of executing the
 
 ## Security gotchas (do not ignore)
 
-- `api/encuesta.js` uses `SUPABASE_SERVICE_KEY` which **bypasses RLS** (full admin access). It only validates token length (20–50 chars), **never compares against `SECRET_NONCE`**.
+- `api/encuesta.js` uses `SUPABASE_SERVICE_KEY` which **bypasses RLS** (full admin access). It validates `token` by **exact equality against `process.env.SECRET_NONCE`** and fails closed (500, nothing saved) if that variable is missing or empty. The secret's value is embedded in `index.html` as `const NONCE` (public by design, SPEC 02); rotating it requires updating three places at once: `.env`, the Vercel dashboard, and `index.html`.
 - No rate limiting, no CAPTCHA, no schema validation on `datos`.
 - Frontend calls `https://ipapi.co/json/` on load without user consent (privacy/GDPR concern).
 

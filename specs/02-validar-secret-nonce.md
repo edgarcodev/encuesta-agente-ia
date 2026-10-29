@@ -1,6 +1,6 @@
 # SPEC 02 — Validar `SECRET_NONCE` real en el servidor
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-29
 > **Objective:** Hacer que `api/encuesta.js` acepte solo tokens iguales al valor real de `SECRET_NONCE`, con el secreto embebido en `index.html`, para que el endpoint deje de aceptar cualquier cadena de 20–50 caracteres.
