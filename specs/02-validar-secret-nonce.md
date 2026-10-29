@@ -63,6 +63,7 @@ This feature introduces no new data structures. It reuses the existing model:
 - **No:** `crypto.timingSafeEqual`. La comparación con `===` basta; un ataque de timing remoto sobre HTTP es impracticable en este contexto.
 - **Yes:** mantener el mensaje 401 `"Token inválido"` sin detallar la causa. No se revela al atacante si falló el valor o el entorno.
 - **Yes:** actualizar `AGENTS.md` en esta spec. El bullet de seguridad queda en falso tras el cambio y un agente futuro podría "revertirlo" por error.
+- **Yes:** rotar `SECRET_NONCE` a un valor nuevo (32 hex, `openssl rand -hex 16`) en los tres lugares (`.env` local, Vercel production, `index.html`) durante el paso 5. El `.env` local contenía el placeholder de `.env.example` y el valor real de producción era desconocido; como nada dependía todavía del valor (era código muerto), rotar fue cero riesgo. Consecuencia: `vercel env pull` enmascara los valores tipo Secret, así que la igualdad con producción solo se puede verificar de forma conductual (curl en producción, paso 6).
 
 ## Risks
 
