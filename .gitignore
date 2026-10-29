@@ -2,3 +2,5 @@
 auditoria/
 references/
 plan/
+.vercel
+.env*
