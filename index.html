@@ -188,14 +188,7 @@
         (function() {
             'use strict';
 
-            const NONCE = (() => {
-                let n = sessionStorage.getItem('encuesta_nonce');
-                if (!n) {
-                    n = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                    sessionStorage.setItem('encuesta_nonce', n);
-                }
-                return n;
-            })();
+            const NONCE = "miNonceSecreto123";
 
             const STORAGE_KEY = 'megaremates_encuesta_enviada';
 
