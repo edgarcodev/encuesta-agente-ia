@@ -1,0 +1,12 @@
+{
+  "name": "encuesta-agente-ia",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "vercel-build": "npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

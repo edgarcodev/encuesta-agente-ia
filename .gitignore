@@ -6,3 +6,6 @@ plan/
 .env*
 # Config local de OpenCode (contiene la API key de context7)
 opencode.jsonc
+# Build output
+dist/
+node_modules/
