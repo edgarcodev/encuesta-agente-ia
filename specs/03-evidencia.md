@@ -115,4 +115,36 @@ Filas creadas durante la verificación local:
 
 ---
 
-*(Pendiente: pasos 5–7.)*
+## Paso 5 — Deploy a Vercel + smoke test en producción
+
+**Despliegue:**
+
+- `vercel link --project encuesta-agente-ia` (el directorio no estaba enlazado; solo creó
+  `.vercel/project.json`… en esta versión del CLI solo rotó `VERCEL_OIDC_TOKEN` en `.env.local`
+  y regeneró `.vercel/README.txt`, que se restauró).
+- `vercel deploy --prod --yes` → `encuesta-agente-h8dgevurg-codeturas.vercel.app`
+  → Producción URL: `https://encuesta-agente-ia.vercel.app`.
+- La protección de despliegue no bloquea `/api/encuesta` (verificado con curl sin cookies).
+
+**Smoke test contra `https://encuesta-agente-ia.vercel.app`:**
+
+| Fase | Caso | Resultado esperado | Resultado obtenido |
+|---|---|---|---|
+| 0 | `GET /api/encuesta` | 405 | `405 application/json` `{"error":"Método no permitido"}` ✅ |
+| 1 | 4 × POST token basura | 401 ×4, `count` = 4 | 4 × `401 {"error":"Token inválido"}`; fila `ip="179.6.100.229"` (IP real) `count=4` ✅ |
+| 2 | 5.º POST válido `verif03_*` | 201 (`count` = 5) | `201 {"success":true}` ✅ |
+| 3 | 6.º POST válido | 429 + `Retry-After` | `HTTP/2 429`, `retry-after: 581`, body con `error` ✅ |
+| 4 | POST con **`x-forwarded-for: 203.0.113.99`** y **`x-real-ip: 198.51.100.77`** falsificadas | sigue contando la IP real (429) | `429`, `retry-after: 575`; contador de la IP real subió a **7**; **0 filas** con las IPs falsificadas ✅ |
+| 5 | `update … window_start = now() - interval '11 minutes'` → POST válido | 201 de nuevo | `201 {"success":true}` y siguiente también `201` ✅ |
+
+**Estado de la BD tras el smoke test (a limpiar en el paso 6):**
+
+- `rate_limits`: `179.6.100.229` (count 2, ventana reiniciada), `::1` (2), `::ffff:127.0.0.1` (1), `unknown` (1).
+- `respuestas_encuesta`: **7** filas con `verif03` (4 locales + 3 de producción).
+
+**Nota:** el smoke test se ejecutó contra la IP pública real del operador; por eso la ventana
+de esa IP se reinició manualmente al final para no dejar cuota agotada en el equipo.
+
+---
+
+*(Pendiente: pasos 6–7.)*
