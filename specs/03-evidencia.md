@@ -147,4 +147,34 @@ de esa IP se reinició manualmente al final para no dejar cuota agotada en el eq
 
 ---
 
-*(Pendiente: pasos 6–7.)*
+## Paso 6 — Limpieza de datos de prueba
+
+**Inventario previo (antes de borrar):**
+
+| Tabla | Contenido |
+|---|---|
+| `respuestas_encuesta` | 13 filas = **6 reales** (ids 1–6, ago–sept, shape `p1/p2/…`) + **7 `verif03`** (ids 11–17) |
+| `rate_limits` | 4 filas: `179.6.100.229` (IP real, 2), `::1` (2), `::ffff:127.0.0.1` (1), `unknown` (1) |
+
+**Borrado (transacción única):**
+
+```sql
+begin;
+delete from public.respuestas_encuesta where datos::text like '%verif03%';
+delete from public.rate_limits;
+commit;
+```
+
+**Verificación posterior:**
+
+| Comprobación | Resultado |
+|---|---|
+| `respuestas_encuesta`: total | **6** (las 6 reales intactas, `min_id=1`, `max_id=6`) ✅ |
+| `respuestas_encuesta`: filas con `verif03` | **0** ✅ |
+| `rate_limits`: filas | **0** ✅ |
+
+No quedan datos de prueba en la BD ✅.
+
+---
+
+*(Pendiente: paso 7.)*
