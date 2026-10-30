@@ -177,4 +177,34 @@ No quedan datos de prueba en la BD ✅.
 
 ---
 
-*(Pendiente: paso 7.)*
+## Verificación de criterios de aceptación (15/15 ✅)
+
+| # | Criterio | Evidencia | OK |
+|---|---|---|---|
+| 1 | Existe `supabase/migrations/0001_rate_limits.sql` con tabla y función | archivo (2976 B) contiene `create table public.rate_limits` y `create or replace function public.increment_rate_limit` | ✅ |
+| 2 | Aplicada una única vez; re-aplicar falla | `schema_migrations`: `migraciones_0001 = 1`; objetos: `tablas_rate_limits = 1`, `funciones = 1`; reintento → `ERROR: 42P07 relation "rate_limits" already exists` (exit 3) | ✅ |
+| 3 | `has_function_privilege` `anon=false` / `service_role=true` | producción: `anon_exec=false`, `service_exec=true` | ✅ |
+| 4 | RLS habilitado, 0 políticas | producción: `rls=true`, `politicas=0` | ✅ |
+| 5 | GET → 405 sin incrementar contador | producción: `GET -> 405`; el POST 400 previo dejó `count=1` y tras el GET **seguía en 1** | ✅ |
+| 6 | Primeros 5 POST con código normal (401/400/201) y todos cuentan | producción: 4 × `401` + 1 × `201` = count 5; adicional: token válido + 3 claves → `400 {"error":"Datos insuficientes"}` **y sí cuenta** | ✅ |
+| 7 | 6.º POST → 429 + `Retry-After` numérico + body `error` | local `retry-after: 555`; producción `HTTP/2 429` `retry-after: 581`; body `{"error":"Demasiados envíos desde esta conexión. Inténtalo de nuevo en unos minutos."}` | ✅ |
+| 8 | Token inválido consume cuota (429 con token basura) | local: `429`, `retry-after: 553` con token basura | ✅ |
+| 9 | Tras expirar ventana → 201 | local (e) `201`; producción (fase 5) `201` y siguiente también `201` | ✅ |
+| 10 | Sin cabeceras de IP → `'unknown'` | handler invocado con `req.headers = {}` → fila `ip="unknown"`, `count=1` (ver nota: `vercel dev` inyecta cabeceras) | ✅ |
+| 11 | Producción: `x-forwarded-for` falsificada cuenta la IP real | con `x-forwarded-for: 203.0.113.99` + `x-real-ip: 198.51.100.77` → `429`; IP real `179.6.100.229` subió a 7; `filas_spoof = 0` | ✅ |
+| 12 | POST válido 10 claves `verif03_*` → 201 y guarda fila | local (c) y producción (fase 2): `201 {"success":true}` + fila creada (limpiada en paso 6) | ✅ |
+| 13 | `index.html` sin cambios y el 429 aparece en el resumen | `git diff main -- index.html` → vacío; ejecutando el código real de `index.html` (líneas 1002–1027) con un `fetch` simulado que devuelve el 429 de producción: `envioResult = {"success":false,"error":"Demasiados envíos desde esta conexión…"}` y la línea 1282 pinta `❌ Error al enviar: Demasiados envíos desde esta conexión. Inténtalo de nuevo en unos minutos.` | ✅ |
+| 14 | Sin datos de prueba | `respuestas_encuesta`: `verif03 = 0`, `total = 6` (las reales, ids 1–6); `rate_limits`: **0 filas** | ✅ |
+| 15 | `AGENTS.md` no afirma "No rate limiting" | `grep "No rate limiting"` → sin resultados; nuevo bullet `Rate limiting: 5 POST / 10 min por IP` presente | ✅ |
+
+**Test adicional del criterio 6 (rama 400):** POST a producción con token válido pero solo
+3 claves → `400 {"error":"Datos insuficientes"}` y el contador de la IP real pasó a 1
+(la rama 400 también consume cuota). El GET posterior lo dejó en 1 (no cuenta).
+Esa fila de prueba se borró acto seguido para no violar el criterio 14.
+
+**Estado final de la BD:** `rate_limits` = 0 filas; `respuestas_encuesta` = 6 filas reales,
+0 con `verif03`.
+
+---
+
+*(SPEC 03: estado `Implementado`, 15/15 criterios verificados.)*

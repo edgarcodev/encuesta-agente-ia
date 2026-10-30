@@ -1,6 +1,6 @@
 # SPEC 03 — Rate limiting por IP en `/api/encuesta`
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 02
 > **Date:** 2026-10-29
 > **Objective:** Limitar `/api/encuesta` a 5 peticiones POST cada 10 minutos por IP usando un contador persistente en Supabase, para que un script no pueda volcar respuestas masivas.
@@ -66,21 +66,21 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Existe `supabase/migrations/0001_rate_limits.sql` con la tabla `rate_limits` y la función `increment_rate_limit`.
-- [ ] La migración está aplicada una única vez en Supabase producción; volver a aplicarla produce error de "ya existe".
-- [ ] `has_function_privilege('anon', 'increment_rate_limit(text)', 'EXECUTE')` es `false` y para `service_role` es `true`.
-- [ ] `rate_limits` tiene RLS habilitado y ninguna política.
-- [ ] Un GET a `/api/encuesta` devuelve 405 y no incrementa ningún contador.
-- [ ] Los primeros 5 POST desde una misma IP responden con su código normal (401/400/201), aunque todos cuentan.
-- [ ] El sexto POST desde esa IP dentro de la ventana devuelve 429 con cabecera `Retry-After` en segundos y body JSON con campo `error`.
-- [ ] Un POST con token inválido también consume cuota (429 llega aunque el token sea basura).
-- [ ] Tras expirar la ventana (10 min o `window_start` retrocedido manualmente), el siguiente POST vuelve a responder 201.
-- [ ] Un POST sin cabeceras de IP se cuenta bajo la clave `unknown`.
-- [ ] En producción, un POST con `x-forwarded-for` falsificada sigue contando la IP real (la fila creada en `rate_limits` es la IP real).
-- [ ] Un POST válido con 10 claves `verif03_*` sigue devolviendo 201 y guardando la fila (el rate limit no rompe el flujo feliz).
-- [ ] `index.html` no tiene cambios y el mensaje del 429 aparece en el resumen de error.
-- [ ] No quedan datos de prueba en la BD: ninguna fila con `verif03` en `respuestas_encuesta` y ninguna fila de prueba en `rate_limits`.
-- [ ] `AGENTS.md` ya no afirma que el endpoint no tiene rate limiting.
+- [x] Existe `supabase/migrations/0001_rate_limits.sql` con la tabla `rate_limits` y la función `increment_rate_limit`.
+- [x] La migración está aplicada una única vez en Supabase producción; volver a aplicarla produce error de "ya existe".
+- [x] `has_function_privilege('anon', 'increment_rate_limit(text)', 'EXECUTE')` es `false` y para `service_role` es `true`.
+- [x] `rate_limits` tiene RLS habilitado y ninguna política.
+- [x] Un GET a `/api/encuesta` devuelve 405 y no incrementa ningún contador.
+- [x] Los primeros 5 POST desde una misma IP responden con su código normal (401/400/201), aunque todos cuentan.
+- [x] El sexto POST desde esa IP dentro de la ventana devuelve 429 con cabecera `Retry-After` en segundos y body JSON con campo `error`.
+- [x] Un POST con token inválido también consume cuota (429 llega aunque el token sea basura).
+- [x] Tras expirar la ventana (10 min o `window_start` retrocedido manualmente), el siguiente POST vuelve a responder 201.
+- [x] Un POST sin cabeceras de IP se cuenta bajo la clave `unknown`.
+- [x] En producción, un POST con `x-forwarded-for` falsificada sigue contando la IP real (la fila creada en `rate_limits` es la IP real).
+- [x] Un POST válido con 10 claves `verif03_*` sigue devolviendo 201 y guardando la fila (el rate limit no rompe el flujo feliz).
+- [x] `index.html` no tiene cambios y el mensaje del 429 aparece en el resumen de error.
+- [x] No quedan datos de prueba en la BD: ninguna fila con `verif03` en `respuestas_encuesta` y ninguna fila de prueba en `rate_limits`.
+- [x] `AGENTS.md` ya no afirma que el endpoint no tiene rate limiting.
 
 ## Decisions
 
