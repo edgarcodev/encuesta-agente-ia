@@ -1,6 +1,6 @@
 # SPEC 06 — Agregar paso de build/bundling ligero con esbuild
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 05 (separación de `index.html` en `index.html`, `styles.css`, `app.js`)
 > **Date:** 2026-10-30
 > **Objective:** Agregar un paso de build con `esbuild` que concatene y minifique `styles.css` y `app.js` en una carpeta `dist/`, ejecutable localmente con `npm run build` y automáticamente en Vercel con el hook `vercel-build`.
