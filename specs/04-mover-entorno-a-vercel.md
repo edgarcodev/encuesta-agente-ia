@@ -1,6 +1,6 @@
 # SPEC 04 — Mover variables de entorno al dashboard de Vercel (no depender de `.env` local)
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01, SPEC 02, SPEC 03
 > **Date:** 2026-10-29
 > **Objective:** Que `api/encuesta.js` lea `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` y `SECRET_NONCE` exclusivamente del entorno de ejecución de Vercel (dashboard → Settings → Environment Variables), sin requerir `.env` local en producción, manteniendo `.env` solo como conveniencia para desarrollo local con `vercel dev`.
