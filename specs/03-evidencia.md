@@ -75,4 +75,44 @@ ERROR: 42P07: relation "rate_limits" already exists
 
 ---
 
-*(Pendiente: pasos 3–7.)*
+## Paso 3 — `api/encuesta.js` (cambio de código)
+
+- `node --check` en modo CommonJS y ESM: exit 0 (sintaxis válida).
+- Orden nuevo: 405 → extracción de IP → chequeo `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` (500) →
+  RPC de rate limit → `SECRET_NONCE` (401) → `datos` (400) → inserción (201).
+- `RATE_LIMIT_MAX = 5` a nivel de módulo; el límite vive en JS, no en SQL.
+- Fail open: cualquier fallo del RPC (`!response.ok` o excepción) → `console.error` y continúa.
+
+---
+
+## Paso 4 — Verificación local (`vercel dev` + curl)
+
+Entorno: `vercel dev` (CLI 65.7.0) en `http://localhost:3003`, `.env` local apuntando a
+Supabase **producción** (por lo que las filas de prueba nacieron en producción y se limpian
+en el paso 6). Estado inicial: `rate_limits` vacía (0 filas), 0 filas `verif03`.
+
+| # | Caso | Resultado esperado | Resultado obtenido |
+|---|---|---|---|
+| a | `GET /api/encuesta` | 405 y **sin** fila en `rate_limits` | `HTTP/1.1 405`, JSON; `rate_limits` = 0 filas ✅ |
+| b | 4 × POST con token basura | 401 ×4 pero `count` sube a 4 | 4 × `401 {"error":"Token inválido"}`; fila `ip="::1"`, `count=4` ✅ |
+| c | POST válido con 10 claves `verif03_1..10` | 201 (`count` = 5) | `201 {"success":true}`; `count=5`; 1 fila `verif03` ✅ |
+| d | 6.º POST (válido) | 429 + `Retry-After` numérico + body con `error` | `429`, cabecera `retry-after: 555`, `{"error":"Demasiados envíos desde esta conexión. Inténtalo de nuevo en unos minutos."}` ✅ |
+| d' | POST con **token basura** estando agotada la cuota | 429 (la cuota se gasta aunque el token sea basura) | `429`, `retry-after: 553` ✅ |
+| e | `update rate_limits set window_start = now() - interval '11 minutes'` → POST válido | 201 de nuevo | `update` OK → `201 {"success":true}` ✅ |
+| f | Petición sin cabeceras de IP | contada bajo `'unknown'` | fila `ip="unknown"`, `count=1` ✅ (ver nota) |
+
+**Nota sobre (f):** no se pudo provocar vía `curl` porque **`vercel dev` inyecta él mismo**
+`x-real-ip`/`x-forwarded-for` en toda petición local (aparecían `::1` y `::ffff:127.0.0.1`
+independientemente de lo que enviara el cliente). Se verificó invocando el `handler` con un
+`req` sin esas cabeceras: respondió `401` (token basura) **y creó la fila `ip="unknown"`** en
+`rate_limits`, lo que confirma la cadena de fallback `x-real-ip → x-forwarded-for → 'unknown'`.
+
+Filas creadas durante la verificación local:
+
+- `rate_limits`: `::1` (count 2), `::ffff:127.0.0.1` (count 1), `unknown` (count 1).
+- `respuestas_encuesta`: 4 filas con `verif03` (pasos c, e, f-http y f-handler).
+- Log de `vercel dev`: sin errores (`Rate limit RPC falló` / `Rate limit RPC error` no aparecen).
+
+---
+
+*(Pendiente: pasos 5–7.)*
