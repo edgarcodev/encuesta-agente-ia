@@ -570,27 +570,27 @@
     function init() {
         // Leer tipo de encuesta desde URL
         const params = new URLSearchParams(window.location.search);
-        const tipoParam = params.get('tipo') || 'compradores';
+        const tipoParam = params.get('tipo');
 
-        if (!ENCUESTAS[tipoParam]) {
-            const splash = document.getElementById('splashScreen');
-            if (splash) splash.style.display = 'none';
-            document.getElementById('app').style.display = '';
-            document.getElementById('stepCounter').textContent = '';
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('dynamicArea').innerHTML = `
-                <div class="alert alert-info" style="margin-top:40px; text-align:center; font-size:18px;">
-                    <p>❌ Tipo de encuesta no disponible.</p>
-                    <p style="margin-top:12px; font-size:16px; color:#5b6f82;">
-                        Los tipos válidos son: <strong>compradores</strong>, <strong>vendedores</strong>.
-                    </p>
-                    <p style="margin-top:8px; font-size:14px; color:#8b9aab;">
-                        Ejemplo: <code>?tipo=compradores</code>
-                    </p>
-                </div>`;
+        // Sin tipo → landing page
+        if (!tipoParam) {
+            showLanding();
             return;
         }
 
+        // Proveedores: slot preparado pero sin contenido aún
+        if (tipoParam === 'proveedores') {
+            showFutureType();
+            return;
+        }
+
+        // Tipo no reconocido → error
+        if (!ENCUESTAS[tipoParam]) {
+            showInvalidType(tipoParam);
+            return;
+        }
+
+        // Tipo válido → splash → encuesta
         encuestaActiva = ENCUESTAS[tipoParam];
 
         // Actualizar título
@@ -616,6 +616,48 @@
             });
     }
 
+    function showLanding() {
+        const splash = document.getElementById('splashScreen');
+        if (splash) splash.style.display = 'none';
+        document.getElementById('app').style.display = '';
+        document.getElementById('stepCounter').textContent = '';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('dynamicArea').innerHTML = `
+            <div style="text-align:center; padding:40px 20px;">
+                <img src="images/megaremates.svg" alt="MegaRemates" style="max-width:180px; margin-bottom:24px;">
+                <h2 style="font-size:24px; color:#1a2634; margin-bottom:12px;">Bienvenido a MegaRemates</h2>
+                <p style="font-size:16px; color:#5b6f82; margin-bottom:32px;">
+                    Tu plataforma de confianza para encontrar las mejores oportunidades.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:500px; margin:0 auto;">
+                    <a href="?tipo=compradores" class="btn btn-primary" style="text-decoration:none;">Encuesta de compradores</a>
+                    <a href="?tipo=vendedores" class="btn btn-secondary" style="text-decoration:none;">Encuesta de vendedores</a>
+                </div>
+            </div>`;
+    }
+
+    function showInvalidType(tipo) {
+        const splash = document.getElementById('splashScreen');
+        if (splash) splash.style.display = 'none';
+        document.getElementById('app').style.display = '';
+        document.getElementById('stepCounter').textContent = '';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('dynamicArea').innerHTML = `
+            <div style="text-align:center; padding:40px 20px;">
+                <h2 style="font-size:24px; color:#a12b2b; margin-bottom:16px;">❌ Encuesta no disponible</h2>
+                <p style="font-size:16px; color:#5b6f82; margin-bottom:24px;">
+                    El tipo <strong>${tipo}</strong> no está disponible.
+                </p>
+                <p style="font-size:14px; color:#8b9aab; margin-bottom:24px;">
+                    Tipos disponibles:
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:500px; margin:0 auto;">
+                    <a href="?tipo=compradores" class="btn btn-primary" style="text-decoration:none;">Encuesta de compradores</a>
+                    <a href="?tipo=vendedores" class="btn btn-secondary" style="text-decoration:none;">Encuesta de vendedores</a>
+                </div>
+            </div>`;
+    }
+
     function showApp() {
         const splash = document.getElementById('splashScreen');
         const app = document.getElementById('app');
@@ -637,6 +679,70 @@
         }
 
         startSurvey();
+    }
+
+    function showLanding() {
+        const splash = document.getElementById('splashScreen');
+        if (splash) splash.style.display = 'none';
+        document.getElementById('app').style.display = '';
+        document.getElementById('stepCounter').textContent = '';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('dynamicArea').innerHTML = `
+            <div style="text-align:center; padding:40px 20px;">
+                <img src="images/megaremates.svg" alt="MegaRemates" style="max-width:180px; margin-bottom:24px;">
+                <h2 style="font-size:24px; color:#1a2634; margin-bottom:12px;">Bienvenido a MegaRemates</h2>
+                <p style="font-size:16px; color:#5b6f82; margin-bottom:32px;">
+                    Tu plataforma de confianza para encontrar las mejores oportunidades.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:500px; margin:0 auto;">
+                    <a href="?tipo=compradores" class="btn btn-primary" style="text-decoration:none;">Encuesta de compradores</a>
+                    <a href="?tipo=vendedores" class="btn btn-secondary" style="text-decoration:none;">Encuesta de vendedores</a>
+                </div>
+            </div>`;
+    }
+
+    function showInvalidType(tipo) {
+        const splash = document.getElementById('splashScreen');
+        if (splash) splash.style.display = 'none';
+        document.getElementById('app').style.display = '';
+        document.getElementById('stepCounter').textContent = '';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('dynamicArea').innerHTML = `
+            <div style="text-align:center; padding:40px 20px;">
+                <h2 style="font-size:24px; color:#a12b2b; margin-bottom:16px;">❌ Encuesta no disponible</h2>
+                <p style="font-size:16px; color:#5b6f82; margin-bottom:24px;">
+                    El tipo <strong>${tipo}</strong> no está disponible.
+                </p>
+                <p style="font-size:14px; color:#8b9aab; margin-bottom:24px;">
+                    Tipos disponibles:
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:500px; margin:0 auto;">
+                    <a href="?tipo=compradores" class="btn btn-primary" style="text-decoration:none;">Encuesta de compradores</a>
+                    <a href="?tipo=vendedores" class="btn btn-secondary" style="text-decoration:none;">Encuesta de vendedores</a>
+                </div>
+            </div>`;
+    }
+
+    function showFutureType() {
+        const splash = document.getElementById('splashScreen');
+        if (splash) splash.style.display = 'none';
+        document.getElementById('app').style.display = '';
+        document.getElementById('stepCounter').textContent = '';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('dynamicArea').innerHTML = `
+            <div style="text-align:center; padding:40px 20px;">
+                <h2 style="font-size:24px; color:#1a2634; margin-bottom:16px;">🚧 Encuesta en preparación</h2>
+                <p style="font-size:16px; color:#5b6f82; margin-bottom:24px;">
+                    La encuesta de <strong>proveedores</strong> estará disponible próximamente.
+                </p>
+                <p style="font-size:14px; color:#8b9aab; margin-bottom:24px;">
+                    Mientras tanto, puedes participar en:
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; max-width:500px; margin:0 auto;">
+                    <a href="?tipo=compradores" class="btn btn-primary" style="text-decoration:none;">Encuesta de compradores</a>
+                    <a href="?tipo=vendedores" class="btn btn-secondary" style="text-decoration:none;">Encuesta de vendedores</a>
+                </div>
+            </div>`;
     }
 
     function startSurvey() {
