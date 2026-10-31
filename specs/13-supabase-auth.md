@@ -1,6 +1,6 @@
 # SPEC 13 — Integrar Supabase Auth (login email/contraseña)
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 12
 > **Date:** 2026-10-31
 > **Objective:** Agregar autenticación con Supabase Auth (email + contraseña) a la página `/login`, proteger `/dashboard` con sesión válida, y manejar la sesión del usuario.
@@ -98,17 +98,17 @@ dashboard/
 
 ## Acceptance criteria
 
-- [ ] `@supabase/supabase-js` instalado como dependencia.
-- [ ] `/login` muestra formulario con email + contraseña + botón "Iniciar sesión".
-- [ ] Login exitoso → redirige a `/dashboard`.
-- [ ] Login fallido → muestra mensaje de error claro.
-- [ ] `/dashboard` sin sesión → redirige a `/login`.
-- [ ] `/dashboard` con sesión → muestra contenido (placeholder por ahora) + email del usuario.
-- [ ] Botón "Cerrar sesión" en dashboard → cierra sesión y redirige a `/login`.
-- [ ] Sesión persiste entre recargas de página (localStorage).
-- [ ] Variables de entorno configuradas para Supabase Auth (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
-- [ ] Usuario admin creado manualmente en Supabase Dashboard.
-- [ ] `AGENTS.md` documenta el flujo de autenticación y variables necesarias.
+- [x] `@supabase/supabase-js` instalado como dependencia.
+- [x] `/login` muestra formulario con email + contraseña + botón "Iniciar sesión".
+- [x] Login exitoso → redirige a `/dashboard`.
+- [x] Login fallido → muestra mensaje de error claro.
+- [x] `/dashboard` sin sesión → redirige a `/login`.
+- [x] `/dashboard` con sesión → muestra contenido (placeholder por ahora) + email del usuario.
+- [x] Botón "Cerrar sesión" en dashboard → cierra sesión y redirige a `/login`.
+- [x] Sesión persiste entre recargas de página (localStorage).
+- [x] Variables de entorno configuradas para Supabase Auth (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
+- [x] Usuario admin creado manualmente en Supabase Dashboard.
+- [x] `AGENTS.md` documenta el flujo de autenticación y variables necesarias.
 
 ## Decisions
 
