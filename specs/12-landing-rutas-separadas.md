@@ -1,6 +1,6 @@
 # SPEC 12 — Landing page en `/` y arquitectura para rutas separadas
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 10, SPEC 11
 > **Date:** 2026-10-30
 > **Objective:** Cambiar el comportamiento de `/` para mostrar una landing page en lugar de cargar la encuesta de compradores por defecto. Las encuestas solo se cargan con `?tipo=` explícito. Preparar estructura para `/login` y `/dashboard` futuros.
@@ -96,15 +96,15 @@ Actualmente `/?` sin parámetro carga la encuesta de compradores por defecto (`|
 
 ## Acceptance criteria
 
-- [ ] `/` sin parámetros muestra landing page, no encuesta.
-- [ ] `/?tipo=compradores` carga encuesta de compradores (41 preguntas) con splash.
-- [ ] `/?tipo=vendedores` carga encuesta de vendedores (38 preguntas) con splash.
-- [ ] `/?tipo=proveedores` muestra "Encuesta no disponible aún".
-- [ ] `/?tipo=invalido` muestra error con tipos válidos.
-- [ ] Carpetas `login/` y `dashboard/` existen como placeholder.
-- [ ] `vercel.json` tiene rewrites correctos para todas las rutas.
-- [ ] `AGENTS.md` documenta la arquitectura completa y convención para nuevas encuestas.
-- [ ] Sin cambios funcionales en las encuestas existentes (mismas preguntas, mismas validaciones, mismo envío).
+- [x] `/` sin parámetros muestra landing page, no encuesta.
+- [x] `/?tipo=compradores` carga encuesta de compradores (41 preguntas) con splash.
+- [x] `/?tipo=vendedores` carga encuesta de vendedores (38 preguntas) con splash.
+- [x] `/?tipo=proveedores` muestra "Encuesta no disponible aún".
+- [x] `/?tipo=invalido` muestra error con tipos válidos.
+- [x] Carpetas `login/` y `dashboard/` existen como placeholder.
+- [x] `vercel.json` tiene rewrites correctos para todas las rutas.
+- [x] `AGENTS.md` documenta la arquitectura completa y convención para nuevas encuestas.
+- [x] Sin cambios funcionales en las encuestas existentes (mismas preguntas, mismas validaciones, mismo envío).
 
 ## Decisions
 
