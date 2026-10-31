@@ -94,10 +94,31 @@ Table `public.respuestas_encuesta`:
 
 POST body format: `{ datos, token, tipo_encuesta }`.
 
-## Adding a new survey type
+## Multiple surveys — `?tipo=` parameter (SPEC 09)
 
-1. Copy `references/vendedores/` structure and adapt `index.html` questions and `api/encuesta.js` as needed.
-2. In the new `api/encuesta.js`, hardcode `const tipo_encuesta = '<new_type>';` and include it in the Supabase POST body.
-3. In the frontend `app.js` (or equivalent), send `tipo_encuesta: '<new_type>'` in the fetch payload.
-4. Add the new type value to the CHECK constraint by creating a migration that drops and recreates `chk_tipo_encuesta` with the expanded list.
-5. Each survey type sends its own `tipo_encuesta` value — the API validates against the constraint, rejecting unknown values with 400.
+`app.js` reads `?tipo=` from the URL. If missing, defaults to `compradores`. If the type is not in `ENCUESTAS`, an error message is shown.
+
+The `ENCUESTAS` object in `app.js` maps each type to its configuration:
+
+```js
+ENCUESTAS = {
+  compradores: { tipo, titulo, endpoint, color, STORAGE_KEY, NONCE|NONCE_KEY, steps[] },
+  vendedores:  { tipo, titulo, endpoint, color, STORAGE_KEY, NONCE|NONCE_KEY, steps[] },
+  // proveedores: ... (future)
+}
+```
+
+- **tipo** — the value sent as `tipo_encuesta` in the POST.
+- **titulo** — shown in `<h1>` and splash screen.
+- **endpoint** — API endpoint to POST to (default `/api/encuesta`).
+- **color** — progress bar gradient color.
+- **STORAGE_KEY** — localStorage key for "already submitted" check.
+- **NONCE** — fixed token string, **or** **NONCE_KEY** — sessionStorage key for dynamic nonce generation.
+- **steps[]** — array of question objects (same format as original `app.js`).
+
+### Adding a new survey type
+
+1. Add a new entry to `ENCUESTAS` in `app.js` with its own `steps[]`.
+2. If the type is not yet in the DB CHECK constraint, create a migration to update `chk_tipo_encuesta`.
+3. Each survey type accesses its own URL: `/?tipo=newtype`.
+4. The `references/` folder templates are still useful as a starting point for new survey HTML+API.
