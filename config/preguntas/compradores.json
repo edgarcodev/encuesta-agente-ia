@@ -1,0 +1,382 @@
+[
+  {
+    "id": "p1",
+    "question": "1. ¿Qué compras habitualmente? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Alimentos y bebidas","Ropa, calzado y accesorios","Productos para el hogar","Muebles","Tecnología y electrónica","Belleza y cuidado personal","Productos de salud","Productos para niños","Construcción y ferretería","Herramientas y maquinaria","Productos para vehículos","Productos agrícolas/agropecuarios","Productos para mascotas","Productos para empresas","Servicios profesionales","Educación/capacitación","Transporte/logística","Entretenimiento/eventos","Productos digitales","Otros"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p2",
+    "question": "2. ¿Con qué frecuencia realizas compras?",
+    "type": "radio",
+    "options": ["Varias veces por semana","Aproximadamente una vez por semana","Varias veces al mes","Aproximadamente una vez al mes","Cada pocos meses","Principalmente cuando surge una necesidad","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p3",
+    "question": "3. ¿Dónde realizas normalmente tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Tiendas físicas","Mercados","Ferias","Centros comerciales","Comercios de barrio","Venta directa","Facebook","Facebook Marketplace","WhatsApp","Instagram","TikTok","Página web","Marketplace/plataforma especializada","Aplicaciones móviles","Recomendaciones de conocidos","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p4",
+    "question": "4. Cuando necesitas comprar algo, ¿cómo lo buscas normalmente? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Pregunto a familiares/amigos/conocidos","Busco en Google","Busco en Facebook","Busco en Marketplace","Busco en Instagram","Busco en TikTok","Busco en WhatsApp","Busco en una tienda o marketplace específico","Voy directamente a una tienda física","Pregunto a vendedores","Comparo en varios lugares","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p5",
+    "question": "5. ¿Qué haces normalmente antes de decidir una compra? (hasta 4)",
+    "type": "checkbox",
+    "maxSelections": 4,
+    "options": ["Comparo precios","Comparo productos","Leo opiniones/comentarios","Pregunto a otras personas","Pregunto directamente al vendedor","Reviso fotografías/videos","Reviso características","Compruebo la reputación del vendedor","Busco promociones","Espero una oferta","Visito físicamente el lugar","Comparo opciones por Internet","Compro directamente sin comparar mucho","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p6",
+    "question": "6. Piensa en tu última compra importante. ¿Cómo encontraste finalmente lo que compraste? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos brevemente qué necesitabas, dónde buscaste y cómo elegiste...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p7",
+    "question": "7. ¿Qué importancia tiene el precio cuando decides una compra?",
+    "type": "radio",
+    "options": ["Es el factor principal","Es muy importante, pero no es el único","Tiene importancia moderada","Tiene poca importancia","Depende del producto o servicio"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p8",
+    "question": "8. Cuando encuentras una oferta, descuento, liquidación, lote o precio especialmente bajo, ¿qué haces normalmente? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Compro inmediatamente si lo necesito","Comparo antes con otras opciones","Pregunto si el precio realmente es bueno","Compro más cantidad de la que pensaba","Compro para aprovechar y guardar","Compro para compartir con otras personas","Compro para revender","No suelo cambiar mi decisión por una oferta","Depende del producto","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p9",
+    "question": "9. ¿Has comprado alguna vez productos en liquidación, remate, lote, saldo, excedente o por cierre de negocio?",
+    "type": "radio",
+    "options": ["Sí, frecuentemente","Sí, algunas veces","Sí, una vez","No","No estoy seguro/a de cómo se clasificaba la compra"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p9_motivo",
+    "question": "¿Qué te motivó principalmente a comprar de esa manera? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Precio","Cantidad","Oportunidad","Producto difícil de encontrar","Para uso personal","Para mi negocio","Para revender","Otro"],
+    "allowOther": true,
+    "condition": {
+      "field": "p9",
+      "operator": "oneOf",
+      "value": ["Sí, frecuentemente", "Sí, algunas veces", "Sí, una vez"]
+    }
+  },
+  {
+    "id": "p10",
+    "question": "10. ¿Para quién o para qué realizas principalmente tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Para mí","Para mi hogar o familia","Para mis hijos u otras personas que dependen de mí","Para mi trabajo o actividad profesional","Para mi negocio","Para revender","Para producir o transformar otros productos","Para prestar un servicio","Para una institución, organización o empresa","Para otra persona","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p11",
+    "question": "11. ¿Qué condiciones influyen actualmente en la forma en que realizas tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Necesito ahorrar lo máximo posible","Tengo un presupuesto limitado o variable","Tengo poco tiempo disponible","Necesito comprar desde casa o a distancia","Tengo responsabilidades de cuidado de hijos","Tengo responsabilidades de cuidado de otros familiares","Necesito comprar cerca de donde vivo o trabajo","Tengo dificultades para desplazarme","Prefiero comprar cuando puedo pagar en efectivo","Prefiero pagar digitalmente","Necesito comparar varias opciones antes de decidir","Necesito comprar rápidamente cuando surge una necesidad","Ninguna de estas condiciones influye significativamente","Otra"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p12",
+    "question": "12. ¿Qué necesitas saber o comprobar para confiar en un vendedor? (hasta 5)",
+    "type": "checkbox",
+    "maxSelections": 5,
+    "options": ["Identidad del vendedor","Ubicación","Teléfono/WhatsApp","Opiniones de otros compradores","Historial/reputación","Fotografías reales","Información detallada del producto","Precio claro","Condiciones de venta","Garantía","Posibilidad de devolución","Comprobante de compra","Poder verlo presencialmente","Pago seguro","Referencias de otras personas","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p13",
+    "question": "13. ¿Has tenido alguna experiencia problemática al comprar? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Producto diferente de lo ofrecido","Producto defectuoso","Producto falsificado o de dudosa procedencia","Pago que resultó ser fraudulento","Vendedor que desapareció","No recibí el producto","Entrega tardía","Problema con una devolución","Problema con garantía","Información engañosa","Cuenta/perfil falso","Otro problema","No he tenido problemas importantes"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p13_abierta",
+    "question": "¿Qué ocurrió y cómo lo resolviste? (opcional)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos brevemente...",
+    "condition": {
+      "field": "p13",
+      "operator": "notIncludes",
+      "value": "No he tenido problemas importantes"
+    }
+  },
+  {
+    "id": "p14",
+    "question": "14. ¿Cómo pagas normalmente tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Efectivo","Tarjeta de débito","Tarjeta de crédito","Transferencia bancaria","Billetera digital","Aplicación de pagos","Pago contraentrega","Crédito/fiado","Pago en cuotas","Separación con adelanto","PayPal u otro servicio internacional","Otro medio de pago local","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p15",
+    "question": "15. ¿Qué es lo más importante para ti al momento de pagar? (hasta 3)",
+    "type": "checkbox",
+    "maxSelections": 3,
+    "options": ["Seguridad","Rapidez","Facilidad","Poder pagar en efectivo","Poder pagar digitalmente","No pagar comisiones elevadas","Poder pagar después","Poder pagar en cuotas","Tener comprobante","Poder reclamar si algo sale mal","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p16",
+    "question": "16. ¿Cómo recibes normalmente tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Las recojo personalmente","Me las entregan en mi domicilio","Me las entregan en mi trabajo","Las recojo en una tienda/punto de entrega","Uso delivery","Uso courier","El vendedor las envía por transporte interprovincial","Las recibo por correo/servicio postal","Depende de la compra","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p17",
+    "question": "17. ¿Qué problemas has tenido con la entrega de tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Demora","Costo elevado","Producto dañado","Producto perdido","Dirección incorrecta","Problemas de coordinación","No encontrar un horario conveniente","Problemas de seguridad","No poder recibir personalmente","Ninguno importante","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p18",
+    "question": "18. Cuando ocurre un imprevisto importante, ¿qué sucede normalmente con tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Las postergo","Busco otro proveedor/vendedor","Compro presencialmente","Compro por otro canal","Busco un producto sustituto","Compro en otra localidad","Cancelo la compra","Continúo normalmente","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p19",
+    "question": "19. ¿Qué situaciones han dificultado alguna vez tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Problemas de transporte","Clima o fenómenos naturales","Cortes de Internet","Cortes de electricidad","Falta de disponibilidad del producto","Incremento fuerte de precios","Problemas de seguridad","Problemas con plataformas digitales","Problemas con pagos","Falta de tiempo","Problemas de entrega","Ninguna importante","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p20",
+    "question": "20. Si mañana dejara de funcionar el principal canal digital que utilizas para encontrar productos o servicios, ¿qué harías? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Buscaría en otra plataforma","Buscaría en Google","Contactaría directamente a vendedores conocidos","Iría a tiendas físicas","Preguntaría a conocidos","Buscaría en redes sociales alternativas","Esperaría a que volviera a funcionar","Me resultaría muy difícil encontrar alternativas","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p21",
+    "question": "21. ¿En qué país realizas principalmente tus compras?",
+    "type": "radio",
+    "options": ["Perú","Argentina","Bolivia","Brasil","Chile","Colombia","Costa Rica","Ecuador","El Salvador","España","Guatemala","Honduras","México","Nicaragua","Panamá","Paraguay","Portugal","República Dominicana","Uruguay","Venezuela","Otro país"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p22",
+    "question": "22. ¿En qué localidad, ciudad o zona realizas principalmente tus compras?",
+    "type": "radio",
+    "condition": { "always": true },
+    "dynamicDefinition": {
+      "field": "p21",
+      "when": { "operator": "equals", "value": "Perú" },
+      "then": {
+        "type": "radio",
+        "hint": "Selecciona la zona donde compras habitualmente.",
+        "options": ["Lima Metropolitana / Callao","Arequipa","Trujillo","Piura","Chiclayo","Cusco","Ica","Huaraz","Chimbote","Nuevo Chimbote","Coishco","Santa","Nepeña","Moro","Casma","Huarmey","Chao","Virú","Otra localidad de Áncash","Otra localidad de la costa peruana","Otra localidad de la sierra peruana","Otra localidad de la selva peruana","Principalmente compro por Internet","Otra:"],
+        "allowOther": true
+      },
+      "else": {
+        "type": "text",
+        "hint": "Escribe el nombre de tu ciudad o localidad (fuera de Perú).",
+        "placeholder": "Ej. Santiago, Bogotá, São Paulo, Madrid..."
+      }
+    }
+  },
+  {
+    "id": "p23",
+    "question": "23. ¿En qué país realizas principalmente tu actividad laboral, comercial o profesional?",
+    "type": "radio",
+    "options": ["En el mismo país donde realizo mis compras","En otro país","Actualmente no realizo una actividad laboral/comercial","Mi actividad se desarrolla principalmente por Internet","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p24",
+    "question": "24. ¿En qué localidad, ciudad o zona realizas principalmente esa actividad?",
+    "type": "radio",
+    "condition": {
+      "field": "p23",
+      "operator": "notEquals",
+      "value": "Actualmente no realizo una actividad laboral/comercial"
+    },
+    "dynamicDefinition": {
+      "logic": "and",
+      "conditions": [
+        { "field": "p21", "operator": "equals", "value": "Perú" },
+        { "field": "p23", "operator": "oneOf", "value": ["En el mismo país donde realizo mis compras", "Mi actividad se desarrolla principalmente por Internet"] }
+      ],
+      "then": {
+        "type": "radio",
+        "hint": "Selecciona la zona donde realizas tu actividad.",
+        "options": ["Lima Metropolitana / Callao","Arequipa","Trujillo","Piura","Chiclayo","Cusco","Ica","Huaraz","Chimbote","Nuevo Chimbote","Coishco","Santa","Nepeña","Moro","Casma","Huarmey","Chao","Virú","Otra localidad de Áncash","Otra localidad de la costa peruana","Otra localidad de la sierra peruana","Otra localidad de la selva peruana","Principalmente compro por Internet","Otra:"],
+        "allowOther": true
+      },
+      "else": {
+        "type": "text",
+        "hint": "Escribe la ciudad o localidad donde realizas tu actividad.",
+        "placeholder": "Ej. Santiago, Bogotá, São Paulo, Madrid..."
+      }
+    }
+  },
+  {
+    "id": "p25",
+    "question": "25. ¿Has comprado alguna vez productos o servicios de otro país?",
+    "type": "radio",
+    "options": ["Sí, frecuentemente","Sí, algunas veces","Sí, una vez","No","No recuerdo"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p26",
+    "question": "26. ¿Qué te motivó principalmente a comprar en otro país? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Mejor precio","Producto que no encontraba localmente","Mayor variedad","Mejor calidad","Marca específica","Promoción/oferta","Recomendación","Producto especializado","Mayor confianza","Otro"],
+    "allowOther": true,
+    "condition": {
+      "field": "p25",
+      "operator": "oneOf",
+      "value": ["Sí, frecuentemente", "Sí, algunas veces", "Sí, una vez"]
+    }
+  },
+  {
+    "id": "p27",
+    "question": "27. ¿Cuál ha sido el principal problema que has encontrado al comprar desde otro país? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Costo de envío","Tiempo de entrega","Aduanas/impuestos","Confianza en el vendedor","Devoluciones","Garantía","Formas de pago","Tipo de cambio","Idioma/comunicación","Producto diferente a lo esperado","Riesgo de fraude","No he tenido problemas importantes","Otro"],
+    "allowOther": true,
+    "condition": {
+      "field": "p25",
+      "operator": "oneOf",
+      "value": ["Sí, frecuentemente", "Sí, algunas veces", "Sí, una vez"]
+    }
+  },
+  {
+    "id": "p28",
+    "question": "28. ¿En qué moneda realizas normalmente tus compras? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Moneda de mi país","Dólares estadounidenses (USD)","Euros (EUR)","Reales brasileños (BRL)","Otra moneda","Utilizo diferentes monedas según la compra"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p29",
+    "question": "29. ¿En qué idioma prefieres recibir información y comunicarte con un vendedor?",
+    "type": "radio",
+    "options": ["Español","Português","Inglés","Otro","Me es indiferente mientras pueda comprender la información"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p30",
+    "question": "30. Cuando encuentras un producto que te interesa, ¿comprarías a un vendedor que está fuera de tu ciudad o país?",
+    "type": "radio",
+    "options": ["Sí, ya lo hago actualmente","Sí, si el precio o beneficio lo justifica","Sí, si existe una forma segura de recibirlo","Sí, pero solamente para determinados productos","Prefiero comprar localmente","No estoy seguro/a"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p31",
+    "question": "31. Si pudieras mejorar una sola parte de tu experiencia actual de compra, ¿cuál escogerías? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Puede ser encontrar productos, comparar precios, confiar en vendedores, pagar, recibir compras...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p32",
+    "question": "32. ¿Cómo resuelves actualmente esa necesidad? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos cómo lo haces hoy...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p33",
+    "question": "33. ¿Qué tipo de oportunidad te interesaría encontrar con mayor frecuencia? (hasta 3)",
+    "type": "checkbox",
+    "maxSelections": 3,
+    "options": ["Precios más bajos","Liquidaciones","Remates","Productos por lote","Compras grupales","Productos difíciles de encontrar","Productos nuevos","Productos usados en buen estado","Servicios a buen precio","Proveedores","Productos directamente de fabricantes","Productos directamente de productores","Comerciantes confiables","Ofertas de negocios locales","Oportunidades de otros lugares o ciudades","Oportunidades internacionales","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p34",
+    "question": "34. ¿Qué tendría que ofrecerte una nueva forma de comprar para que realmente te resultara útil? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Mejores precios","Mayor variedad","Vendedores confiables","Información clara","Productos auténticos/verificables","Comparación de opciones","Formas de pago variadas","Pago en efectivo","Pagos digitales","Entrega confiable","Posibilidad de recoger personalmente","Garantías claras","Devoluciones","Atención humana","Posibilidad de comprar por Internet y continuar presencialmente","Posibilidad de comprar localmente y también fuera de mi ciudad/país","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p35",
+    "question": "35. ¿Cuál de estas posibilidades te resultaría más útil? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Encontrar productos de diferentes vendedores en un mismo lugar","Encontrar oportunidades de liquidación o remate","Encontrar productos por lote","Encontrar ofertas de negocios cercanos","Encontrar productos de otras ciudades","Encontrar productos de otros países","Encontrar servicios","Comparar precios y condiciones","Encontrar vendedores confiables","Organizar compras grupales","Facilitar entrega o recojo","Facilitar diferentes formas de pago","Otra"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p36",
+    "question": "36. ¿Qué te haría confiar en un servicio de este tipo? (hasta 3)",
+    "type": "checkbox",
+    "maxSelections": 3,
+    "options": ["Vendedores identificables","Información verificable","Reputación comprobable","Protección frente a estafas","Precios transparentes","Atención humana","Posibilidad de trato presencial","Pago seguro","Posibilidad de pagar en efectivo","Garantías claras","Devoluciones","Entrega confiable","Bajo costo","Facilidad de uso","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p37",
+    "question": "37. ¿Te gustaría participar posteriormente en una entrevista o prueba relacionada con esta investigación?",
+    "type": "radio",
+    "options": ["Sí","No","Tal vez"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p38",
+    "question": "38. ¿Por qué medio prefieres que te contactemos?",
+    "type": "radio",
+    "options": ["WhatsApp","Llamada","Correo electrónico","Otro"],
+    "allowOther": true,
+    "condition": {
+      "field": "p37",
+      "operator": "oneOf",
+      "value": ["Sí", "Tal vez"]
+    }
+  },
+  {
+    "id": "p39",
+    "question": "39. Datos de contacto (opcional):",
+    "type": "text",
+    "placeholder": "Ej. 987654321 o correo@ejemplo.com",
+    "condition": {
+      "field": "p37",
+      "operator": "oneOf",
+      "value": ["Sí", "Tal vez"]
+    }
+  }
+]

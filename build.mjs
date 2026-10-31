@@ -52,4 +52,10 @@ if (existsSync('images')) {
   console.log('✓ dist/images/');
 }
 
+// 5. Copiar config/preguntas/ a dist/config/preguntas/
+if (existsSync('config/preguntas')) {
+  copyDirRecursive('config/preguntas', join(DIST, 'config/preguntas'));
+  console.log('✓ dist/config/preguntas/');
+}
+
 console.log('\nBuild completo en dist/');
