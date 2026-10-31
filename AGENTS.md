@@ -214,11 +214,32 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 
 ## Login and Dashboard (Phase 3 — future specs)
 
-- **SPEC 14:** Roles de usuario (admin, viewer).
-- **SPEC 15:** Row Level Security (RLS) policies.
+- **SPEC 14:** ~~Roles de usuario (admin, viewer)~~ → Replaced by env injection spec.
+- **SPEC 15:** ✅ Row Level Security (RLS) policies — implemented.
 - **SPEC 16:** Dashboard con selector de encuesta y gráficos.
 - **SPEC 17:** Exportar resultados a CSV.
 - **SPEC 18:** Actualizar `AGENTS.md` con flujo de auth completo.
+
+## Row Level Security (SPEC 15)
+
+RLS is enabled on `respuestas_encuesta` and `respuestas_encuesta_vendedores`.
+
+| Policy | Table | Role | Operation | Condition |
+|--------|-------|------|-----------|-----------|
+| `authenticated_read` | `respuestas_encuesta` | `authenticated` | SELECT | `auth.uid() IS NOT NULL` |
+| `authenticated_read` | `respuestas_encuesta_vendedores` | `authenticated` | SELECT | `auth.uid() IS NOT NULL` |
+| `Permitir inserciones publicas` | `respuestas_encuesta` | `anon` | INSERT | *(existing — survey submissions)* |
+
+**Key points:**
+- `service_role` bypasses RLS automatically — `api/encuesta.js` is unaffected.
+- `anon` can only INSERT (submit surveys), cannot SELECT.
+- `authenticated` users can SELECT (read dashboard data).
+- No UPDATE/DELETE policies yet — coming in future specs.
+
+**Verify policies:**
+```sql
+select policyname, roles, cmd from pg_policies where tablename = 'respuestas_encuesta';
+```
 
 ## Project structure
 
