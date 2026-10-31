@@ -211,7 +211,7 @@
     // ================================================================
     // ENVÍO
     // ================================================================
-    function enviarRespuestas(geo) {
+    function enviarRespuestas(geo, allowMetadata) {
         const dataToSend = {};
         for (const key in answers) {
             if (answers[key] !== undefined && answers[key] !== null && answers[key] !== '') {
@@ -220,17 +220,24 @@
         }
 
         const fin = new Date();
-        dataToSend._metadata = {
-            fuente, dispositivo,
-            inicio: inicioEncuesta.toISOString(),
-            fin: fin.toISOString(),
-            tiempo_total_segundos: Math.round((fin - inicioEncuesta) / 1000),
-            tiempos_por_pregunta: tiemposPorPregunta,
-            conexion,
-            navegador: navigator.userAgent,
-            plataforma: navigator.platform || 'desconocida'
-        };
-        if (geo) dataToSend._geo = geo;
+        const tiempoTotal = Math.round((fin - inicioEncuesta) / 1000);
+
+        if (allowMetadata) {
+            dataToSend._metadata = {
+                fuente, dispositivo,
+                inicio: inicioEncuesta.toISOString(),
+                fin: fin.toISOString(),
+                tiempo_total_segundos: tiempoTotal,
+                tiempos_por_pregunta: tiemposPorPregunta,
+                conexion,
+                navegador: navigator.userAgent,
+                plataforma: navigator.platform || 'desconocida'
+            };
+            if (geo) dataToSend._geo = geo;
+        } else {
+            // Solo tiempo total — no identifica al usuario
+            dataToSend._metadata = { tiempo_total_segundos: tiempoTotal };
+        }
 
         const nonce = encuestaActiva.NONCE_KEY
             ? (sessionStorage.getItem(encuestaActiva.NONCE_KEY) || '')
@@ -476,9 +483,8 @@
                 nextBtn.textContent = 'Enviando...';
                 registrarTiempoPregunta(s.id);
 
-                (geoData ? Promise.resolve(geoData) : obtenerGeoData().then(g => geoData = g))
-                    .then(g => enviarRespuestas(g))
-                    .then(showSummary);
+                // Show summary with privacy consent before sending
+                showSummary(null);
                 return;
             }
             registrarTiempoPregunta(s.id);
@@ -500,6 +506,8 @@
     // ================================================================
     // RESUMEN
     // ================================================================
+    const PRIVACY_TEXT = `MegaRemates recolecta tus respuestas de forma anónima para mejorar nuestros servicios. Con tu consentimiento, también recopilamos datos de navegación como ubicación aproximada (basada en IP), tipo de dispositivo y navegador. Estos datos se almacenan de forma segura y no se comparten con terceros. Puedes revocar tu consentimiento en cualquier momento contactándonos.`;
+
     function showSummary(envioResult) {
         const area = document.getElementById('dynamicArea');
         saveCurrentAnswer();
@@ -518,7 +526,7 @@
             if (envioResult) {
                 html += `<div class="alert alert-error">❌ Error al enviar: ${envioResult.error}.<br>Tus respuestas se guardaron localmente.</div>`;
             } else {
-                html += `<div class="alert alert-info">⚠️ Aún no has enviado los datos.</div>`;
+                html += `<div class="alert alert-info">⚠️ Revisa tus respuestas antes de enviar.</div>`;
             }
 
             html += `<h3 style="margin-bottom:16px; font-weight:600;">Resumen de tus respuestas</h3>`;
@@ -536,9 +544,18 @@
                 html += `</div>`;
             });
 
+            // Privacy consent checkbox
+            html += `<div class="privacy-consent">
+                        <label class="privacy-label">
+                            <input type="checkbox" id="consentCheckbox" checked>
+                            <span>Permitir datos de navegación <em>(ubicación aproximada, dispositivo)</em></span>
+                        </label>
+                        <a href="#" class="privacy-link" id="privacyLink">Aviso de privacidad</a>
+                     </div>`;
+
             html += `<div style="margin-top:24px; display:flex; gap:12px;">
-                        <button class="btn btn-secondary" id="backBtn">← Volver</button>
-                        <button class="btn btn-primary" id="restartBtn" style="flex:1;">🔁 Nueva encuesta</button>
+                        <button class="btn btn-secondary" id="backBtn">← Volver para editar</button>
+                        <button class="btn btn-primary" id="confirmBtn" style="flex:1;">Confirmar y enviar ✓</button>
                      </div>`;
         }
         html += `</div>`;
@@ -549,18 +566,33 @@
 
         if (!exito) {
             const back = document.getElementById('backBtn');
-            const restart = document.getElementById('restartBtn');
+            const confirmBtn = document.getElementById('confirmBtn');
             if (back) back.addEventListener('click', () => {
                 const v = getVisibleSteps();
                 if (v.length) { currentStepIndex = v.length - 1; renderStep(); }
             });
-            if (restart) restart.addEventListener('click', () => {
-                for (const k in answers) delete answers[k];
-                datosEnviados = false;
-                currentStepIndex = 0;
-                try { localStorage.removeItem(encuestaActiva.STORAGE_KEY); } catch (e) {}
-                renderStep();
-            });
+
+            // Privacy link
+            const privacyLink = document.getElementById('privacyLink');
+            if (privacyLink) {
+                privacyLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Aviso de privacidad\n\n' + PRIVACY_TEXT);
+                });
+            }
+
+            // Confirm and send
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', function() {
+                    const allowMetadata = document.getElementById('consentCheckbox').checked;
+                    confirmBtn.disabled = true;
+                    confirmBtn.textContent = 'Enviando...';
+
+                    (geoData ? Promise.resolve(geoData) : obtenerGeoData().then(g => { geoData = g; return g; }))
+                        .then(g => enviarRespuestas(allowMetadata ? g : null, allowMetadata))
+                        .then(result => showSummary(result));
+                });
+            }
         }
     }
 
