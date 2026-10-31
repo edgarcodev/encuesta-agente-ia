@@ -1,6 +1,6 @@
 # SPEC 22 — Dashboard mejorado con filtros y tabla de respuestas
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 17
 > **Date:** 2026-10-31
 > **Objective:** Mejorar el dashboard con filtro por rango de fechas, tabla de respuestas crudas, y gráficos adicionales (fuente, dispositivo). Actualizar `AGENTS.md` con toda la documentación acumulada.
@@ -55,14 +55,14 @@ El dashboard actual muestra KPIs, 3 gráficos básicos y export CSV. Para análi
 
 ## Acceptance criteria
 
-- [ ] Filtro por rango de fechas visible y funcional (7d, 30d, 90d, todo, personalizado).
-- [ ] Todos los gráficos se actualizan al cambiar el filtro de fechas.
-- [ ] Tabla de respuestas crudas paginada con columnas relevantes.
-- [ ] Gráfico por fuente muestra distribución de canales (Facebook, WhatsApp, etc.).
-- [ ] Gráfico por dispositivo muestra distribución (celular, desktop, tablet).
-- [ ] Export CSV respeta los filtros activos.
-- [ ] Diseño responsive en mobile.
-- [ ] `AGENTS.md` documenta todo el proyecto actualizado.
+- [x] Filtro por rango de fechas visible y funcional (7d, 30d, 90d, todo, personalizado).
+- [x] Todos los gráficos se actualizan al cambiar el filtro de fechas.
+- [x] Tabla de respuestas crudas paginada con columnas relevantes.
+- [x] Gráfico por fuente muestra distribución de canales (Facebook, WhatsApp, etc.).
+- [x] Gráfico por dispositivo muestra distribución (celular, desktop, tablet).
+- [x] Export CSV respeta los filtros activos.
+- [x] Diseño responsive en mobile.
+- [x] `AGENTS.md` documenta todo el proyecto actualizado.
 
 ## Decisions
 
