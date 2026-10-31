@@ -1,6 +1,6 @@
 # SPEC 08 — Agregar columna `tipo_encuesta` a `respuestas_encuesta`
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01, SPEC 05, SPEC 06
 > **Date:** 2026-10-30
 > **Objective:** Agregar columna `tipo_encuesta` (`'compradores'`, `'vendedores'`, `'proveedores'`) a la tabla `respuestas_encuesta` y actualizar frontend + API para que cada encuesta identifique su tipo al guardar.
@@ -52,14 +52,14 @@ El JSONB `datos` no cambia. Se envía `{ datos, token, tipo_encuesta }` en el PO
 
 ## Acceptance criteria
 
-- [ ] Existe `supabase/migrations/0002_tipo_encuesta.sql` con `ADD COLUMN` y `CHECK` constraint.
-- [ ] La migración se aplicó en producción: `\d respuestas_encuesta` muestra `tipo_encuesta text` y `chk_tipo_encuesta`.
-- [ ] `api/encuesta.js` extrae y valida `tipo_encuesta` del body, lo pasa a Supabase.
-- [ ] `app.js` envía `tipo_encuesta: 'compradores'` en el POST.
-- [ ] `references/vendedores/api/encuesta.js` envía `tipo_encuesta: 'vendedores'`.
-- [ ] POST sin `tipo_encuesta` o con valor inválido devuelve 400.
-- [ ] Registros existentes en la tabla permanecen con `tipo_encuesta = NULL`.
-- [ ] `AGENTS.md` documenta la columna, los valores, y el patrón para nuevos tipos.
+- [x] Existe `supabase/migrations/0002_tipo_encuesta.sql` con `ADD COLUMN` y `CHECK` constraint.
+- [x] La migración se aplicó en producción: `\d respuestas_encuesta` muestra `tipo_encuesta text` y `chk_tipo_encuesta`.
+- [x] `api/encuesta.js` extrae y valida `tipo_encuesta` del body, lo pasa a Supabase.
+- [x] `app.js` envía `tipo_encuesta: 'compradores'` en el POST.
+- [x] `references/vendedores/api/encuesta.js` envía `tipo_encuesta: 'vendedores'`.
+- [x] POST sin `tipo_encuesta` o con valor inválido devuelve 400.
+- [x] Registros existentes en la tabla permanecen con `tipo_encuesta = NULL`.
+- [x] `AGENTS.md` documenta la columna, los valores, y el patrón para nuevos tipos.
 
 ## Decisions
 
