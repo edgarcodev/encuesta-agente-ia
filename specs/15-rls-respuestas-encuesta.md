@@ -1,6 +1,6 @@
 # SPEC 15 — Row Level Security (RLS) en Supabase para `respuestas_encuesta`
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 08, SPEC 13
 > **Date:** 2026-10-31
 > **Objective:** Configurar políticas RLS en Supabase para proteger la tabla `respuestas_encuesta`. El API serverless sigue usando `service_role` (bypass RLS), pero las queries directas desde el dashboard (con `anon` key) deben respetar RLS.
@@ -57,13 +57,13 @@ Actualmente `respuestas_encuesta` tiene RLS habilitado pero **sin políticas** �
 
 ## Acceptance criteria
 
-- [ ] Migración `0003_*` creada y aplicada en producción.
-- [ ] `authenticated` puede hacer SELECT en `respuestas_encuesta`.
-- [ ] `anon` NO puede hacer SELECT en `respuestas_encuesta`.
-- [ ] `service_role` sigue pudiendo INSERT (bypass RLS).
-- [ ] API de encuestas (`api/encuesta.js`) sigue funcionando sin cambios.
-- [ ] Dashboard puede leer datos si el usuario está autenticado.
-- [ ] `AGENTS.md` documenta las políticas RLS activas.
+- [x] Migración `0003_*` creada y aplicada en producción.
+- [x] `authenticated` puede hacer SELECT en `respuestas_encuesta`.
+- [x] `anon` NO puede hacer SELECT en `respuestas_encuesta`.
+- [x] `service_role` sigue pudiendo INSERT (bypass RLS).
+- [x] API de encuestas (`api/encuesta.js`) sigue funcionando sin cambios.
+- [x] Dashboard puede leer datos si el usuario está autenticado.
+- [x] `AGENTS.md` documenta las políticas RLS activas.
 
 ## Decisions
 
