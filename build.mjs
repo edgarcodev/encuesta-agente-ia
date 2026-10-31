@@ -58,4 +58,16 @@ if (existsSync('config/preguntas')) {
   console.log('✓ dist/config/preguntas/');
 }
 
+// 6. Copiar login/ a dist/login/
+if (existsSync('login')) {
+  copyDirRecursive('login', join(DIST, 'login'));
+  console.log('✓ dist/login/');
+}
+
+// 7. Copiar dashboard/ a dist/dashboard/
+if (existsSync('dashboard')) {
+  copyDirRecursive('dashboard', join(DIST, 'dashboard'));
+  console.log('✓ dist/dashboard/');
+}
+
 console.log('\nBuild completo en dist/');

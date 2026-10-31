@@ -5,17 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — MegaRemates</title>
     <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="survey-container" id="app">
-        <div style="text-align:center; padding:40px 20px;">
-            <h1 style="margin-bottom:24px;">Dashboard</h1>
-            <p style="color:#5b6f82;">Dashboard en construcción (Fase 3).</p>
-            <p style="color:#8b9aab; margin-top:16px;">
-                Próximas funcionalidades: autenticación, gráficos, filtros por tipo, export CSV.
-            </p>
-            <a href="/" class="btn btn-primary" style="margin-top:24px; display:inline-block;">Volver al inicio</a>
+        <div class="dashboard">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <div>
+                    <h1 style="font-size:22px; margin-bottom:4px;">Panel Administrativo</h1>
+                    <p style="color:#5b6f82; font-size:14px;">Conectado como: <strong id="userEmail">...</strong></p>
+                </div>
+                <button id="logoutBtn" class="btn btn-secondary" style="flex:none; padding:8px 20px; font-size:14px;">Cerrar sesión</button>
+            </div>
+
+            <div style="text-align:center; padding:60px 20px; color:#5b6f82;">
+                <p style="font-size:18px; margin-bottom:8px;">🚧 Dashboard en construcción</p>
+                <p style="font-size:14px;">Próximas funcionalidades: gráficos, filtros por tipo de encuesta, exportación a CSV.</p>
+            </div>
         </div>
     </div>
+
+    <script src="/dashboard/dashboard.js" defer></script>
 </body>
 </html>
