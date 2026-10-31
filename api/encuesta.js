@@ -5,7 +5,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { datos, token } = req.body;
+  const { datos, token, tipo_encuesta } = req.body;
+
+  const VALID_TIPOS = ['compradores', 'vendedores', 'proveedores'];
+  if (tipo_encuesta !== undefined && tipo_encuesta !== null && !VALID_TIPOS.includes(tipo_encuesta)) {
+    return res.status(400).json({ error: 'tipo_encuesta inválido' });
+  }
 
   // IP del cliente: x-real-ip (la pone Vercel, no spoofeable por el cliente) →
   // primera IP de x-forwarded-for → 'unknown'. Nunca se deja el endpoint sin contar.
@@ -74,7 +79,7 @@ export default async function handler(req, res) {
         'apikey': SUPABASE_SERVICE_KEY,
         'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`
       },
-      body: JSON.stringify({ datos })
+      body: JSON.stringify({ datos, tipo_encuesta: tipo_encuesta || null })
     });
 
     if (!response.ok) {
