@@ -1,6 +1,6 @@
 # SPEC 16 — Dashboard privado con selector de encuesta y gráficos básicos
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 13, SPEC 15
 > **Date:** 2026-10-31
 > **Objective:** Construir el dashboard administrativo con autenticación, selector de tipo de encuesta, y gráficos básicos con datos reales de Supabase.
@@ -103,13 +103,13 @@ select datos->>'p1' as respuesta, count(*)
 
 ## Acceptance criteria
 
-- [ ] Dashboard se carga después del login con datos reales.
-- [ ] Selector de tipo de encuesta filtra los gráficos.
-- [ ] Al menos 3 gráficos funcionales: barras, línea, donut.
-- [ ] KPIs muestran totales correctos (total, hoy, promedio).
-- [ ] Diseño responsive (mobile-friendly).
-- [ ] Datos se refrescan al cambiar el selector.
-- [ ] `AGENTS.md` documenta la estructura del dashboard.
+- [x] Dashboard se carga después del login con datos reales.
+- [x] Selector de tipo de encuesta filtra los gráficos.
+- [x] Al menos 3 gráficos funcionales: barras, línea, donut.
+- [x] KPIs muestran totales correctos (total, hoy, promedio).
+- [x] Diseño responsive (mobile-friendly).
+- [x] Datos se refrescan al cambiar el selector.
+- [x] `AGENTS.md` documenta la estructura del dashboard.
 
 ## Decisions
 
