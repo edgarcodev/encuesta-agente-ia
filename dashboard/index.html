@@ -28,12 +28,27 @@
             <!-- Sidebar -->
             <aside class="dashboard-sidebar">
                 <div class="sidebar-section">
-                    <label for="tipoSelect" class="sidebar-label">Tipo de encuesta</label>
+                    <label class="sidebar-label">Tipo de encuesta</label>
                     <select id="tipoSelect" class="sidebar-select">
                         <option value="todos">Todas</option>
                         <option value="compradores">Compradores</option>
                         <option value="vendedores">Vendedores</option>
                     </select>
+                </div>
+
+                <div class="sidebar-section">
+                    <label class="sidebar-label">Rango de fechas</label>
+                    <select id="dateRangeSelect" class="sidebar-select">
+                        <option value="7">Últimos 7 días</option>
+                        <option value="30" selected>Últimos 30 días</option>
+                        <option value="90">Últimos 90 días</option>
+                        <option value="all">Todo</option>
+                        <option value="custom">Personalizado</option>
+                    </select>
+                    <div id="customDateInputs" class="custom-dates" style="display:none;">
+                        <input type="date" id="dateFrom" class="date-input">
+                        <input type="date" id="dateTo" class="date-input">
+                    </div>
                 </div>
 
                 <div class="sidebar-section">
@@ -52,20 +67,56 @@
                 </div>
             </aside>
 
-            <!-- Charts -->
+            <!-- Main content -->
             <main class="dashboard-main">
-                <div class="chart-grid">
-                    <div class="chart-container">
-                        <h3 class="chart-title">Respuestas por tipo</h3>
-                        <canvas id="chartTipo"></canvas>
+                <!-- Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" data-tab="charts">📊 Gráficos</button>
+                    <button class="tab-btn" data-tab="responses">📋 Respuestas</button>
+                </div>
+
+                <!-- Charts tab -->
+                <div id="tabCharts" class="tab-content active">
+                    <div class="chart-grid">
+                        <div class="chart-container">
+                            <h3 class="chart-title">Respuestas por tipo</h3>
+                            <canvas id="chartTipo"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3 class="chart-title">Respuestas por día</h3>
+                            <canvas id="chartDia"></canvas>
+                        </div>
+                        <div class="chart-container chart-wide">
+                            <h3 class="chart-title">¿Qué compran/venden?</h3>
+                            <canvas id="chartP1"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3 class="chart-title">Fuente de tráfico</h3>
+                            <canvas id="chartFuente"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3 class="chart-title">Dispositivo</h3>
+                            <canvas id="chartDispositivo"></canvas>
+                        </div>
                     </div>
-                    <div class="chart-container">
-                        <h3 class="chart-title">Respuestas por día (últimos 30 días)</h3>
-                        <canvas id="chartDia"></canvas>
-                    </div>
-                    <div class="chart-container chart-wide">
-                        <h3 class="chart-title">¿Qué compran/venden?</h3>
-                        <canvas id="chartP1"></canvas>
+                </div>
+
+                <!-- Responses tab -->
+                <div id="tabResponses" class="tab-content">
+                    <div class="responses-table-wrapper">
+                        <table class="responses-table" id="responsesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha</th>
+                                    <th>Tiempo</th>
+                                    <th>Respuesta 1</th>
+                                </tr>
+                            </thead>
+                            <tbody id="responsesBody"></tbody>
+                        </table>
+                        <div id="pagination" class="pagination"></div>
                     </div>
                 </div>
 

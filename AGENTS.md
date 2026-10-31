@@ -46,15 +46,15 @@
 | `/?tipo=vendedores` | Splash → Sellers survey (38 questions) |
 | `/?tipo=proveedores` | "Coming soon" message (slot prepared) |
 | `/?tipo=<invalid>` | Error with available survey links |
-| `/login` | Auth page (Phase 3 — placeholder) |
-| `/dashboard` | Admin dashboard (Phase 3 — placeholder) |
-| `/dashboard?tipo=compradores\|vendedores\|proveedores` | Dashboard filtered by type (Phase 3) |
+| `/login` | Admin login con Supabase Auth (email/password) |
+| `/dashboard` | Dashboard protegido con gráficos, filtros y tabla de respuestas |
+| `/dashboard?tipo=compradores\|vendedores\|proveedores` | Dashboard filtrado por tipo |
 
 ## Security gotchas (do not ignore)
 
 - `api/encuesta.js` uses `SUPABASE_SERVICE_KEY` which **bypasses RLS** (full admin access). It validates `token` by **exact equality against `process.env.SECRET_NONCE`** and fails closed (500, nothing saved) if that variable is missing or empty. The secret's value is embedded in `index.html` as `const NONCE` (public by design, SPEC 02); rotating it requires updating three places at once: `.env`, the Vercel dashboard, and `index.html`.
 - **Rate limiting: 5 POST / 10 min per IP** (SPEC 03). Every POST — including invalid tokens and bad payloads — calls the PostgREST RPC `increment_rate_limit(p_ip)` *before* the token check; a persistent counter lives in the `rate_limits` table (one row per IP, fixed window). When `count > 5` the API answers `429` with a `Retry-After` header. The limit itself is `const RATE_LIMIT_MAX = 5` in `api/encuesta.js`; the SQL function only counts. The RPC fails **open** (`console.error` and continue) because `SECRET_NONCE` remains the real gate. IP source: `x-real-ip` (set by Vercel, not spoofable) → first entry of `x-forwarded-for` → `'unknown'`. No CAPTCHA, no schema validation on `datos`.
-- Frontend calls `https://ipapi.co/json/` on load without user consent (privacy/GDPR concern).
+- Frontend calls `https://ipapi.co/json/` on load without user consent (privacy/GDPR concern). SPEC 19 added privacy consent checkbox — if unchecked, geo and metadata are NOT sent.
 
 ## Git / file conventions
 
@@ -203,7 +203,7 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 | `SUPABASE_ANON_KEY` | Publishable key | `login/auth.js` (client), `dashboard/dashboard.js` (client) |
 | `SUPABASE_SERVICE_KEY` | Service role key (bypasses RLS) | `api/encuesta.js` (server only) |
 
-**Important:** `SUPABASE_ANON_KEY` is embedded in `login/auth.js` and `dashboard/dashboard.js` for now. In production, set it as a Vercel environment variable and inject it during build or use runtime config.
+**Important:** `SUPABASE_ANON_KEY` is injected during build from environment variables (SPEC 14). In local dev, create `.env` with both `SUPABASE_URL` and `SUPABASE_ANON_KEY`. In Vercel, set them in Settings → Environment Variables (mark for Production, Preview, and Development).
 
 ### Setup
 
@@ -214,11 +214,22 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 
 ## Login and Dashboard (Phase 3 — implemented)
 
+- **SPEC 13:** ✅ Supabase Auth (login email/password).
 - **SPEC 14:** ✅ Inyección segura de `SUPABASE_ANON_KEY` durante build.
 - **SPEC 15:** ✅ Row Level Security (RLS) policies.
 - **SPEC 16:** ✅ Dashboard con selector de encuesta y gráficos (Chart.js).
 - **SPEC 17:** ✅ Exportar resultados a CSV.
-- **SPEC 18:** Actualizar `AGENTS.md` con flujo de auth completo.
+- **SPEC 18:** ~~Actualización~~ → Documentación ya integrada incrementalmente.
+- **SPEC 19:** ✅ Aviso de privacidad y consentimiento explícito.
+- **SPEC 22:** ✅ Dashboard mejorado con filtros, tabla de respuestas y gráficos adicionales.
+
+### Dashboard features (SPEC 16 + 22)
+
+- **Filtros:** tipo de encuesta (compradores, vendedores, todos) + rango de fechas (7d, 30d, 90d, todo, personalizado).
+- **KPIs:** total respuestas, respuestas hoy, tiempo promedio.
+- **Gráficos:** por tipo (barras), por día (línea), qué compran/venden (donut), fuente de tráfico (barras horizontales), dispositivo (donut).
+- **Tabla de respuestas:** paginada (20 por página) con ID, tipo, fecha, tiempo, primera respuesta.
+- **Export CSV:** respeta filtros activos (tipo + fechas).
 
 ## Row Level Security (SPEC 15)
 
