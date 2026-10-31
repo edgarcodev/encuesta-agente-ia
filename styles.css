@@ -292,6 +292,50 @@ body {
     color: #a12b2b;
 }
 
+/* Privacy consent in summary */
+.privacy-consent {
+    background: #f8faff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.privacy-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #1e2a36;
+    cursor: pointer;
+}
+
+.privacy-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #3b82f6;
+    flex-shrink: 0;
+}
+
+.privacy-label em {
+    color: #5b6f82;
+    font-style: normal;
+}
+
+.privacy-link {
+    font-size: 13px;
+    color: #3b82f6;
+    text-decoration: none;
+    align-self: flex-start;
+}
+
+.privacy-link:hover {
+    text-decoration: underline;
+}
+
 .dashboard-content {
     display: flex;
     flex: 1;
