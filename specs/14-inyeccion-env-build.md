@@ -1,6 +1,6 @@
 # SPEC 14 — Inyección segura de `SUPABASE_ANON_KEY` durante el build
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 13
 > **Date:** 2026-10-31
 > **Objective:** Eliminar `SUPABASE_ANON_KEY` hardcodeada en `login/auth.js` y `dashboard/dashboard.js`. Inyectarla de forma segura durante el build desde variables de entorno.
@@ -62,14 +62,14 @@ En SPEC 13, `SUPABASE_ANON_KEY` quedó embebida directamente en `login/auth.js` 
 
 ## Acceptance criteria
 
-- [ ] No hay `SUPABASE_ANON_KEY` ni `SUPABASE_URL` hardcodeadas en el código fuente.
-- [ ] `build.mjs` inyecta las variables desde `process.env`.
-- [ ] El build falla si las variables no están definidas.
-- [ ] `.env.example` existe con las variables documentadas.
-- [ ] `login/auth.js` lee las variables de `window.SUPABASE_*`.
-- [ ] `dashboard/dashboard.js` lee las variables de `window.SUPABASE_*`.
-- [ ] En Vercel, las variables se configuran como Environment Variables.
-- [ ] `AGENTS.md` documenta el flujo de inyección.
+- [x] No hay `SUPABASE_ANON_KEY` ni `SUPABASE_URL` hardcodeadas en el código fuente.
+- [x] `build.mjs` inyecta las variables desde `process.env`.
+- [x] El build falla si las variables no están definidas.
+- [x] `.env.example` existe con las variables documentadas.
+- [x] `login/auth.js` lee las variables de `window.SUPABASE_*`.
+- [x] `dashboard/dashboard.js` lee las variables de `window.SUPABASE_*`.
+- [x] En Vercel, las variables se configuran como Environment Variables.
+- [x] `AGENTS.md` documenta el flujo de inyección.
 
 ## Decisions
 
