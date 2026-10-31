@@ -6,26 +6,80 @@
     <title>Dashboard — MegaRemates</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="/dashboard/config.js"></script>
 </head>
 <body>
-    <div class="survey-container" id="app">
-        <div class="dashboard">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <div>
-                    <h1 style="font-size:22px; margin-bottom:4px;">Panel Administrativo</h1>
-                    <p style="color:#5b6f82; font-size:14px;">Conectado como: <strong id="userEmail">...</strong></p>
-                </div>
-                <button id="logoutBtn" class="btn btn-secondary" style="flex:none; padding:8px 20px; font-size:14px;">Cerrar sesión</button>
+    <div class="dashboard-app" id="app" style="display:none;">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <img src="/images/megaremates.svg" alt="MegaRemates" class="header-logo">
+                <h1>Panel Administrativo</h1>
             </div>
+            <div class="header-right">
+                <span id="userEmail" class="user-email"></span>
+                <button id="logoutBtn" class="btn btn-logout">Cerrar sesión</button>
+            </div>
+        </header>
 
-            <div style="text-align:center; padding:60px 20px; color:#5b6f82;">
-                <p style="font-size:18px; margin-bottom:8px;">🚧 Dashboard en construcción</p>
-                <p style="font-size:14px;">Próximas funcionalidades: gráficos, filtros por tipo de encuesta, exportación a CSV.</p>
-            </div>
+        <div class="dashboard-content">
+            <!-- Sidebar -->
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-section">
+                    <label for="tipoSelect" class="sidebar-label">Tipo de encuesta</label>
+                    <select id="tipoSelect" class="sidebar-select">
+                        <option value="todos">Todas</option>
+                        <option value="compradores">Compradores</option>
+                        <option value="vendedores">Vendedores</option>
+                    </select>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="kpi-card">
+                        <span class="kpi-value" id="kpiTotal">0</span>
+                        <span class="kpi-label">Total respuestas</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-value" id="kpiHoy">0</span>
+                        <span class="kpi-label">Hoy</span>
+                    </div>
+                    <div class="kpi-card">
+                        <span class="kpi-value" id="kpiPromedio">--</span>
+                        <span class="kpi-label">Tiempo promedio</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Charts -->
+            <main class="dashboard-main">
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Respuestas por tipo</h3>
+                        <canvas id="chartTipo"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 class="chart-title">Respuestas por día (últimos 30 días)</h3>
+                        <canvas id="chartDia"></canvas>
+                    </div>
+                    <div class="chart-container chart-wide">
+                        <h3 class="chart-title">¿Qué compran/venden?</h3>
+                        <canvas id="chartP1"></canvas>
+                    </div>
+                </div>
+
+                <div id="loadingState" class="loading-state" style="display:none;">
+                    <div class="spinner"></div>
+                    <p>Cargando datos...</p>
+                </div>
+                <div id="emptyState" class="empty-state" style="display:none;">
+                    <p>No hay datos disponibles para este filtro.</p>
+                </div>
+            </main>
         </div>
     </div>
 
-    <script src="/dashboard/dashboard.js" defer></script>
+    <script src="/dashboard/charts.js"></script>
+    <script src="/dashboard/dashboard.js"></script>
 </body>
 </html>
