@@ -1,0 +1,313 @@
+[
+  {
+    "id": "p1",
+    "question": "1. ¿Qué vendes actualmente? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Productos físicos nuevos","Productos físicos usados","Productos fabricados por mí","Productos que compro para revender","Productos digitales","Servicios","Productos + servicios","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p2",
+    "question": "2. ¿Qué categorías vendes principalmente? (máximo 3)",
+    "type": "checkbox",
+    "maxSelections": 3,
+    "options": ["Alimentos y bebidas","Ropa, calzado y accesorios","Hogar y muebles","Tecnología y electrónica","Belleza y cuidado personal","Salud","Construcción y ferretería","Maquinaria/equipos","Automotriz","Agricultura/agro","Productos para empresas","Educación/capacitación","Servicios profesionales","Transporte/logística","Inmobiliario","Joyería/metales/objetos de valor","Artesanía","Otros"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p3",
+    "question": "3. ¿Desde dónde realizas principalmente tu actividad comercial? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Desde un local comercial","Desde mi vivienda","Desde un taller/oficina","Desde un puesto/mercado/feria","Desde la calle o venta ambulante","Desde un almacén","Sin ubicación física fija","Principalmente por Internet","Combinación de varios","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p4",
+    "question": "4. ¿Desde hace cuánto tiempo vendes?",
+    "type": "radio",
+    "options": ["Menos de 3 meses","3–6 meses","7–12 meses","1–2 años","3–5 años","Más de 5 años"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p5",
+    "question": "5. ¿Por qué medios consigues actualmente la mayoría de tus clientes? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Facebook","Facebook Marketplace","WhatsApp","Instagram","TikTok","Página web propia","Google/Google Maps","Plataformas o marketplaces especializados","Local físico","Mercado/feria","Venta directa en calle","Recomendaciones de clientes","Amigos/familiares/conocidos","Vendedores/intermediarios","Publicidad física","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p6",
+    "question": "6. ¿Cuál de esos canales te genera actualmente más ventas?",
+    "type": "radio",
+    "options": ["Facebook","Facebook Marketplace","WhatsApp","Instagram","TikTok","Página web propia","Google/Google Maps","Plataformas o marketplaces especializados","Local físico","Mercado/feria","Venta directa en calle","Recomendaciones de clientes","Amigos/familiares/conocidos","Vendedores/intermediarios","Publicidad física","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p7",
+    "question": "7. Piensa en una venta reciente que hayas conseguido por Internet. ¿Cómo llegó ese cliente hasta ti? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Describe el proceso...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p8",
+    "question": "8. Cuando alguien se interesa por lo que vendes, ¿qué ocurre normalmente? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Me escribe por WhatsApp","Me escribe por Messenger","Me llama","Comenta una publicación","Me pregunta por mensaje privado de otra red","Viene directamente al local","Nos encontramos presencialmente","Le envío catálogo/lista de precios","Le envío fotos o videos","Coordinamos una visita","Negociamos precio","Separamos el producto","Entrego directamente","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p9",
+    "question": "9. ¿Qué formas de pago utilizas actualmente? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Efectivo","Yape","Plin","Transferencia bancaria","Tarjeta","PayPal","Otra billetera digital","Contraentrega","Fiado/crédito directo","Pago por partes/cuotas","Separación con adelanto","Intercambio/barter","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p10",
+    "question": "10. Cuando vendes al crédito, fiado o en cuotas, ¿cómo lo manejas actualmente? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["No vendo al crédito","Confío en clientes conocidos","Anoto manualmente la deuda","Uso WhatsApp","Uso una hoja/cuaderno","Uso Excel/Google Sheets","Uso una aplicación","Solicito adelanto","Establezco fechas de pago","Cobro intereses","Utilizo algún tercero","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p10_abierta",
+    "question": "¿Qué es lo más difícil de vender al crédito o fiado? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos...",
+    "condition": {
+      "field": "p10",
+      "operator": "notIncludes",
+      "value": "No vendo al crédito"
+    }
+  },
+  {
+    "id": "p11",
+    "question": "11. ¿Qué haces actualmente cuando tienes productos que no se venden? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Bajo el precio","Hago una promoción","Publico nuevamente","Lo ofrezco por otro canal","Lo agrupo con otros productos","Lo vendo por lote","Lo remato","Lo devuelvo al proveedor","Lo utilizo para otro propósito","Lo intercambio","Lo guardo hasta que aparezca comprador","Lo vendo a otro comerciante","Lo vendo a mayorista/intermediario","Lo termino perdiendo/deteriorando","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p12",
+    "question": "12. En los últimos 3 meses, ¿has tenido productos o mercadería que hayan permanecido demasiado tiempo sin venderse?",
+    "type": "radio",
+    "options": ["Sí, frecuentemente","Sí, algunas veces","Sí, una vez","No","No manejo inventario"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p12_abierta",
+    "question": "¿Qué hiciste finalmente con esa mercadería? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos...",
+    "condition": {
+      "field": "p12",
+      "operator": "oneOf",
+      "value": ["Sí, frecuentemente", "Sí, algunas veces", "Sí, una vez"]
+    }
+  },
+  {
+    "id": "p13",
+    "question": "13. ¿Cuáles son actualmente tus principales dificultades para vender? (máximo 5)",
+    "type": "checkbox",
+    "maxSelections": 5,
+    "options": ["Conseguir nuevos clientes","Conseguir clientes que realmente compren","Competencia","Precios de la competencia","Regateo/negociación","Publicidad","Alcance de mis publicaciones","Confianza del cliente","Clientes que no responden","Clientes que separan y no compran","Incumplimiento de pagos","Estafas/fraudes","Productos falsificados o imitaciones en el mercado","Devoluciones","Entregas","Transporte","Costos de envío","Abastecimiento","Falta de capital","Inventario que no rota","Seguridad","Conectividad/Internet","Falta de tiempo","Falta de personal","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p14",
+    "question": "14. De todos esos problemas, ¿cuál es el que más afecta actualmente a tu negocio?",
+    "type": "radio",
+    "options": ["Conseguir nuevos clientes","Conseguir clientes que realmente compren","Competencia","Precios de la competencia","Regateo/negociación","Publicidad","Alcance de mis publicaciones","Confianza del cliente","Clientes que no responden","Clientes que separan y no compran","Incumplimiento de pagos","Estafas/fraudes","Productos falsificados o imitaciones en el mercado","Devoluciones","Entregas","Transporte","Costos de envío","Abastecimiento","Falta de capital","Inventario que no rota","Seguridad","Conectividad/Internet","Falta de tiempo","Falta de personal","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p14_abierta",
+    "question": "¿Por qué este problema es importante para ti? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p15",
+    "question": "15. ¿Has tenido alguna experiencia problemática con un comprador o una venta durante el último año? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Comprador que no pagó","Comprobante/pago falso","Cliente que desapareció después de separar","Producto devuelto inesperadamente","Reclamo injustificado","Intento de estafa","Suplantación de identidad","Cuenta falsa","Problema durante la entrega","Robo/pérdida","Amenaza o situación de inseguridad","No he tenido problemas","Otro"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p15_abierta",
+    "question": "Si quieres, cuéntanos brevemente qué ocurrió y cómo lo resolviste. (opcional)",
+    "type": "textarea",
+    "placeholder": "Describe la situación...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p16",
+    "question": "16. ¿Ha cambiado durante el último año la forma en que entregas, cobras o atiendes a tus clientes por razones de seguridad o confianza?",
+    "type": "radio",
+    "options": ["Sí, bastante","Sí, algo","No","No estoy seguro/a","Prefiero no responder"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p16_abierta",
+    "question": "¿Qué cambiaste? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos...",
+    "condition": {
+      "field": "p16",
+      "operator": "oneOf",
+      "value": ["Sí, bastante", "Sí, algo"]
+    }
+  },
+  {
+    "id": "p17",
+    "question": "17. Cuando ocurre un imprevisto importante, ¿qué parte de tu negocio se afecta primero? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Conseguir productos","Transporte","Entregas","Cobros","Comunicación con clientes","Internet/conectividad","Publicidad","Acceso al local","Personal","Capital/caja","Inventario","Otro","Normalmente puedo continuar sin grandes problemas"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p18",
+    "question": "18. En los últimos 12 meses, ¿qué tipo de imprevistos han afectado tu actividad comercial? (puedes seleccionar varias)",
+    "type": "checkbox",
+    "options": ["Problemas de transporte","Clima/inundaciones u otros fenómenos naturales","Cortes de Internet","Cortes de electricidad","Problemas de abastecimiento","Incremento fuerte de precios","Problemas de seguridad","Problemas con plataformas digitales","Problemas de pago/cobro","Falta de personal","Problemas familiares/personales","Otro","Ninguno importante"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p19",
+    "question": "19. Cuando uno de esos problemas ocurre, ¿qué haces normalmente para continuar vendiendo? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Describe qué alternativa usas...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p20",
+    "question": "20. Si mañana dejaras de utilizar el principal canal digital que hoy te ayuda a vender, ¿qué ocurriría con tu negocio?",
+    "type": "radio",
+    "options": ["Podría continuar casi igual","Perdería algunas ventas","Perdería muchas ventas","Una parte importante de mi negocio quedaría afectada","Prácticamente no podría vender","No depende de canales digitales","No estoy seguro/a"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p20_abierta",
+    "question": "¿Qué harías para continuar vendiendo? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos tu plan...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p21",
+    "question": "21. ¿En qué localidad o zona realizas principalmente tus ventas o actividad comercial?",
+    "type": "radio",
+    "options": ["Lima Metropolitana / Callao","Arequipa","Trujillo","Piura","Chiclayo","Cusco","Ica","Huaraz","Chimbote","Nuevo Chimbote","Coishco","Santa","Nepeña","Moro","Casma","Huarmey","Chao","Virú","Otra ciudad/localidad de Áncash","Otra localidad de la costa","Otra localidad de la sierra","Otra localidad de la selva","Principalmente trabajo/comercializo por Internet","Otra:"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p22",
+    "question": "22. ¿En qué localidad o zona se encuentran principalmente tus clientes?",
+    "type": "radio",
+    "options": ["Lima Metropolitana / Callao","Arequipa","Trujillo","Piura","Chiclayo","Cusco","Ica","Huaraz","Chimbote","Nuevo Chimbote","Coishco","Santa","Nepeña","Moro","Casma","Huarmey","Chao","Virú","Otra ciudad/localidad de Áncash","Otra localidad de la costa","Otra localidad de la sierra","Otra localidad de la selva","Principalmente trabajo/comercializo por Internet","Otra:"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p23",
+    "question": "23. Aproximadamente, ¿cuántas personas participan actualmente en tu actividad comercial?",
+    "type": "radio",
+    "options": ["Solo yo","2 personas","3–5","6–10","11–20","Más de 20"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p24",
+    "question": "24. Aproximadamente, ¿cuántas ventas realizas en un mes normal?",
+    "type": "radio",
+    "options": ["1–5","6–10","11–30","31–50","51–100","Más de 100","Es variable","Prefiero no responder"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p25",
+    "question": "25. Si pudieras resolver una sola parte de tu proceso actual de venta, ¿cuál escogerías? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Escribe cuál sería...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p26",
+    "question": "26. ¿Cómo resuelves actualmente esa necesidad? (respuesta abierta)",
+    "type": "textarea",
+    "placeholder": "Cuéntanos cómo lo haces...",
+    "condition": { "always": true }
+  },
+  {
+    "id": "p27",
+    "question": "27. ¿Qué tipo de ayuda externa te resultaría más útil para mejorar tus ventas? (máximo 3)",
+    "type": "checkbox",
+    "maxSelections": 3,
+    "options": ["Encontrar nuevos clientes","Dar mayor visibilidad a mis productos","Encontrar compradores para mercadería que no rota","Encontrar proveedores","Comprar productos a mejores precios","Vender por lotes","Encontrar otros comerciantes con quienes negociar","Organizar pedidos","Gestionar entregas","Facilitar cobros","Generar confianza entre comprador y vendedor","Verificar productos o vendedores","Conseguir información de precios","Acceder a servicios profesionales","Acceder a financiamiento/crédito","Organizar compras grupales","Ninguna de las anteriores","Otra"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p28",
+    "question": "28. Si existiera un servicio que reuniera algunas de esas oportunidades comerciales, ¿qué función te parecería más útil? (máximo 3)",
+    "type": "checkbox",
+    "maxSelections": 3,
+    "options": ["Encontrar compradores","Publicar productos","Liquidar productos que no se venden","Encontrar proveedores","Comprar/vender por lotes","Encontrar servicios","Encontrar oportunidades de compra","Facilitar contacto entre comerciantes","Organizar compras grupales","Ayudar con entregas","Facilitar distintas formas de pago","Ayudar a verificar vendedores/productos","Otra"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p29",
+    "question": "29. ¿Qué condición tendría que cumplir un servicio de este tipo para que confiaras en él? (máximo 3)",
+    "type": "checkbox",
+    "maxSelections": 3,
+    "options": ["Precios transparentes","Vendedores identificables","Compradores identificables","Información real del producto","Sistema para reportar problemas","Reputación verificable","Protección frente a estafas","Posibilidad de trato presencial","Pago en efectivo","Pagos digitales","Buen servicio de atención","Entregas confiables","Garantías claras","Bajo costo","Facilidad de uso","Otra"],
+    "allowOther": true,
+    "condition": { "always": true }
+  },
+  {
+    "id": "p30",
+    "question": "30. ¿Te gustaría participar posteriormente en una entrevista o prueba relacionada con esta investigación?",
+    "type": "radio",
+    "options": ["Sí","No","Tal vez"],
+    "condition": { "always": true }
+  },
+  {
+    "id": "p31",
+    "question": "31. ¿Por qué medio prefieres que te contactemos?",
+    "type": "radio",
+    "options": ["WhatsApp","Llamada telefónica","Correo electrónico","Otro"],
+    "allowOther": true,
+    "condition": {
+      "field": "p30",
+      "operator": "oneOf",
+      "value": ["Sí", "Tal vez"]
+    }
+  },
+  {
+    "id": "p32",
+    "question": "32. Datos de contacto (WhatsApp, email o teléfono) – opcional:",
+    "type": "text",
+    "placeholder": "Ej. 987654321 o correo@ejemplo.com",
+    "condition": {
+      "field": "p30",
+      "operator": "oneOf",
+      "value": ["Sí", "Tal vez"]
+    }
+  }
+]

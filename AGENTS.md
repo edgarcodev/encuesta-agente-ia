@@ -118,7 +118,53 @@ ENCUESTAS = {
 
 ### Adding a new survey type
 
-1. Add a new entry to `ENCUESTAS` in `app.js` with its own `steps[]`.
-2. If the type is not yet in the DB CHECK constraint, create a migration to update `chk_tipo_encuesta`.
-3. Each survey type accesses its own URL: `/?tipo=newtype`.
-4. The `references/` folder templates are still useful as a starting point for new survey HTML+API.
+1. Add a new entry to `ENCUESTAS` in `app.js` with its own `questionsUrl`.
+2. Create `config/preguntas/<new_type>.json` with the question definitions.
+3. If the type is not yet in the DB CHECK constraint, create a migration to update `chk_tipo_encuesta`.
+4. Each survey type accesses its own URL: `/?tipo=newtype`.
+5. The `references/` folder templates are still useful as a starting point for new survey HTML+API.
+
+## Question JSON format (SPEC 10)
+
+Questions live in `config/preguntas/<tipo>.json`. Each question is a JSON object:
+
+```json
+{
+  "id": "p1",
+  "question": "1. ¿Pregunta?",
+  "type": "checkbox|radio|text|textarea",
+  "options": ["Opción 1", "Opción 2"],
+  "allowOther": true,
+  "maxSelections": 3,
+  "placeholder": "...",
+  "hint": "...",
+  "condition": { "always": true },
+  "dynamicDefinition": { ... }
+}
+```
+
+**Conditions** (no eval, declarative only):
+
+```json
+{ "always": true }
+{ "field": "p9", "operator": "oneOf", "value": ["Sí", "No"] }
+{ "field": "p13", "operator": "notIncludes", "value": "No he tenido..." }
+{ "logic": "and", "conditions": [...] }
+```
+
+Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
+
+**Dynamic definitions** (questions that change type/options based on another answer):
+
+```json
+{
+  "dynamicDefinition": {
+    "field": "p21",
+    "when": { "operator": "equals", "value": "Perú" },
+    "then": { "type": "radio", "options": [...], "allowOther": true },
+    "else": { "type": "text", "placeholder": "..." }
+  }
+}
+```
+
+For compound conditions in dynamicDefinition, use `"logic": "and"` with `"conditions": [...]` instead of `field`/`when`.
