@@ -1,6 +1,6 @@
 # SPEC 10 — Extraer preguntas de cada encuesta a archivos de configuración JSON
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 09
 > **Date:** 2026-10-30
 > **Objective:** Separar las preguntas de `app.js` en archivos JSON declarativos. `app.js` queda como motor puro: carga, interpreta condiciones, renderiza y envía.
@@ -147,14 +147,14 @@ config/
 
 ## Acceptance criteria
 
-- [ ] `config/preguntas/compradores.json` existe con 41 preguntas idénticas a las actuales.
-- [ ] `config/preguntas/vendedores.json` existe con 38 preguntas idénticas a las actuales.
-- [ ] `app.js` no contiene `steps.push()` ni preguntas hardcodeadas.
-- [ ] `app.js` contiene motor `evaluateCondition()`, `applyDynamicDefinition()`, `parseQuestions()`.
-- [ ] `build.mjs` copia `config/preguntas/` a `dist/`.
-- [ ] Comportamiento idéntico: mismas preguntas, mismo orden, mismas condiciones, mismo envío.
-- [ ] `/?tipo=compradores` y `/?tipo=vendedores` funcionan igual que antes.
-- [ ] `AGENTS.md` documenta el formato JSON.
+- [x] `config/preguntas/compradores.json` existe con 41 preguntas idénticas a las actuales.
+- [x] `config/preguntas/vendedores.json` existe con 38 preguntas idénticas a las actuales.
+- [x] `app.js` no contiene `steps.push()` ni preguntas hardcodeadas.
+- [x] `app.js` contiene motor `evaluateCondition()`, `applyDynamicDefinition()`, `parseQuestions()`.
+- [x] `build.mjs` copia `config/preguntas/` a `dist/`.
+- [x] Comportamiento idéntico: mismas preguntas, mismo orden, mismas condiciones, mismo envío.
+- [x] `/?tipo=compradores` y `/?tipo=vendedores` funcionan igual que antes.
+- [x] `AGENTS.md` documenta el formato JSON.
 
 ## Decisions
 
