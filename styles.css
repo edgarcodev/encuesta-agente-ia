@@ -248,6 +248,50 @@ body {
     background: #e2e8f0;
 }
 
+.btn-export {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #22a65e;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-export:hover {
+    background: #1a8a4e;
+}
+
+.btn-export:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.export-status {
+    text-align: center;
+    padding: 8px 16px;
+    background: #f8faff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #5b6f82;
+}
+
+.export-status.success {
+    background: #e6f7e6;
+    border-color: #22a65e;
+    color: #0e5e2e;
+}
+
+.export-status.error {
+    background: #fde8e8;
+    border-color: #a12b2b;
+    color: #a12b2b;
+}
+
 .dashboard-content {
     display: flex;
     flex: 1;
