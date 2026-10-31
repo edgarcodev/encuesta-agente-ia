@@ -138,6 +138,39 @@
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) logoutBtn.addEventListener('click', signOut);
 
+        // Export CSV
+        const exportBtn = document.getElementById('exportBtn');
+        const exportStatus = document.getElementById('exportStatus');
+        if (exportBtn && window.dashboardExport) {
+            exportBtn.addEventListener('click', async function() {
+                const tipo = tipoSelect ? tipoSelect.value : 'todos';
+                exportBtn.disabled = true;
+                if (exportStatus) {
+                    exportStatus.style.display = 'block';
+                    exportStatus.className = 'export-status';
+                }
+                try {
+                    await window.dashboardExport.exportResponses(tipo, function(msg, isFinal) {
+                        if (exportStatus) {
+                            exportStatus.textContent = msg;
+                            exportStatus.className = 'export-status' + (isFinal ? (msg.startsWith('✅') ? ' success' : ' error') : '');
+                            if (isFinal) {
+                                setTimeout(() => { exportStatus.style.display = 'none'; }, 5000);
+                            }
+                        }
+                    });
+                } catch (err) {
+                    if (exportStatus) {
+                        exportStatus.textContent = '❌ Error al exportar: ' + err.message;
+                        exportStatus.className = 'export-status error';
+                        setTimeout(() => { exportStatus.style.display = 'none'; }, 5000);
+                    }
+                } finally {
+                    exportBtn.disabled = false;
+                }
+            });
+        }
+
         // Init charts
         window.dashboardCharts.init();
 
