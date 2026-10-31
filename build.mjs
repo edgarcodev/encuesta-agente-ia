@@ -70,4 +70,36 @@ if (existsSync('dashboard')) {
   console.log('✓ dist/dashboard/');
 }
 
+// 8. Inyectar variables de entorno en config.js
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('❌ Error: SUPABASE_URL y SUPABASE_ANON_KEY deben estar definidas como variables de entorno.');
+  console.error('   Para desarrollo local, crea un archivo .env con estas variables.');
+  console.error('   En Vercel, configúralas en Settings → Environment Variables.');
+  process.exit(1);
+}
+
+const configFiles = [
+  join(DIST, 'login', 'config.js'),
+  join(DIST, 'dashboard', 'config.js'),
+];
+
+for (const file of configFiles) {
+  if (existsSync(file)) {
+    let content = readFileSync(file, 'utf8');
+    content = content.replace('__SUPABASE_URL__', SUPABASE_URL);
+    content = content.replace('__SUPABASE_ANON_KEY__', SUPABASE_ANON_KEY);
+    writeFileSync(file, content, 'utf8');
+
+    // Verificar que no quedaron placeholders
+    if (content.includes('__SUPABASE_')) {
+      console.error(`❌ Error: placeholders sin reemplazar en ${file}`);
+      process.exit(1);
+    }
+  }
+}
+console.log('✓ Variables de entorno inyectadas en config.js');
+
 console.log('\nBuild completo en dist/');
