@@ -1,6 +1,6 @@
 # SPEC 11 — Estandarizar `references/vendedores/` como plantilla para nuevas encuestas
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 08, SPEC 10
 > **Date:** 2026-10-30
 > **Objective:** Asegurar que `references/vendedores/` sea una plantilla actualizada y documentada para crear nuevas encuestas independientes (proveedores, etc.), con la misma funcionalidad que la encuesta principal.
@@ -66,12 +66,12 @@ references/<tipo>/
 
 ## Acceptance criteria
 
-- [ ] `references/vendedores/api/encuesta.js` incluye `tipo_encuesta: 'vendedores'` en el POST.
-- [ ] `references/vendedores/index.html` tiene splash screen con logo MegaRemates.
-- [ ] Las 38 preguntas de `references/vendedores/index.html` coinciden con `config/preguntas/vendedores.json`.
-- [ ] El POST incluye `tipo_encuesta: 'vendedores'` y guarda correctamente en Supabase.
-- [ ] `references/vendedores/README.md` existe con instrucciones claras para crear nuevas encuestas.
-- [ ] `vercel.json` tiene el rewrite correcto para `/api/encuesta`.
+- [x] `references/vendedores/api/encuesta.js` incluye `tipo_encuesta: 'vendedores'` en el POST.
+- [x] `references/vendedores/index.html` tiene splash screen con logo MegaRemates.
+- [x] Las 38 preguntas de `references/vendedores/index.html` coinciden con `config/preguntas/vendedores.json`.
+- [x] El POST incluye `tipo_encuesta: 'vendedores'` y guarda correctamente en Supabase.
+- [x] `references/vendedores/README.md` existe con instrucciones claras para crear nuevas encuestas.
+- [x] `vercel.json` tiene el rewrite correcto para `/api/encuesta`.
 
 ## Decisions
 
