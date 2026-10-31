@@ -1,6 +1,6 @@
 # SPEC 09 — Parámetro de ruta `?tipo=` para cargar el cuestionario correspondiente
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 08
 > **Date:** 2026-10-30
 > **Objective:** Permitir que una sola encuesta (`/`) cargue el cuestionario correcto según el parámetro `?tipo=` (`compradores`, `vendedores`, `proveedores`), con preguntas distintas para cada tipo.
@@ -69,16 +69,16 @@ const ENCUESTAS = {
 
 ## Acceptance criteria
 
-- [ ] `app.js` contiene objeto `ENCUESTAS` con `compradores` y `vendedores`.
-- [ ] `/?tipo=compradores` carga las 39 preguntas de compradores con `tipo_encuesta: 'compradores'`.
-- [ ] `/?tipo=vendedores` carga las 32 preguntas de vendedores con `tipo_encuesta: 'vendedores'`.
-- [ ] Sin parámetro → default `compradores`.
-- [ ] `/?tipo=invalido` muestra "Tipo de encuesta no disponible".
-- [ ] El splash screen muestra el título correcto según el tipo.
-- [ ] El color del progress bar cambia según el tipo (azul compradores, naranja vendedores).
-- [ ] LocalStorage usa claves separadas por tipo para "ya enviada".
-- [ ] Las respuestas se guardan con el `tipo_encuesta` correcto en Supabase.
-- [ ] `AGENTS.md` documenta la estructura `ENCUESTAS` y el patrón para nuevos tipos.
+- [x] `app.js` contiene objeto `ENCUESTAS` con `compradores` y `vendedores`.
+- [x] `/?tipo=compradores` carga las 39 preguntas de compradores con `tipo_encuesta: 'compradores'`.
+- [x] `/?tipo=vendedores` carga las 32 preguntas de vendedores con `tipo_encuesta: 'vendedores'`.
+- [x] Sin parámetro → default `compradores`.
+- [x] `/?tipo=invalido` muestra "Tipo de encuesta no disponible".
+- [x] El splash screen muestra el título correcto según el tipo.
+- [x] El color del progress bar cambia según el tipo (azul compradores, naranja vendedores).
+- [x] LocalStorage usa claves separadas por tipo para "ya enviada".
+- [x] Las respuestas se guardan con el `tipo_encuesta` correcto en Supabase.
+- [x] `AGENTS.md` documenta la estructura `ENCUESTAS` y el patrón para nuevos tipos.
 
 ## Decisions
 
