@@ -185,13 +185,40 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 }
 ```
 
-## Login and Dashboard (Phase 3 — placeholder)
+## Authentication (SPEC 13)
 
-Directories `login/` and `dashboard/` exist as placeholders. Full implementation belongs to Phase 3 (SPECs 13-18):
+`/login` uses Supabase Auth (email/password) for admin access.
 
-- **Login:** Supabase Auth (email/password), session management, RLS policies.
-- **Dashboard:** Admin-only access, survey type selector, charts, CSV export.
-- **Security:** Dashboard protected by valid session; RLS on `respuestas_encuesta` table; no JS-only redirects as the sole protection.
+- **Client:** `@supabase/supabase-js` loaded via CDN in `login/index.html` and `dashboard/index.html`.
+- **Login:** `login/auth.js` handles `signInWithPassword()`, error mapping, and redirect to `/dashboard`.
+- **Dashboard protection:** `dashboard/dashboard.js` checks `getSession()` on load; redirects to `/login` if no session.
+- **Logout:** `signOut()` → redirects to `/login`.
+- **Session persistence:** localStorage (Supabase default).
+
+### Variables de entorno
+
+| Variable | Uso | Dónde |
+|----------|-----|-------|
+| `SUPABASE_URL` | URL del proyecto | `api/encuesta.js` (server), `login/auth.js` (client), `dashboard/dashboard.js` (client) |
+| `SUPABASE_ANON_KEY` | Publishable key | `login/auth.js` (client), `dashboard/dashboard.js` (client) |
+| `SUPABASE_SERVICE_KEY` | Service role key (bypasses RLS) | `api/encuesta.js` (server only) |
+
+**Important:** `SUPABASE_ANON_KEY` is embedded in `login/auth.js` and `dashboard/dashboard.js` for now. In production, set it as a Vercel environment variable and inject it during build or use runtime config.
+
+### Setup
+
+1. Enable Email provider in Supabase Dashboard → Authentication → Providers.
+2. Disable email confirmation in Supabase Dashboard → Authentication → Settings (for dev).
+3. Create admin user in Supabase Dashboard → Authentication → Users.
+4. Set `SUPABASE_ANON_KEY` in Vercel dashboard (Settings → Environment Variables).
+
+## Login and Dashboard (Phase 3 — future specs)
+
+- **SPEC 14:** Roles de usuario (admin, viewer).
+- **SPEC 15:** Row Level Security (RLS) policies.
+- **SPEC 16:** Dashboard con selector de encuesta y gráficos.
+- **SPEC 17:** Exportar resultados a CSV.
+- **SPEC 18:** Actualizar `AGENTS.md` con flujo de auth completo.
 
 ## Project structure
 
@@ -209,10 +236,12 @@ Directories `login/` and `dashboard/` exist as placeholders. Full implementation
 │       ├── compradores.json      ← 41 questions
 │       ├── vendedores.json       ← 38 questions
 │       └── .gitkeep
-├── login/                        ← (Phase 3 placeholder)
-│   └── index.html
-├── dashboard/                    ← (Phase 3 placeholder)
-│   └── index.html
+├── login/                        ← Login page + Supabase Auth
+│   ├── index.html
+│   └── auth.js
+├── dashboard/                    ← Protected dashboard
+│   ├── index.html
+│   └── dashboard.js
 ├── references/
 │   └── vendedores/               ← Standalone survey template
 │       ├── index.html

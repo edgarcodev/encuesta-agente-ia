@@ -156,3 +156,35 @@ body {
     .btn { padding: 12px 18px; font-size: 15px; }
     .options-group label { padding: 10px 12px; font-size: 15px; }
 }
+
+/* Login form styles */
+.login-form {
+    max-width: 380px; margin: 0 auto; padding: 20px 0;
+}
+.form-group {
+    margin-bottom: 16px;
+}
+.form-group label {
+    display: block; font-size: 14px; font-weight: 600; color: #1a2634;
+    margin-bottom: 6px;
+}
+.form-group input {
+    width: 100%; padding: 12px 14px; font-size: 16px;
+    border: 1.5px solid #e2e8f0; border-radius: 12px;
+    background: #fafcff; font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-group input:focus {
+    outline: none; border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+.login-error {
+    background: #fde8e8; color: #a12b2b; padding: 10px 14px;
+    border-radius: 10px; font-size: 14px; margin-bottom: 16px;
+    text-align: center;
+}
+
+/* Dashboard styles */
+.dashboard {
+    padding: 10px 0;
+}
