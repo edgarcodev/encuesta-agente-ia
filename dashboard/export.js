@@ -5,7 +5,7 @@
 
     const BATCH_SIZE = 1000;
 
-    async function fetchAllResponses(tipo) {
+    async function fetchAllResponses(tipo, dateFilter) {
         let allRows = [];
         let offset = 0;
         let hasMore = true;
@@ -19,6 +19,13 @@
 
             if (tipo !== 'todos') {
                 query = query.eq('tipo_encuesta', tipo);
+            }
+
+            if (dateFilter && dateFilter.from) {
+                query = query.gte('created_at', dateFilter.from + 'T00:00:00');
+            }
+            if (dateFilter && dateFilter.to) {
+                query = query.lte('created_at', dateFilter.to + 'T23:59:59');
             }
 
             const { data, error } = await query;
@@ -130,10 +137,10 @@
         return `respuestas_${tipoLabel}_${date}.csv`;
     }
 
-    async function exportResponses(tipo, onStatus) {
+    async function exportResponses(tipo, dateFilter, onStatus) {
         onStatus('Cargando datos...');
 
-        const rows = await fetchAllResponses(tipo);
+        const rows = await fetchAllResponses(tipo, dateFilter);
 
         if (rows.length === 0) {
             onStatus('No hay datos para exportar.', true);

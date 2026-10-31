@@ -4,6 +4,8 @@
     let chartTipo = null;
     let chartDia = null;
     let chartP1 = null;
+    let chartFuente = null;
+    let chartDispositivo = null;
 
     const COLORS = {
         primary: '#3b82f6',
@@ -18,20 +20,24 @@
         const ctxTipo = document.getElementById('chartTipo');
         const ctxDia = document.getElementById('chartDia');
         const ctxP1 = document.getElementById('chartP1');
+        const ctxFuente = document.getElementById('chartFuente');
+        const ctxDispositivo = document.getElementById('chartDispositivo');
+
+        const baseOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: COLORS.text } },
+                y: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { color: COLORS.text } }
+            }
+        };
 
         if (ctxTipo) {
             chartTipo = new Chart(ctxTipo, {
                 type: 'bar',
                 data: { labels: [], datasets: [{ label: 'Respuestas', data: [], backgroundColor: [COLORS.primary, COLORS.secondary, COLORS.accent] }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: COLORS.text } },
-                        y: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { color: COLORS.text } }
-                    }
-                }
+                options: baseOptions
             });
         }
 
@@ -39,15 +45,7 @@
             chartDia = new Chart(ctxDia, {
                 type: 'line',
                 data: { labels: [], datasets: [{ label: 'Respuestas', data: [], borderColor: COLORS.primary, backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.3, pointRadius: 3 }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: COLORS.text, maxRotation: 45 } },
-                        y: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { color: COLORS.text } }
-                    }
-                }
+                options: baseOptions
             });
         }
 
@@ -58,9 +56,37 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: {
-                        legend: { position: 'right', labels: { color: COLORS.text, font: { size: 12 } } }
-                    },
+                    plugins: { legend: { position: 'right', labels: { color: COLORS.text, font: { size: 12 } } } },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        if (ctxFuente) {
+            chartFuente = new Chart(ctxFuente, {
+                type: 'bar',
+                data: { labels: [], datasets: [{ label: 'Respuestas', data: [], backgroundColor: generateColors(10), indexAxis: 'y' }] },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: COLORS.grid }, ticks: { color: COLORS.text } },
+                        y: { grid: { display: false }, ticks: { color: COLORS.text } }
+                    }
+                }
+            });
+        }
+
+        if (ctxDispositivo) {
+            chartDispositivo = new Chart(ctxDispositivo, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: [COLORS.primary, COLORS.secondary, '#8b5cf6', COLORS.neutral] }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { position: 'right', labels: { color: COLORS.text, font: { size: 12 } } } },
                     cutout: '60%'
                 }
             });
@@ -87,6 +113,18 @@
             chartP1.data.labels = topItems.map(item => item.value);
             chartP1.data.datasets[0].data = topItems.map(item => item.count);
             chartP1.update();
+        }
+
+        if (chartFuente) {
+            chartFuente.data.labels = data.fuente.map(f => f.value);
+            chartFuente.data.datasets[0].data = data.fuente.map(f => f.count);
+            chartFuente.update();
+        }
+
+        if (chartDispositivo) {
+            chartDispositivo.data.labels = data.dispositivo.map(d => d.value);
+            chartDispositivo.data.datasets[0].data = data.dispositivo.map(d => d.count);
+            chartDispositivo.update();
         }
     }
 
