@@ -1,6 +1,6 @@
 # SPEC 19 — Aviso de privacidad y casilla de consentimiento explícito
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 16
 > **Date:** 2026-10-31
 > **Objective:** Agregar casilla de consentimiento (marcada por defecto) en la página de resumen, antes de confirmar el envío. Si el usuario la desmarca, solo se envían las respuestas (anonimizado). Si la mantiene marcada, se envían también datos de navegación.
@@ -88,14 +88,14 @@ Splash → Preguntas → Resumen (con checkbox) → Confirmar → Envío a API
 
 ## Acceptance criteria
 
-- [ ] Checkbox visible en la página de resumen, marcado por defecto.
-- [ ] Si está marcado: se envía todo como antes (respuestas + metadata + geo).
-- [ ] Si está desmarcado: solo se envían respuestas + `tipo_encuesta` + `tiempo_total_segundos`.
-- [ ] El usuario siempre puede enviar la encuesta (no se bloquea).
-- [ ] Link al aviso de privacidad visible junto al checkbox.
-- [ ] Aviso de privacidad con texto claro y conciso.
-- [ ] Funciona en ambas encuestas (compradores y vendedores).
-- [ ] `AGENTS.md` documenta el comportamiento.
+- [x] Checkbox visible en la página de resumen, marcado por defecto.
+- [x] Si está marcado: se envía todo como antes (respuestas + metadata + geo).
+- [x] Si está desmarcado: solo se envían respuestas + `tipo_encuesta` + `tiempo_total_segundos`.
+- [x] El usuario siempre puede enviar la encuesta (no se bloquea).
+- [x] Link al aviso de privacidad visible junto al checkbox.
+- [x] Aviso de privacidad con texto claro y conciso.
+- [x] Funciona en ambas encuestas (compradores y vendedores).
+- [x] `AGENTS.md` documenta el comportamiento.
 
 ## Decisions
 
