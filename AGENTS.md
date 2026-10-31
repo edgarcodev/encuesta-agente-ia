@@ -212,11 +212,11 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 3. Create admin user in Supabase Dashboard → Authentication → Users.
 4. Set `SUPABASE_ANON_KEY` in Vercel dashboard (Settings → Environment Variables).
 
-## Login and Dashboard (Phase 3 — future specs)
+## Login and Dashboard (Phase 3 — implemented)
 
-- **SPEC 14:** ~~Roles de usuario (admin, viewer)~~ → Replaced by env injection spec.
-- **SPEC 15:** ✅ Row Level Security (RLS) policies — implemented.
-- **SPEC 16:** Dashboard con selector de encuesta y gráficos.
+- **SPEC 14:** ✅ Inyección segura de `SUPABASE_ANON_KEY` durante build.
+- **SPEC 15:** ✅ Row Level Security (RLS) policies.
+- **SPEC 16:** ✅ Dashboard con selector de encuesta y gráficos (Chart.js).
 - **SPEC 17:** Exportar resultados a CSV.
 - **SPEC 18:** Actualizar `AGENTS.md` con flujo de auth completo.
 
