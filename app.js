@@ -815,7 +815,7 @@
         return fetch('/api/encuesta', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ datos: dataToSend, token: NONCE })
+            body: JSON.stringify({ datos: dataToSend, token: NONCE, tipo_encuesta: 'compradores' })
         })
         .then(async res => {
             if (!res.ok) {
