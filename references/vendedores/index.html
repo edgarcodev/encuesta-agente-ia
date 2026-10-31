@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Remates · Encuesta Vendedores</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #f4f7fc; min-height: 100vh; display: flex;
+            align-items: center; justify-content: center; padding: 16px;
+        }
+        .survey-container {
+            max-width: 720px; width: 100%; background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04);
+            padding: 32px 28px; transition: all 0.2s;
+        }
+        .survey-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px;
+        }
+        .survey-header h1 {
+            font-size: 20px; font-weight: 700; color: #1a2634;
+        }
+        .survey-header .step-counter {
+            font-size: 14px; font-weight: 500; color: #5b6f82;
+            background: #eef2f7; padding: 4px 14px; border-radius: 40px;
+        }
+        .progress-bar-container {
+            width: 100%; height: 6px; background: #e6ecf3;
+            border-radius: 10px; margin-bottom: 28px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; background: linear-gradient(90deg, #f97316, #f59e0b);
+            border-radius: 10px; transition: width 0.35s ease; width: 0%;
+        }
+        .question-area {
+            min-height: 240px; display: flex; flex-direction: column;
+            justify-content: space-between;
+        }
+        .question-text {
+            font-size: 20px; font-weight: 600; color: #0b1a2a;
+            line-height: 1.4; margin-bottom: 20px;
+        }
+        .question-text .sub-label {
+            font-weight: 400; font-size: 14px; color: #5b6f82;
+            display: block; margin-top: 4px;
+        }
+        .options-group {
+            display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px;
+        }
+        .options-group label {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 16px; color: #1e2a36; padding: 10px 14px;
+            background: #f8faff; border: 1.5px solid #e2e8f0;
+            border-radius: 14px; cursor: pointer; transition: all 0.15s;
+            flex-wrap: wrap;
+        }
+        .options-group label:hover {
+            background: #f0f4fe; border-color: #cbd5e1;
+        }
+        .options-group input[type="radio"],
+        .options-group input[type="checkbox"] {
+            width: 18px; height: 18px; accent-color: #f97316;
+            flex-shrink: 0; cursor: pointer;
+        }
+        .text-input {
+            width: 100%; padding: 14px 16px; font-size: 16px;
+            border: 1.5px solid #e2e8f0; border-radius: 14px;
+            background: #fafcff; font-family: inherit; resize: vertical;
+        }
+        .text-input:focus {
+            outline: none; border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+        }
+        .text-input.textarea { min-height: 90px; }
+        .otro-input {
+            flex: 1; min-width: 120px; padding: 6px 12px;
+            border: 1.5px solid #dce2ec; border-radius: 40px;
+            font-size: 14px; background: white;
+        }
+        .otro-input:focus {
+            border-color: #f97316; outline: none;
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+        }
+        .navigation {
+            display: flex; justify-content: space-between; gap: 12px;
+            margin-top: 28px; padding-top: 20px;
+            border-top: 1px solid #e9eef4;
+        }
+        .btn {
+            padding: 12px 28px; border: none; border-radius: 40px;
+            font-weight: 600; font-size: 16px; cursor: pointer;
+            transition: all 0.2s; background: #f1f4f9; color: #1e2a36;
+            flex: 1; text-align: center;
+        }
+        .btn-primary {
+            background: #f97316; color: white;
+            box-shadow: 0 4px 12px rgba(249,115,22,0.25);
+        }
+        .btn-primary:hover { background: #ea5a0a; transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: #eef2f7; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-success {
+            background: #22a65e; color: white;
+            box-shadow: 0 4px 12px rgba(34,166,94,0.25);
+        }
+        .btn-success:hover { background: #1a8a4e; transform: translateY(-2px); }
+        .btn-success:disabled { opacity: 0.5; cursor: not-allowed; }
+        .summary { padding: 8px 0; }
+        .summary-item { padding: 14px 0; border-bottom: 1px solid #eef2f7; }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item strong { display: block; font-weight: 600; color: #1a2634; margin-bottom: 4px; }
+        .summary-item .answer {
+            color: #2d3f52; background: #f5f8fe;
+            padding: 6px 14px; border-radius: 40px;
+            display: inline-block; font-size: 14px;
+        }
+        .summary-item .answer.multi { display: flex; flex-wrap: wrap; gap: 6px; }
+        .summary-item .answer.multi span { background: #f5f8fe; padding: 4px 14px; border-radius: 40px; }
+        .alert {
+            border-radius: 16px; padding: 16px 20px;
+            margin-bottom: 16px; font-weight: 500;
+        }
+        .alert-success { background: #e6f7e6; color: #0e5e2e; }
+        .alert-error { background: #fde8e8; color: #a12b2b; }
+        .alert-info { background: #fef3e8; color: #8a4a0a; }
+        .info-hint {
+            font-size: 14px; color: #5b6f82; background: #f1f5fa;
+            padding: 10px 14px; border-radius: 12px; margin-bottom: 14px;
+            border-left: 3px solid #f97316;
+        }
+        /* Splash screen */
+        #splashScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff100; display: flex; align-items: center;
+            justify-content: center; z-index: 1000; flex-direction: column;
+        }
+        #splashScreen.splash-hidden { display: none; }
+        .splash-logo { max-width: 220px; height: auto; margin-bottom: 24px; }
+        .splash-title {
+            font-size: 24px; font-weight: 700; color: #1a2634;
+            margin-bottom: 32px; text-align: center;
+        }
+        @media (max-width: 480px) {
+            .survey-container { padding: 20px 16px; }
+            .question-text { font-size: 18px; }
+            .btn { padding: 12px 18px; font-size: 15px; }
+            .options-group label { padding: 10px 12px; font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla splash de bienvenida -->
+    <div id="splashScreen">
+        <img src="images/megaremates.svg" alt="MegaRemates" class="splash-logo" style="width:200px;max-width:200px;">
+        <h2 class="splash-title">Encuesta realizada por MegaRemates</h2>
+        <button class="btn btn-primary" id="startSurveyBtn" style="flex:none;padding:12px 48px;width:auto;font-size:18px;">Comenzar encuesta</button>
+    </div>
+
+    <div class="survey-container" id="app" style="display:none;">
+        <div class="survey-header">
+            <h1>📦 Mega Remates · Vendedores</h1>
+            <span class="step-counter" id="stepCounter">Paso 1</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div id="dynamicArea"></div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        function opts(arr) { return arr.map(label => ({ label, value: label })); }
+
+        const STORAGE_KEY = 'megaremates_encuesta_vendedores_enviada';
+        const NONCE = (() => {
+            let n = sessionStorage.getItem('encuesta_nonce_vendedores');
+            if (!n) {
+                n = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                sessionStorage.setItem('encuesta_nonce_vendedores', n);
+            }
+            return n;
+        })();
+
+        const tipo_encuesta = 'vendedores';
+        let datosEnviados = false;
+        let geoData = null;
+        const inicioEncuesta = new Date();
+        const tiemposPorPregunta = {};
+        let preguntaActualId = null;
+        let inicioPregunta = null;
+        let fuente = 'desconocida';
+        let dispositivo = 'desktop';
+        let conexion = {};
+
+        const steps = [];
+        const answers = {};
+
+        // --- BLOQUE A: PERFIL DE LA ACTIVIDAD COMERCIAL (1-4) ---
+        steps.push({ id: 'p1', question: '1. ¿Qué vendes actualmente? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Productos físicos nuevos','Productos físicos usados','Productos fabricados por mí','Productos que compro para revender','Productos digitales','Servicios','Productos + servicios','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p2', question: '2. ¿Qué categorías vendes principalmente? (máximo 3)', type: 'checkbox', maxSelections: 3, options: opts(['Alimentos y bebidas','Ropa, calzado y accesorios','Hogar y muebles','Tecnología y electrónica','Belleza y cuidado personal','Salud','Construcción y ferretería','Maquinaria/equipos','Automotriz','Agricultura/agro','Productos para empresas','Educación/capacitación','Servicios profesionales','Transporte/logística','Inmobiliario','Joyería/metales/objetos de valor','Artesanía','Otros']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p3', question: '3. ¿Desde dónde realizas principalmente tu actividad comercial? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Desde un local comercial','Desde mi vivienda','Desde un taller/oficina','Desde un puesto/mercado/feria','Desde la calle o venta ambulante','Desde un almacén','Sin ubicación física fija','Principalmente por Internet','Combinación de varios','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p4', question: '4. ¿Desde hace cuánto tiempo vendes?', type: 'radio', options: opts(['Menos de 3 meses','3–6 meses','7–12 meses','1–2 años','3–5 años','Más de 5 años']), condition: () => true });
+
+        // --- BLOQUE B: CÓMO ENCUENTRA CLIENTES (5-7) ---
+        steps.push({ id: 'p5', question: '5. ¿Por qué medios consigues actualmente la mayoría de tus clientes? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Facebook','Facebook Marketplace','WhatsApp','Instagram','TikTok','Página web propia','Google/Google Maps','Plataformas o marketplaces especializados','Local físico','Mercado/feria','Venta directa en calle','Recomendaciones de clientes','Amigos/familiares/conocidos','Vendedores/intermediarios','Publicidad física','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p6', question: '6. ¿Cuál de esos canales te genera actualmente más ventas?', type: 'radio', options: opts(['Facebook','Facebook Marketplace','WhatsApp','Instagram','TikTok','Página web propia','Google/Google Maps','Plataformas o marketplaces especializados','Local físico','Mercado/feria','Venta directa en calle','Recomendaciones de clientes','Amigos/familiares/conocidos','Vendedores/intermediarios','Publicidad física','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p7', question: '7. Piensa en una venta reciente que hayas conseguido por Internet. ¿Cómo llegó ese cliente hasta ti? (respuesta abierta)', type: 'textarea', placeholder: 'Describe el proceso...', condition: () => true });
+
+        // --- BLOQUE C: CÓMO OCURRE UNA VENTA (8-10) ---
+        steps.push({ id: 'p8', question: '8. Cuando alguien se interesa por lo que vendes, ¿qué ocurre normalmente? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Me escribe por WhatsApp','Me escribe por Messenger','Me llama','Comenta una publicación','Me pregunta por mensaje privado de otra red','Viene directamente al local','Nos encontramos presencialmente','Le envío catálogo/lista de precios','Le envío fotos o videos','Coordinamos una visita','Negociamos precio','Separamos el producto','Entrego directamente','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p9', question: '9. ¿Qué formas de pago utilizas actualmente? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Efectivo','Yape','Plin','Transferencia bancaria','Tarjeta','PayPal','Otra billetera digital','Contraentrega','Fiado/crédito directo','Pago por partes/cuotas','Separación con adelanto','Intercambio/barter','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p10', question: '10. Cuando vendes al crédito, fiado o en cuotas, ¿cómo lo manejas actualmente? (puedes seleccionar varias)', type: 'checkbox', options: opts(['No vendo al crédito','Confío en clientes conocidos','Anoto manualmente la deuda','Uso WhatsApp','Uso una hoja/cuaderno','Uso Excel/Google Sheets','Uso una aplicación','Solicito adelanto','Establezco fechas de pago','Cobro intereses','Utilizo algún tercero','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p10_abierta', question: '¿Qué es lo más difícil de vender al crédito o fiado? (respuesta abierta)', type: 'textarea', placeholder: 'Cuéntanos...', condition: () => { const val = answers.p10; if (!val || !Array.isArray(val)) return false; return !val.includes('No vendo al crédito'); } });
+
+        // --- BLOQUE D: INVENTARIO Y LIQUIDEZ (11-12) ---
+        steps.push({ id: 'p11', question: '11. ¿Qué haces actualmente cuando tienes productos que no se venden? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Bajo el precio','Hago una promoción','Publico nuevamente','Lo ofrezco por otro canal','Lo agrupo con otros productos','Lo vendo por lote','Lo remato','Lo devuelvo al proveedor','Lo utilizo para otro propósito','Lo intercambio','Lo guardo hasta que aparezca comprador','Lo vendo a otro comerciante','Lo vendo a mayorista/intermediario','Lo termino perdiendo/deteriorando','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p12', question: '12. En los últimos 3 meses, ¿has tenido productos o mercadería que hayan permanecido demasiado tiempo sin venderse?', type: 'radio', options: opts(['Sí, frecuentemente','Sí, algunas veces','Sí, una vez','No','No manejo inventario']), condition: () => true });
+        steps.push({ id: 'p12_abierta', question: '¿Qué hiciste finalmente con esa mercadería? (respuesta abierta)', type: 'textarea', placeholder: 'Cuéntanos...', condition: () => { const val = answers.p12; return val && (val === 'Sí, frecuentemente' || val === 'Sí, algunas veces' || val === 'Sí, una vez'); } });
+
+        // --- BLOQUE E: PROBLEMAS COMERCIALES (13-14) ---
+        steps.push({ id: 'p13', question: '13. ¿Cuáles son actualmente tus principales dificultades para vender? (máximo 5)', type: 'checkbox', maxSelections: 5, options: opts(['Conseguir nuevos clientes','Conseguir clientes que realmente compren','Competencia','Precios de la competencia','Regateo/negociación','Publicidad','Alcance de mis publicaciones','Confianza del cliente','Clientes que no responden','Clientes que separan y no compran','Incumplimiento de pagos','Estafas/fraudes','Productos falsificados o imitaciones en el mercado','Devoluciones','Entregas','Transporte','Costos de envío','Abastecimiento','Falta de capital','Inventario que no rota','Seguridad','Conectividad/Internet','Falta de tiempo','Falta de personal','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p14', question: '14. De todos esos problemas, ¿cuál es el que más afecta actualmente a tu negocio?', type: 'radio', options: opts(['Conseguir nuevos clientes','Conseguir clientes que realmente compren','Competencia','Precios de la competencia','Regateo/negociación','Publicidad','Alcance de mis publicaciones','Confianza del cliente','Clientes que no responden','Clientes que separan y no compran','Incumplimiento de pagos','Estafas/fraudes','Productos falsificados o imitaciones en el mercado','Devoluciones','Entregas','Transporte','Costos de envío','Abastecimiento','Falta de capital','Inventario que no rota','Seguridad','Conectividad/Internet','Falta de tiempo','Falta de personal','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p14_abierta', question: '¿Por qué este problema es importante para ti? (respuesta abierta)', type: 'textarea', placeholder: 'Cuéntanos...', condition: () => true });
+
+        // --- BLOQUE F: CONFIANZA Y SEGURIDAD (15-16) ---
+        steps.push({ id: 'p15', question: '15. ¿Has tenido alguna experiencia problemática con un comprador o una venta durante el último año? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Comprador que no pagó','Comprobante/pago falso','Cliente que desapareció después de separar','Producto devuelto inesperadamente','Reclamo injustificado','Intento de estafa','Suplantación de identidad','Cuenta falsa','Problema durante la entrega','Robo/pérdida','Amenaza o situación de inseguridad','No he tenido problemas','Otro']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p15_abierta', question: 'Si quieres, cuéntanos brevemente qué ocurrió y cómo lo resolviste. (opcional)', type: 'textarea', placeholder: 'Describe la situación...', condition: () => true });
+        steps.push({ id: 'p16', question: '16. ¿Ha cambiado durante el último año la forma en que entregas, cobras o atiendes a tus clientes por razones de seguridad o confianza?', type: 'radio', options: opts(['Sí, bastante','Sí, algo','No','No estoy seguro/a','Prefiero no responder']), condition: () => true });
+        steps.push({ id: 'p16_abierta', question: '¿Qué cambiaste? (respuesta abierta)', type: 'textarea', placeholder: 'Cuéntanos...', condition: () => { const val = answers.p16; return val && (val === 'Sí, bastante' || val === 'Sí, algo'); } });
+
+        // --- BLOQUE G: RESILIENCIA COMERCIAL (17-19) ---
+        steps.push({ id: 'p17', question: '17. Cuando ocurre un imprevisto importante, ¿qué parte de tu negocio se afecta primero? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Conseguir productos','Transporte','Entregas','Cobros','Comunicación con clientes','Internet/conectividad','Publicidad','Acceso al local','Personal','Capital/caja','Inventario','Otro','Normalmente puedo continuar sin grandes problemas']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p18', question: '18. En los últimos 12 meses, ¿qué tipo de imprevistos han afectado tu actividad comercial? (puedes seleccionar varias)', type: 'checkbox', options: opts(['Problemas de transporte','Clima/inundaciones u otros fenómenos naturales','Cortes de Internet','Cortes de electricidad','Problemas de abastecimiento','Incremento fuerte de precios','Problemas de seguridad','Problemas con plataformas digitales','Problemas de pago/cobro','Falta de personal','Problemas familiares/personales','Otro','Ninguno importante']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p19', question: '19. Cuando uno de esos problemas ocurre, ¿qué haces normalmente para continuar vendiendo? (respuesta abierta)', type: 'textarea', placeholder: 'Describe qué alternativa usas...', condition: () => true });
+
+        // --- BLOQUE H: DEPENDENCIA DE PLATAFORMAS (20) ---
+        steps.push({ id: 'p20', question: '20. Si mañana dejaras de utilizar el principal canal digital que hoy te ayuda a vender, ¿qué ocurriría con tu negocio?', type: 'radio', options: opts(['Podría continuar casi igual','Perdería algunas ventas','Perdería muchas ventas','Una parte importante de mi negocio quedaría afectada','Prácticamente no podría vender','No depende de canales digitales','No estoy seguro/a']), condition: () => true });
+        steps.push({ id: 'p20_abierta', question: '¿Qué harías para continuar vendiendo? (respuesta abierta)', type: 'textarea', placeholder: 'Cuéntanos tu plan...', condition: () => true });
+
+        // --- BLOQUE I: GEOGRAFÍA COMERCIAL (21-22) ---
+        steps.push({ id: 'p21', question: '21. ¿En qué localidad o zona realizas principalmente tus ventas o actividad comercial?', type: 'radio', options: opts(['Lima Metropolitana / Callao','Arequipa','Trujillo','Piura','Chiclayo','Cusco','Ica','Huaraz','Chimbote','Nuevo Chimbote','Coishco','Santa','Nepeña','Moro','Casma','Huarmey','Chao','Virú','Otra ciudad/localidad de Áncash','Otra localidad de la costa','Otra localidad de la sierra','Otra localidad de la selva','Principalmente trabajo/comercializo por Internet','Otra:']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p22', question: '22. ¿En qué localidad o zona se encuentran principalmente tus clientes?', type: 'radio', options: opts(['Lima Metropolitana / Callao','Arequipa','Trujillo','Piura','Chiclayo','Cusco','Ica','Huaraz','Chimbote','Nuevo Chimbote','Coishco','Santa','Nepeña','Moro','Casma','Huarmey','Chao','Virú','Otra ciudad/localidad de Áncash','Otra localidad de la costa','Otra localidad de la sierra','Otra localidad de la selva','Principalmente trabajo/comercializo por Internet','Otra:']), allowOther: true, condition: () => true });
+
+        // --- BLOQUE J: ORGANIZACIÓN Y VOLUMEN (23-24) ---
+        steps.push({ id: 'p23', question: '23. Aproximadamente, ¿cuántas personas participan actualmente en tu actividad comercial?', type: 'radio', options: opts(['Solo yo','2 personas','3–5','6–10','11–20','Más de 20']), condition: () => true });
+        steps.push({ id: 'p24', question: '24. Aproximadamente, ¿cuántas ventas realizas en un mes normal?', type: 'radio', options: opts(['1–5','6–10','11–30','31–50','51–100','Más de 100','Es variable','Prefiero no responder']), condition: () => true });
+
+        // --- BLOQUE K: NECESIDAD PRIORITARIA (25-26) ---
+        steps.push({ id: 'p25', question: '25. Si pudieras resolver una sola parte de tu proceso actual de venta, ¿cuál escogerías? (respuesta abierta)', type: 'textarea', placeholder: 'Escribe cuál sería...', condition: () => true });
+        steps.push({ id: 'p26', question: '26. ¿Cómo resuelves actualmente esa necesidad? (respuesta abierta)', type: 'textarea', placeholder: 'Cuéntanos cómo lo haces...', condition: () => true });
+
+        // --- BLOQUE L: QUÉ ESTARÍA DISPUESTO A PROBAR (27-29) ---
+        steps.push({ id: 'p27', question: '27. ¿Qué tipo de ayuda externa te resultaría más útil para mejorar tus ventas? (máximo 3)', type: 'checkbox', maxSelections: 3, options: opts(['Encontrar nuevos clientes','Dar mayor visibilidad a mis productos','Encontrar compradores para mercadería que no rota','Encontrar proveedores','Comprar productos a mejores precios','Vender por lotes','Encontrar otros comerciantes con quienes negociar','Organizar pedidos','Gestionar entregas','Facilitar cobros','Generar confianza entre comprador y vendedor','Verificar productos o vendedores','Conseguir información de precios','Acceder a servicios profesionales','Acceder a financiamiento/crédito','Organizar compras grupales','Ninguna de las anteriores','Otra']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p28', question: '28. Si existiera un servicio que reuniera algunas de esas oportunidades comerciales, ¿qué función te parecería más útil? (máximo 3)', type: 'checkbox', maxSelections: 3, options: opts(['Encontrar compradores','Publicar productos','Liquidar productos que no se venden','Encontrar proveedores','Comprar/vender por lotes','Encontrar servicios','Encontrar oportunidades de compra','Facilitar contacto entre comerciantes','Organizar compras grupales','Ayudar con entregas','Facilitar distintas formas de pago','Ayudar a verificar vendedores/productos','Otra']), allowOther: true, condition: () => true });
+        steps.push({ id: 'p29', question: '29. ¿Qué condición tendría que cumplir un servicio de este tipo para que confiaras en él? (máximo 3)', type: 'checkbox', maxSelections: 3, options: opts(['Precios transparentes','Vendedores identificables','Compradores identificables','Información real del producto','Sistema para reportar problemas','Reputación verificable','Protección frente a estafas','Posibilidad de trato presencial','Pago en efectivo','Pagos digitales','Buen servicio de atención','Entregas confiables','Garantías claras','Bajo costo','Facilidad de uso','Otra']), allowOther: true, condition: () => true });
+
+        // --- BLOQUE M: CONTACTO PARA INVESTIGACIÓN (30-32) ---
+        steps.push({ id: 'p30', question: '30. ¿Te gustaría participar posteriormente en una entrevista o prueba relacionada con esta investigación?', type: 'radio', options: opts(['Sí','No','Tal vez']), condition: () => true });
+        steps.push({ id: 'p31', question: '31. ¿Por qué medio prefieres que te contactemos?', type: 'radio', options: opts(['WhatsApp','Llamada telefónica','Correo electrónico','Otro']), allowOther: true, condition: () => (answers.p30 === 'Sí' || answers.p30 === 'Tal vez') });
+        steps.push({ id: 'p32', question: '32. Datos de contacto (WhatsApp, email o teléfono) – opcional:', type: 'text', placeholder: 'Ej. 987654321 o correo@ejemplo.com', condition: () => (answers.p30 === 'Sí' || answers.p30 === 'Tal vez') });
+
+        // ================================================================
+        // HELPERS
+        // ================================================================
+        function detectarDispositivo() {
+            const ua = navigator.userAgent;
+            if (/tablet|ipad|playbook|silk/i.test(ua)) return 'tablet';
+            if (/mobile|iphone|ipod|android|blackberry|windows phone/i.test(ua)) return 'celular';
+            return 'laptop/PC';
+        }
+        function obtenerFuente() {
+            const params = new URLSearchParams(window.location.search);
+            const utmSource = params.get('utm_source');
+            if (utmSource) return utmSource;
+            try {
+                const ref = document.referrer || '';
+                if (ref.includes('facebook.com')) return 'Facebook';
+                if (ref.includes('messenger.com')) return 'Messenger';
+                if (ref.includes('whatsapp.com')) return 'WhatsApp';
+                if (ref.includes('instagram.com')) return 'Instagram';
+                if (ref.includes('tiktok.com')) return 'TikTok';
+                if (ref.includes('youtube.com')) return 'YouTube';
+                if (ref.includes('google.com')) return 'Google';
+                if (ref.includes('twitter.com')) return 'Twitter';
+                if (ref.includes('linkedin.com')) return 'LinkedIn';
+                if (ref.includes('megaremates.com')) return 'Web directa';
+                return 'directo';
+            } catch (e) { return 'desconocida'; }
+        }
+        function obtenerGeoData() {
+            return fetch('https://ipapi.co/json/')
+                .then(res => res.ok ? res.json() : null)
+                .then(data => data ? {
+                    ip: data.ip || 'desconocida', ciudad: data.city || '', region: data.region || '',
+                    pais: data.country_name || '', lat: data.latitude || null, lon: data.longitude || null
+                } : null)
+                .catch(() => null);
+        }
+        function obtenerConexion() {
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn) return { effectiveType: conn.effectiveType || 'unknown', downlink: conn.downlink || null, rtt: conn.rtt || null };
+            return {};
+        }
+
+        // ================================================================
+        // ENVÍO
+        // ================================================================
+        function enviarRespuestas(geo) {
+            const dataToSend = {};
+            for (const key in answers) {
+                if (answers[key] !== undefined && answers[key] !== null && answers[key] !== '') {
+                    dataToSend[key] = answers[key];
+                }
+            }
+            const fin = new Date();
+            dataToSend._metadata = {
+                fuente, dispositivo, inicio: inicioEncuesta.toISOString(), fin: fin.toISOString(),
+                tiempo_total_segundos: Math.round((fin - inicioEncuesta) / 1000),
+                tiempos_por_pregunta: tiemposPorPregunta, conexion,
+                navegador: navigator.userAgent, plataforma: navigator.platform || 'desconocida'
+            };
+            if (geo) dataToSend._geo = geo;
+
+            return fetch('/api/encuesta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ datos: dataToSend, token: NONCE, tipo_encuesta })
+            })
+            .then(async res => {
+                if (!res.ok) {
+                    const t = await res.text();
+                    let msg;
+                    try { msg = JSON.parse(t).error || `Error ${res.status}`; }
+                    catch (e) { msg = `Error ${res.status}: ${t || res.statusText}`; }
+                    throw new Error(msg);
+                }
+                const t = await res.text();
+                if (!t) return {};
+                try { return JSON.parse(t); } catch (e) { return { success: true }; }
+            })
+            .then(data => {
+                datosEnviados = true;
+                try { localStorage.setItem(STORAGE_KEY, 'true'); } catch (e) {}
+                return { success: true, data };
+            })
+            .catch(error => {
+                console.error('❌ Error al enviar:', error);
+                return { success: false, error: error.message };
+            });
+        }
+
+        // ================================================================
+        // NAVEGACIÓN
+        // ================================================================
+        let currentStepIndex = 0;
+        function getVisibleSteps() { return steps.filter(s => s.condition()); }
+        function getCurrentVisibleIndex() {
+            const visible = getVisibleSteps();
+            if (currentStepIndex >= visible.length) currentStepIndex = visible.length - 1;
+            if (currentStepIndex < 0) currentStepIndex = 0;
+            return currentStepIndex;
+        }
+        function getCurrentStep() {
+            const visible = getVisibleSteps();
+            return visible[getCurrentVisibleIndex()] || null;
+        }
+        function saveCurrentAnswer() {
+            const step = getCurrentStep();
+            if (!step) return;
+            const el = document.querySelector(`[data-step-id="${step.id}"]`);
+            if (!el) return;
+            let value;
+            if (step.type === 'radio') {
+                const c = el.querySelector('input[type="radio"]:checked');
+                if (c) {
+                    value = c.value;
+                    if (value === 'Otra:') {
+                        const lbl = c.closest('label');
+                        if (lbl) {
+                            const ti = lbl.querySelector('.otro-input');
+                            if (ti && ti.value.trim() !== '') value = 'Otra: ' + ti.value.trim();
+                        }
+                    }
+                } else value = null;
+            } else if (step.type === 'checkbox') {
+                const cbs = el.querySelectorAll('input[type="checkbox"]:checked');
+                value = Array.from(cbs).map(cb => cb.value);
+                if (step.maxSelections && value.length > step.maxSelections) {
+                    alert(`Selecciona máximo ${step.maxSelections} opciones.`);
+                    const last = cbs[cbs.length - 1];
+                    if (last) { last.checked = false; value = Array.from(el.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); }
+                }
+                const otroInput = el.querySelector('.otro-input');
+                if (otroInput && otroInput.value.trim() !== '') {
+                    const otroCheck = el.querySelector('input[type="checkbox"][value="Otro"]');
+                    if (otroCheck && otroCheck.checked) {
+                        value = value.filter(v => v !== 'Otro' && v !== 'Otros' && v !== 'Otra' && v !== 'Otra:');
+                        value.push(otroInput.value.trim());
+                    }
+                    const otraCheck = el.querySelector('input[type="checkbox"][value="Otra:"]');
+                    if (otraCheck && otraCheck.checked) {
+                        value = value.filter(v => v !== 'Otra:');
+                        value.push('Otra: ' + otroInput.value.trim());
+                    }
+                }
+            } else {
+                const inp = el.querySelector('input, textarea');
+                value = inp ? inp.value : '';
+            }
+            if (value !== undefined) answers[step.id] = value;
+        }
+        function loadAnswer(step) {
+            const el = document.querySelector(`[data-step-id="${step.id}"]`);
+            if (!el) return;
+            const val = answers[step.id];
+            if (val === undefined) return;
+            if (step.type === 'radio') {
+                const radios = el.querySelectorAll('input[type="radio"]');
+                let found = false;
+                radios.forEach(r => {
+                    if (r.value === val) { r.checked = true; found = true; }
+                    if (!found && val && typeof val === 'string' && val.startsWith('Otra:')) {
+                        if (r.value === 'Otra:') {
+                            r.checked = true; found = true;
+                            const lbl = r.closest('label');
+                            if (lbl) { const ti = lbl.querySelector('.otro-input'); if (ti) ti.value = val.replace('Otra: ', '').trim(); }
+                        }
+                    }
+                });
+            } else if (step.type === 'checkbox') {
+                const checks = el.querySelectorAll('input[type="checkbox"]');
+                checks.forEach(cb => { if (Array.isArray(val)) cb.checked = val.some(v => v === cb.value || v.startsWith(cb.value + ':')); });
+                const otroInput = el.querySelector('.otro-input');
+                if (otroInput && Array.isArray(val)) {
+                    const otroVal = val.find(v => !step.options.some(o => o.value === v) && !v.startsWith('Otra'));
+                    if (otroVal) otroInput.value = otroVal;
+                }
+            } else {
+                const inp = el.querySelector('input, textarea');
+                if (inp) inp.value = val;
+            }
+        }
+        function registrarTiempoPregunta(stepId) {
+            if (preguntaActualId && inicioPregunta) tiemposPorPregunta[preguntaActualId] = Math.round((new Date() - inicioPregunta) / 1000);
+            preguntaActualId = stepId; inicioPregunta = new Date();
+        }
+        function renderStep() {
+            const step = getCurrentStep();
+            const area = document.getElementById('dynamicArea');
+            if (!step) { showSummary(); return; }
+            if (step.id !== preguntaActualId) registrarTiempoPregunta(step.id);
+            const visible = getVisibleSteps();
+            const idx = getCurrentVisibleIndex();
+            document.getElementById('stepCounter').textContent = `Paso ${idx+1} de ${visible.length}`;
+            const progress = ((idx) / (visible.length - 1)) * 100;
+            document.getElementById('progressFill').style.width = (visible.length === 1 ? 100 : progress) + '%';
+
+            let html = `<div class="question-area" data-step-id="${step.id}">`;
+            html += `<div class="question-text">${step.question}`;
+            if (step.type === 'text' || step.type === 'textarea') html += ` <span class="sub-label">(respuesta corta)</span>`;
+            if (step.maxSelections) html += ` <span class="sub-label">(máximo ${step.maxSelections})</span>`;
+            html += `</div>`;
+
+            if (step.type === 'radio' || step.type === 'checkbox') {
+                html += `<div class="options-group">`;
+                step.options.forEach(opt => {
+                    html += `<label><input type="${step.type}" name="${step.id}" value="${opt.value}"><span>${opt.label}</span>`;
+                    if ((opt.label === 'Otro' || opt.label === 'Otros' || opt.label === 'Otra' || opt.label === 'Otra:') && step.allowOther) {
+                        html += `<input type="text" class="otro-input" placeholder="Especifica..." style="margin-left:8px;">`;
+                    }
+                    html += `</label>`;
+                });
+                html += `</div>`;
+            } else if (step.type === 'text') {
+                html += `<input type="text" class="text-input" placeholder="${step.placeholder || ''}" style="min-height:50px;">`;
+            } else if (step.type === 'textarea') {
+                html += `<textarea class="text-input textarea" placeholder="${step.placeholder || ''}"></textarea>`;
+            }
+
+            html += `<div class="navigation">`;
+            html += `<button class="btn btn-secondary" id="prevBtn" ${idx===0?'disabled':''}>← Anterior</button>`;
+            html += (idx === visible.length - 1) ? `<button class="btn btn-success" id="nextBtn">Enviar respuestas ✓</button>` : `<button class="btn btn-primary" id="nextBtn">Siguiente →</button>`;
+            html += `</div></div>`;
+            area.innerHTML = html;
+            loadAnswer(step);
+
+            area.querySelectorAll('input, textarea').forEach(inp => {
+                inp.addEventListener('change', () => {
+                    saveCurrentAnswer();
+                    if (step.type === 'radio') {
+                        const parents = ['p10','p12','p16','p30'];
+                        if (parents.includes(step.id)) {
+                            const vis = getVisibleSteps();
+                            const ni = vis.findIndex(s => s.id === step.id);
+                            if (ni !== -1) currentStepIndex = ni;
+                            renderStep();
+                        }
+                    }
+                });
+                inp.addEventListener('blur', saveCurrentAnswer);
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                saveCurrentAnswer();
+                const s = getCurrentStep();
+                if (!s) return;
+                if (s.type === 'radio' && !answers[s.id]) { alert('Selecciona una opción.'); return; }
+                if (s.type === 'checkbox') {
+                    const v = answers[s.id];
+                    if (!v || (Array.isArray(v) && v.length === 0)) { alert('Selecciona al menos una opción.'); return; }
+                    if (s.maxSelections && Array.isArray(v) && v.length > s.maxSelections) { alert(`Selecciona máximo ${s.maxSelections} opciones.`); return; }
+                }
+                if ((s.type === 'text' || s.type === 'textarea') && (!answers[s.id] || String(answers[s.id]).trim() === '')) { alert('Por favor escribe tu respuesta.'); return; }
+
+                const vis = getVisibleSteps();
+                if (currentStepIndex === vis.length - 1) {
+                    this.disabled = true; this.textContent = 'Enviando...';
+                    registrarTiempoPregunta(s.id);
+                    if (!geoData) {
+                        obtenerGeoData().then(g => { geoData = g; enviarRespuestas(g).then(showSummary); })
+                            .catch(() => { enviarRespuestas(null).then(showSummary); });
+                    } else { enviarRespuestas(geoData).then(showSummary); }
+                    return;
+                }
+                registrarTiempoPregunta(s.id); currentStepIndex++; renderStep();
+            });
+
+            document.getElementById('prevBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (currentStepIndex > 0) {
+                    const s = getCurrentStep();
+                    if (s) registrarTiempoPregunta(s.id);
+                    currentStepIndex--; renderStep();
+                }
+            });
+        }
+
+        // ================================================================
+        // RESUMEN
+        // ================================================================
+        function showSummary(envioResult) {
+            const area = document.getElementById('dynamicArea');
+            saveCurrentAnswer();
+            const allAnswers = { ...answers };
+            const visibleSteps = getVisibleSteps();
+            const exito = envioResult && envioResult.success;
+
+            let html = `<div class="summary">`;
+            if (exito) {
+                html += `<div class="alert alert-success" style="text-align:center; font-size:18px;">✅ ¡Encuesta enviada correctamente! Muchas gracias por tu tiempo.<p style="margin-top:12px; font-size:16px; color:#5b6f82;">Tus respuestas han sido registradas.</p></div>`;
+            } else {
+                if (envioResult) html += `<div class="alert alert-error">❌ Error al enviar: ${envioResult.error || 'intenta de nuevo más tarde'}.<br>Tus respuestas se guardaron localmente.</div>`;
+                else html += `<div class="alert alert-info">⚠️ Aún no has enviado los datos.</div>`;
+
+                html += `<h3 style="margin-bottom:16px; font-weight:600; color:#0b1a2a;">Resumen de tus respuestas</h3>`;
+                visibleSteps.forEach(step => {
+                    const val = allAnswers[step.id];
+                    if (val === undefined || val === null || (Array.isArray(val) && val.length === 0) || (typeof val === 'string' && val.trim() === '')) return;
+                    html += `<div class="summary-item"><strong>${step.question}</strong>`;
+                    if (Array.isArray(val)) { html += `<div class="answer multi">`; val.forEach(v => html += `<span>${v}</span>`); html += `</div>`; }
+                    else { html += `<div class="answer">${val}</div>`; }
+                    html += `</div>`;
+                });
+                html += `<div style="margin-top:24px; display:flex; gap:12px;">`;
+                html += `<button class="btn btn-secondary" id="backBtn">← Volver</button>`;
+                html += `<button class="btn btn-primary" id="restartBtn" style="flex:1;">🔁 Nueva encuesta</button></div>`;
+            }
+            html += `</div>`;
+            area.innerHTML = html;
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('stepCounter').textContent = exito ? '¡Completado!' : 'Resumen';
+
+            if (!exito) {
+                document.getElementById('backBtn').addEventListener('click', () => {
+                    const v = getVisibleSteps(); if (v.length) { currentStepIndex = v.length - 1; renderStep(); }
+                });
+                document.getElementById('restartBtn').addEventListener('click', () => {
+                    for (const k in answers) delete answers[k];
+                    datosEnviados = false; currentStepIndex = 0;
+                    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+                    renderStep();
+                });
+            }
+        }
+
+        // ================================================================
+        // INICIO
+        // ================================================================
+        function init() {
+            try {
+                if (localStorage.getItem(STORAGE_KEY) === 'true') {
+                    document.getElementById('dynamicArea').innerHTML = `<div class="alert alert-info" style="margin-top:40px; text-align:center; font-size:18px;"><p>✅ Ya has completado esta encuesta anteriormente.</p><p style="margin-top:12px; font-size:16px; color:#5b6f82;">Gracias por tu participación.</p></div>`;
+                    document.getElementById('stepCounter').textContent = 'Completado';
+                    document.getElementById('progressFill').style.width = '100%';
+                    return;
+                }
+            } catch (e) {}
+
+            // Pantalla splash
+            const splash = document.getElementById('splashScreen');
+            const app = document.getElementById('app');
+            if (splash && app) {
+                splash.style.display = 'flex';
+                app.style.display = 'none';
+                document.getElementById('startSurveyBtn').addEventListener('click', function() {
+                    splash.style.display = 'none';
+                    app.style.display = '';
+                    fuente = obtenerFuente(); dispositivo = detectarDispositivo(); conexion = obtenerConexion();
+                    obtenerGeoData().then(g => geoData = g).catch(() => geoData = null);
+                    preguntaActualId = null; inicioPregunta = new Date();
+                    currentStepIndex = 0; datosEnviados = false;
+                    renderStep();
+                });
+                return;
+            }
+
+            fuente = obtenerFuente(); dispositivo = detectarDispositivo(); conexion = obtenerConexion();
+            obtenerGeoData().then(g => geoData = g).catch(() => geoData = null);
+            preguntaActualId = null; inicioPregunta = new Date();
+            currentStepIndex = 0; datosEnviados = false;
+            renderStep();
+        }
+
+        window.addEventListener('load', init);
+    })();
+    </script>
+</body>
+</html>

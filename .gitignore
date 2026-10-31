@@ -1,6 +1,7 @@
 .env
 auditoria/
 references/
+!references/vendedores/
 plan/
 .vercel
 .env*
