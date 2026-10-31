@@ -33,7 +33,7 @@
             endpoint: '/api/encuesta',
             color: '#f97316',
             STORAGE_KEY: 'megaremates_encuesta_vendedores_enviada',
-            NONCE_KEY: 'encuesta_nonce_vendedores',
+            NONCE: 'f8fc62c3199a7c297b576ac9aadb9a52',
             questionsUrl: '/config/preguntas/vendedores.json'
         }
     };
