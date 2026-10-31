@@ -217,7 +217,7 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 - **SPEC 14:** ✅ Inyección segura de `SUPABASE_ANON_KEY` durante build.
 - **SPEC 15:** ✅ Row Level Security (RLS) policies.
 - **SPEC 16:** ✅ Dashboard con selector de encuesta y gráficos (Chart.js).
-- **SPEC 17:** Exportar resultados a CSV.
+- **SPEC 17:** ✅ Exportar resultados a CSV.
 - **SPEC 18:** Actualizar `AGENTS.md` con flujo de auth completo.
 
 ## Row Level Security (SPEC 15)
@@ -262,7 +262,10 @@ select policyname, roles, cmd from pg_policies where tablename = 'respuestas_enc
 │   └── auth.js
 ├── dashboard/                    ← Protected dashboard
 │   ├── index.html
-│   └── dashboard.js
+│   ├── dashboard.js
+│   ├── charts.js                 ← Chart.js configuration
+│   ├── config.js                 ← Env vars (injected by build)
+│   └── export.js                 ← CSV export functionality
 ├── references/
 │   └── vendedores/               ← Standalone survey template
 │       ├── index.html

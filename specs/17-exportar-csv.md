@@ -1,6 +1,6 @@
 # SPEC 17 — Exportar resultados a CSV desde el dashboard
 
-> **Status:** Borrador
+> **Status:** Implementado
 > **Depends on:** SPEC 16
 > **Date:** 2026-10-31
 > **Objective:** Agregar botón de "Exportar CSV" al dashboard que descargue un archivo CSV con todas las respuestas filtradas por tipo de encuesta.
@@ -64,15 +64,15 @@ id,tipo_encuesta,created_at,tiempo_total_segundos,p1,p2,p3,...,_metadata.fuente,
 
 ## Acceptance criteria
 
-- [ ] Botón "Exportar CSV" visible en el dashboard.
-- [ ] Al hacer clic, se descarga un archivo `.csv`.
-- [ ] El archivo contiene todas las respuestas del tipo seleccionado.
-- [ ] Las columnas incluyen: `id`, `tipo_encuesta`, `created_at`, `tiempo_total_segundos`, `p1`–`p39`/`p32`, `_metadata.*`, `_geo.*`.
-- [ ] Los arrays de checkbox se exportan separados por `;`.
-- [ ] El archivo se abre correctamente en Excel/Google Sheets sin errores de encoding.
-- [ ] El nombre del archivo incluye el tipo y la fecha.
-- [ ] Funciona con 0 registros (archivo vacío con headers).
-- [ ] `AGENTS.md` documenta la funcionalidad.
+- [x] Botón "Exportar CSV" visible en el dashboard.
+- [x] Al hacer clic, se descarga un archivo `.csv`.
+- [x] El archivo contiene todas las respuestas del tipo seleccionado.
+- [x] Las columnas incluyen: `id`, `tipo_encuesta`, `created_at`, `tiempo_total_segundos`, `p1`–`p39`/`p32`, `_metadata.*`, `_geo.*`.
+- [x] Los arrays de checkbox se exportan separados por `;`.
+- [x] El archivo se abre correctamente en Excel/Google Sheets sin errores de encoding.
+- [x] El nombre del archivo incluye el tipo y la fecha.
+- [x] Funciona con 0 registros (archivo vacío con headers).
+- [x] `AGENTS.md` documenta la funcionalidad.
 
 ## Decisions
 
