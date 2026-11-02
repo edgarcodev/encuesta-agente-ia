@@ -102,7 +102,14 @@
     "logic": "and",
     "conditions": [
       { "field": "p21", "operator": "equals", "value": "Perú" },
-      { "field": "p23", "operator": "oneOf", "value": ["En el mismo país donde realizo mis compras", "Mi actividad se desarrolla principalmente por Internet"] }
+      {
+        "field": "p23",
+        "operator": "oneOf",
+        "value": [
+          "En el mismo país donde realizo mis compras",
+          "Mi actividad se desarrolla principalmente por Internet"
+        ]
+      }
     ]
   }
 }
@@ -110,14 +117,14 @@
 
 ### Operators
 
-| Operator | Description | Example |
-|----------|-------------|---------|
-| `always` | Always visible | `{ "always": true }` |
-| `equals` | `answers[field] === value` | `p9`, `equals`, `"Sí, frecuentemente"` |
-| `notEquals` | `answers[field] !== value` | `p23`, `notEquals`, `"Actualmente no..."` |
-| `oneOf` | `value.includes(answers[field])` | `p9`, `oneOf`, `["Sí, frecuentemente", ...]` |
-| `includes` | `answers[field].includes(value)` | — |
-| `notIncludes` | `!answers[field].includes(value)` (for arrays) | `p13`, `notIncludes`, `"No he tenido..."` |
+| Operator      | Description                                    | Example                                      |
+| ------------- | ---------------------------------------------- | -------------------------------------------- |
+| `always`      | Always visible                                 | `{ "always": true }`                         |
+| `equals`      | `answers[field] === value`                     | `p9`, `equals`, `"Sí, frecuentemente"`       |
+| `notEquals`   | `answers[field] !== value`                     | `p23`, `notEquals`, `"Actualmente no..."`    |
+| `oneOf`       | `value.includes(answers[field])`               | `p9`, `oneOf`, `["Sí, frecuentemente", ...]` |
+| `includes`    | `answers[field].includes(value)`               | —                                            |
+| `notIncludes` | `!answers[field].includes(value)` (for arrays) | `p13`, `notIncludes`, `"No he tenido..."`    |
 
 ## File structure
 
@@ -166,8 +173,8 @@ config/
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| `fetch()` falla en dev (CORS/file://) | Los JSON van en `dist/` y se sirven desde el mismo origin |
-| JSON malformado rompe la encuesta | Validar con `node -e` antes de commitear; el build puede validar |
-| `build.mjs` no copia los JSON | Agregar regla explícita de copia |
+| Risk                                  | Mitigation                                                       |
+| ------------------------------------- | ---------------------------------------------------------------- |
+| `fetch()` falla en dev (CORS/file://) | Los JSON van en `dist/` y se sirven desde el mismo origin        |
+| JSON malformado rompe la encuesta     | Validar con `node -e` antes de commitear; el build puede validar |
+| `build.mjs` no copia los JSON         | Agregar regla explícita de copia                                 |

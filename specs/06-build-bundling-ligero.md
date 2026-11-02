@@ -87,12 +87,12 @@ No se introducen nuevas estructuras de datos de aplicación. El build produce:
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| esbuild no encuentra el binario en Vercel | `npm install` corre automáticamente en Vercel; el binario de esbuild se descarga en `postinstall`. Si falla, usar `esbuild-wasm` como fallback |
-| Las rutas relativas en `dist/index.html` no apuntan bien a los assets | En `dist/`, `styles.css`, `app.js` e `images/` quedan al mismo nivel que `index.html`, igual que en la raíz; las rutas relativas no cambian |
-| `vercel.json` no soporta `outputDirectory` o el rewrite no funciona | Si `outputDirectory` no funciona, usar rewrites explícitos: `"/(.*)"` → `"/dist/$1"` y `"/"` → `"/dist/index.html"` |
-| Dependencia nueva rompe el CI de Vercel | Probar con `vercel deploy` en preview antes de mergear a producción |
+| Risk                                                                  | Mitigation                                                                                                                                     |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| esbuild no encuentra el binario en Vercel                             | `npm install` corre automáticamente en Vercel; el binario de esbuild se descarga en `postinstall`. Si falla, usar `esbuild-wasm` como fallback |
+| Las rutas relativas en `dist/index.html` no apuntan bien a los assets | En `dist/`, `styles.css`, `app.js` e `images/` quedan al mismo nivel que `index.html`, igual que en la raíz; las rutas relativas no cambian    |
+| `vercel.json` no soporta `outputDirectory` o el rewrite no funciona   | Si `outputDirectory` no funciona, usar rewrites explícitos: `"/(.*)"` → `"/dist/$1"` y `"/"` → `"/dist/index.html"`                            |
+| Dependencia nueva rompe el CI de Vercel                               | Probar con `vercel deploy` en preview antes de mergear a producción                                                                            |
 
 ## What is **not** in this spec
 

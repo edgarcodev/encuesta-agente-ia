@@ -42,10 +42,10 @@ This feature introduces no new data structures. It reuses the existing model.
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| El orden de las reglas en `rewrites` importa; si el catch-all va primero, sigue sin funcionar | Verificar que la regla `/api/(.*)` esté en la primera posición del array |
-| Otras rutas estáticas (imágenes, CSS) podrían verse afectadas | El catch-all sigue presente para todo lo que no sea `/api/*`, por lo que los assets estáticos siguen funcionando |
+| Risk                                                                                          | Mitigation                                                                                                       |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| El orden de las reglas en `rewrites` importa; si el catch-all va primero, sigue sin funcionar | Verificar que la regla `/api/(.*)` esté en la primera posición del array                                         |
+| Otras rutas estáticas (imágenes, CSS) podrían verse afectadas                                 | El catch-all sigue presente para todo lo que no sea `/api/*`, por lo que los assets estáticos siguen funcionando |
 
 ## What is **not** in this spec
 

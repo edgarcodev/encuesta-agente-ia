@@ -29,6 +29,7 @@ En SPEC 13, `SUPABASE_ANON_KEY` quedó embebida directamente en `login/auth.js` 
 ## Implementation plan
 
 1. **Crear `.env.example`** con las variables necesarias:
+
    ```
    SUPABASE_URL=https://tu-proyecto.supabase.co
    SUPABASE_ANON_KEY=sb_publishable_xxxxxxxxxxxxxxxxxxxxxx
@@ -80,8 +81,8 @@ En SPEC 13, `SUPABASE_ANON_KEY` quedó embebida directamente en `login/auth.js` 
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Build local falla sin `.env` | Documentar en `.env.example` y en `AGENTS.md` |
-| Placeholder no se reemplaza correctamente | Validar en el build que no queden `__SUPABASE_*__` en `dist/` |
-| CDN de Supabase cachea versiones viejas | Usar versión específica en la URL del CDN (`@supabase/supabase-js@2.48.1`) |
+| Risk                                      | Mitigation                                                                 |
+| ----------------------------------------- | -------------------------------------------------------------------------- |
+| Build local falla sin `.env`              | Documentar en `.env.example` y en `AGENTS.md`                              |
+| Placeholder no se reemplaza correctamente | Validar en el build que no queden `__SUPABASE_*__` en `dist/`              |
+| CDN de Supabase cachea versiones viejas   | Usar versión específica en la URL del CDN (`@supabase/supabase-js@2.48.1`) |

@@ -72,11 +72,11 @@ El JSONB `datos` no cambia. Se envía `{ datos, token, tipo_encuesta }` en el PO
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| La migración falla si ya se corrió | Seguir la convención: sin `IF NOT EXISTS` — el error indica que ya existe |
-| API rechaza POSTs antiguos que no envían `tipo_encuesta` | El campo es nullable; la API acepta NULL y lo deja como NULL |
-| Supabase tarda en propagar el cambio de schema | El check constraint se aplica inmediatamente; el INSERT falla si el valor no es válido |
+| Risk                                                     | Mitigation                                                                             |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| La migración falla si ya se corrió                       | Seguir la convención: sin `IF NOT EXISTS` — el error indica que ya existe              |
+| API rechaza POSTs antiguos que no envían `tipo_encuesta` | El campo es nullable; la API acepta NULL y lo deja como NULL                           |
+| Supabase tarda en propagar el cambio de schema           | El check constraint se aplica inmediatamente; el INSERT falla si el valor no es válido |
 
 ## What is **not** in this spec
 

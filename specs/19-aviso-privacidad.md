@@ -41,10 +41,10 @@ Splash → Preguntas → Resumen (con checkbox) → Confirmar → Envío a API
 
 ### Comportamiento del checkbox
 
-| Estado | Qué se envía a la API |
-|--------|----------------------|
+| Estado                | Qué se envía a la API                                     |
+| --------------------- | --------------------------------------------------------- |
 | **Marcado** (default) | `datos` + `tipo_encuesta` + `_metadata` completo + `_geo` |
-| **Desmarcado** | Solo `datos` + `tipo_encuesta` + `tiempo_total_segundos` |
+| **Desmarcado**        | Solo `datos` + `tipo_encuesta` + `tiempo_total_segundos`  |
 
 **El usuario siempre puede enviar la encuesta** — nunca se bloquea el envío.
 
@@ -53,7 +53,7 @@ Splash → Preguntas → Resumen (con checkbox) → Confirmar → Envío a API
 **In:**
 
 - Checkbox **marcado por defecto** en la página de resumen (donde se muestran todas las respuestas).
-- Texto discreto: *"Permitir datos de navegación (ubicación aproximada, dispositivo)"*.
+- Texto discreto: _"Permitir datos de navegación (ubicación aproximada, dispositivo)"_.
 - Si está **marcado** (default): se envía todo (respuestas + `_metadata` + `_geo`).
 - Si está **desmarcado**: solo se envían las respuestas + `tipo_encuesta` + `tiempo_total_segundos`.
 - Link discreto al aviso de privacidad junto al checkbox.
@@ -107,8 +107,8 @@ Splash → Preguntas → Resumen (con checkbox) → Confirmar → Envío a API
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Usuario desmarca sin entender | Texto claro y aviso de privacidad accesible |
-| Legalmente insuficiente en algunas jurisdicciones | Consultar abogado si se escala a producción formal |
-| Dificultad técnica para separar metadata | El cambio es solo en `enviarRespuestas()` — simple condicional |
+| Risk                                              | Mitigation                                                     |
+| ------------------------------------------------- | -------------------------------------------------------------- |
+| Usuario desmarca sin entender                     | Texto claro y aviso de privacidad accesible                    |
+| Legalmente insuficiente en algunas jurisdicciones | Consultar abogado si se escala a producción formal             |
+| Dificultad técnica para separar metadata          | El cambio es solo en `enviarRespuestas()` — simple condicional |

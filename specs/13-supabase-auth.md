@@ -63,9 +63,9 @@ dashboard/
 
 ### Variables de entorno
 
-| Variable | Uso |
-|----------|-----|
-| `SUPABASE_URL` | URL del proyecto Supabase (misma que ya se usa en el backend) |
+| Variable            | Uso                                                           |
+| ------------------- | ------------------------------------------------------------- |
+| `SUPABASE_URL`      | URL del proyecto Supabase (misma que ya se usa en el backend) |
 | `SUPABASE_ANON_KEY` | Publishable API key (para el cliente, NO la service_role key) |
 
 **Importante:** En Vercel, estas variables deben estar expuestas al cliente. Para Vercel, el prefijo `NEXT_PUBLIC_` no aplica porque no usamos Next.js. En su lugar, se inyectan en el HTML durante el build o se leen desde `vercel.json` con `env` rewrites. La forma más simple es inyectarlas en un `<script>` en `index.html` durante el build.
@@ -121,9 +121,9 @@ dashboard/
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Sin usuarios creados en Supabase | Crear usuario admin manualmente en Supabase Dashboard → Authentication → Users |
-| Confusión entre anon key y service role key | Usar solo `ANON_KEY` en el cliente; `SERVICE_KEY` solo en serverless (`api/encuesta.js`) |
-| Variables de entorno no expuestas al cliente | Inyectar en `<script>` durante el build o usar `vercel.json` env rewrites |
-| Sesión expira y usuario queda en dashboard | `dashboard.js` verifica sesión en cada carga; si expira, redirige a `/login` |
+| Risk                                         | Mitigation                                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Sin usuarios creados en Supabase             | Crear usuario admin manualmente en Supabase Dashboard → Authentication → Users           |
+| Confusión entre anon key y service role key  | Usar solo `ANON_KEY` en el cliente; `SERVICE_KEY` solo en serverless (`api/encuesta.js`) |
+| Variables de entorno no expuestas al cliente | Inyectar en `<script>` durante el build o usar `vercel.json` env rewrites                |
+| Sesión expira y usuario queda en dashboard   | `dashboard.js` verifica sesión en cada carga; si expira, redirige a `/login`             |

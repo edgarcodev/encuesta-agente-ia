@@ -18,208 +18,225 @@ describe('evaluateCondition', () => {
 
   describe('equals', () => {
     it('returns true when value matches', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'equals', value: 'Sí' },
-        { p9: 'Sí' }
-      )).toBe(true);
+      expect(
+        evaluateCondition({ field: 'p9', operator: 'equals', value: 'Sí' }, { p9: 'Sí' })
+      ).toBe(true);
     });
 
     it('returns false when value does not match', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'equals', value: 'Sí' },
-        { p9: 'No' }
-      )).toBe(false);
+      expect(
+        evaluateCondition({ field: 'p9', operator: 'equals', value: 'Sí' }, { p9: 'No' })
+      ).toBe(false);
     });
 
     it('returns false when field is missing', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'equals', value: 'Sí' },
-        {}
-      )).toBe(false);
+      expect(evaluateCondition({ field: 'p9', operator: 'equals', value: 'Sí' }, {})).toBe(false);
     });
   });
 
   describe('notEquals', () => {
     it('returns true when value differs', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'notEquals', value: 'Sí' },
-        { p9: 'No' }
-      )).toBe(true);
+      expect(
+        evaluateCondition({ field: 'p9', operator: 'notEquals', value: 'Sí' }, { p9: 'No' })
+      ).toBe(true);
     });
 
     it('returns false when value matches', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'notEquals', value: 'Sí' },
-        { p9: 'Sí' }
-      )).toBe(false);
+      expect(
+        evaluateCondition({ field: 'p9', operator: 'notEquals', value: 'Sí' }, { p9: 'Sí' })
+      ).toBe(false);
     });
   });
 
   describe('oneOf', () => {
     it('returns true when value is in the array', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'oneOf', value: ['Sí', 'No'] },
-        { p9: 'Sí' }
-      )).toBe(true);
+      expect(
+        evaluateCondition({ field: 'p9', operator: 'oneOf', value: ['Sí', 'No'] }, { p9: 'Sí' })
+      ).toBe(true);
     });
 
     it('returns false when value is not in the array', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'oneOf', value: ['Sí', 'No'] },
-        { p9: 'Tal vez' }
-      )).toBe(false);
+      expect(
+        evaluateCondition(
+          { field: 'p9', operator: 'oneOf', value: ['Sí', 'No'] },
+          { p9: 'Tal vez' }
+        )
+      ).toBe(false);
     });
 
     it('returns false when value is missing', () => {
-      expect(evaluateCondition(
-        { field: 'p9', operator: 'oneOf', value: ['Sí', 'No'] },
-        {}
-      )).toBe(false);
+      expect(evaluateCondition({ field: 'p9', operator: 'oneOf', value: ['Sí', 'No'] }, {})).toBe(
+        false
+      );
     });
   });
 
   describe('includes', () => {
     it('returns true when array includes value', () => {
-      expect(evaluateCondition(
-        { field: 'p13', operator: 'includes', value: 'Facebook' },
-        { p13: ['Facebook', 'Google'] }
-      )).toBe(true);
+      expect(
+        evaluateCondition(
+          { field: 'p13', operator: 'includes', value: 'Facebook' },
+          { p13: ['Facebook', 'Google'] }
+        )
+      ).toBe(true);
     });
 
     it('returns false when array does not include value', () => {
-      expect(evaluateCondition(
-        { field: 'p13', operator: 'includes', value: 'Facebook' },
-        { p13: ['Google', 'WhatsApp'] }
-      )).toBe(false);
+      expect(
+        evaluateCondition(
+          { field: 'p13', operator: 'includes', value: 'Facebook' },
+          { p13: ['Google', 'WhatsApp'] }
+        )
+      ).toBe(false);
     });
 
     it('returns false when answer is not an array', () => {
-      expect(evaluateCondition(
-        { field: 'p13', operator: 'includes', value: 'Facebook' },
-        { p13: 'Facebook' }
-      )).toBe(false);
+      expect(
+        evaluateCondition(
+          { field: 'p13', operator: 'includes', value: 'Facebook' },
+          { p13: 'Facebook' }
+        )
+      ).toBe(false);
     });
   });
 
   describe('notIncludes', () => {
     it('returns true when array does not include value', () => {
-      expect(evaluateCondition(
-        { field: 'p13', operator: 'notIncludes', value: 'No he tenido...' },
-        { p13: ['Facebook', 'Google'] }
-      )).toBe(true);
+      expect(
+        evaluateCondition(
+          { field: 'p13', operator: 'notIncludes', value: 'No he tenido...' },
+          { p13: ['Facebook', 'Google'] }
+        )
+      ).toBe(true);
     });
 
     it('returns false when array includes value', () => {
-      expect(evaluateCondition(
-        { field: 'p13', operator: 'notIncludes', value: 'No he tenido...' },
-        { p13: ['No he tenido...', 'Facebook'] }
-      )).toBe(false);
+      expect(
+        evaluateCondition(
+          { field: 'p13', operator: 'notIncludes', value: 'No he tenido...' },
+          { p13: ['No he tenido...', 'Facebook'] }
+        )
+      ).toBe(false);
     });
 
     it('returns false when answer is not an array', () => {
-      expect(evaluateCondition(
-        { field: 'p13', operator: 'notIncludes', value: 'test' },
-        { p13: 'test' }
-      )).toBe(false);
+      expect(
+        evaluateCondition({ field: 'p13', operator: 'notIncludes', value: 'test' }, { p13: 'test' })
+      ).toBe(false);
     });
   });
 
   describe('logic: and', () => {
     it('returns true when all conditions are true', () => {
-      expect(evaluateCondition(
-        {
-          logic: 'and',
-          conditions: [
-            { field: 'p21', operator: 'equals', value: 'Perú' },
-            { field: 'p23', operator: 'oneOf', value: ['En el mismo país', 'Mi actividad se desarrolla'] }
-          ]
-        },
-        { p21: 'Perú', p23: 'En el mismo país' }
-      )).toBe(true);
+      expect(
+        evaluateCondition(
+          {
+            logic: 'and',
+            conditions: [
+              { field: 'p21', operator: 'equals', value: 'Perú' },
+              {
+                field: 'p23',
+                operator: 'oneOf',
+                value: ['En el mismo país', 'Mi actividad se desarrolla'],
+              },
+            ],
+          },
+          { p21: 'Perú', p23: 'En el mismo país' }
+        )
+      ).toBe(true);
     });
 
     it('returns false when one condition is false', () => {
-      expect(evaluateCondition(
-        {
-          logic: 'and',
-          conditions: [
-            { field: 'p21', operator: 'equals', value: 'Perú' },
-            { field: 'p23', operator: 'equals', value: 'En el mismo país' }
-          ]
-        },
-        { p21: 'Chile', p23: 'En el mismo país' }
-      )).toBe(false);
+      expect(
+        evaluateCondition(
+          {
+            logic: 'and',
+            conditions: [
+              { field: 'p21', operator: 'equals', value: 'Perú' },
+              { field: 'p23', operator: 'equals', value: 'En el mismo país' },
+            ],
+          },
+          { p21: 'Chile', p23: 'En el mismo país' }
+        )
+      ).toBe(false);
     });
 
     it('returns false when all conditions are false', () => {
-      expect(evaluateCondition(
-        {
-          logic: 'and',
-          conditions: [
-            { field: 'p21', operator: 'equals', value: 'Perú' },
-            { field: 'p23', operator: 'equals', value: 'En el mismo país' }
-          ]
-        },
-        { p21: 'Chile', p23: 'Otro' }
-      )).toBe(false);
+      expect(
+        evaluateCondition(
+          {
+            logic: 'and',
+            conditions: [
+              { field: 'p21', operator: 'equals', value: 'Perú' },
+              { field: 'p23', operator: 'equals', value: 'En el mismo país' },
+            ],
+          },
+          { p21: 'Chile', p23: 'Otro' }
+        )
+      ).toBe(false);
     });
   });
 
   describe('logic: or', () => {
     it('returns true when at least one condition is true', () => {
-      expect(evaluateCondition(
-        {
-          logic: 'or',
-          conditions: [
-            { field: 'p16', operator: 'equals', value: 'Sí' },
-            { field: 'p16', operator: 'equals', value: 'Tal vez' }
-          ]
-        },
-        { p16: 'Tal vez' }
-      )).toBe(true);
+      expect(
+        evaluateCondition(
+          {
+            logic: 'or',
+            conditions: [
+              { field: 'p16', operator: 'equals', value: 'Sí' },
+              { field: 'p16', operator: 'equals', value: 'Tal vez' },
+            ],
+          },
+          { p16: 'Tal vez' }
+        )
+      ).toBe(true);
     });
 
     it('returns false when all conditions are false', () => {
-      expect(evaluateCondition(
-        {
-          logic: 'or',
-          conditions: [
-            { field: 'p16', operator: 'equals', value: 'Sí' },
-            { field: 'p16', operator: 'equals', value: 'Tal vez' }
-          ]
-        },
-        { p16: 'No' }
-      )).toBe(false);
+      expect(
+        evaluateCondition(
+          {
+            logic: 'or',
+            conditions: [
+              { field: 'p16', operator: 'equals', value: 'Sí' },
+              { field: 'p16', operator: 'equals', value: 'Tal vez' },
+            ],
+          },
+          { p16: 'No' }
+        )
+      ).toBe(false);
     });
   });
 
   describe('nested logic', () => {
     it('handles nested AND inside OR', () => {
-      expect(evaluateCondition(
-        {
-          logic: 'or',
-          conditions: [
-            {
-              logic: 'and',
-              conditions: [
-                { field: 'p21', operator: 'equals', value: 'Perú' },
-                { field: 'p23', operator: 'equals', value: 'En el mismo país' }
-              ]
-            },
-            { field: 'p21', operator: 'equals', value: 'Chile' }
-          ]
-        },
-        { p21: 'Chile', p23: 'Otro' }
-      )).toBe(true);
+      expect(
+        evaluateCondition(
+          {
+            logic: 'or',
+            conditions: [
+              {
+                logic: 'and',
+                conditions: [
+                  { field: 'p21', operator: 'equals', value: 'Perú' },
+                  { field: 'p23', operator: 'equals', value: 'En el mismo país' },
+                ],
+              },
+              { field: 'p21', operator: 'equals', value: 'Chile' },
+            ],
+          },
+          { p21: 'Chile', p23: 'Otro' }
+        )
+      ).toBe(true);
     });
   });
 
   describe('unknown operator', () => {
     it('returns true for unknown operator', () => {
-      expect(evaluateCondition(
-        { field: 'p1', operator: 'unknownOp', value: 'x' },
-        { p1: 'x' }
-      )).toBe(true);
+      expect(
+        evaluateCondition({ field: 'p1', operator: 'unknownOp', value: 'x' }, { p1: 'x' })
+      ).toBe(true);
     });
   });
 });
@@ -245,11 +262,18 @@ describe('applyDynamicDefinition', () => {
         logic: 'and',
         conditions: [
           { field: 'p21', operator: 'equals', value: 'Perú' },
-          { field: 'p23', operator: 'equals', value: 'En el mismo país' }
+          { field: 'p23', operator: 'equals', value: 'En el mismo país' },
         ],
-        then: { type: 'radio', options: [{ label: 'Courier', value: 'Courier' }, { label: 'Otro', value: 'Otro' }], allowOther: true },
-        else: { type: 'text', placeholder: 'Escribe aquí...' }
-      }
+        then: {
+          type: 'radio',
+          options: [
+            { label: 'Courier', value: 'Courier' },
+            { label: 'Otro', value: 'Otro' },
+          ],
+          allowOther: true,
+        },
+        else: { type: 'text', placeholder: 'Escribe aquí...' },
+      },
     };
 
     const result = applyDynamicDefinition(step, { p21: 'Perú', p23: 'En el mismo país' });
@@ -270,11 +294,11 @@ describe('applyDynamicDefinition', () => {
         logic: 'and',
         conditions: [
           { field: 'p21', operator: 'equals', value: 'Perú' },
-          { field: 'p23', operator: 'equals', value: 'En el mismo país' }
+          { field: 'p23', operator: 'equals', value: 'En el mismo país' },
         ],
         then: { type: 'radio', options: [{ label: 'Courier', value: 'Courier' }] },
-        else: { type: 'text', placeholder: 'Escribe aquí...' }
-      }
+        else: { type: 'text', placeholder: 'Escribe aquí...' },
+      },
     };
 
     const result = applyDynamicDefinition(step, { p21: 'Chile', p23: 'En el mismo país' });
@@ -292,8 +316,8 @@ describe('applyDynamicDefinition', () => {
         field: 'p4',
         when: { operator: 'equals', value: 'Otro' },
         then: { type: 'radio', options: [{ label: 'A', value: 'A' }] },
-        else: { type: 'text' }
-      }
+        else: { type: 'text' },
+      },
     };
 
     const result = applyDynamicDefinition(step, { p4: 'Otro' });
@@ -309,8 +333,8 @@ describe('applyDynamicDefinition', () => {
         field: 'p4',
         when: { operator: 'equals', value: 'Otro' },
         then: { type: 'radio', options: [{ label: 'A', value: 'A' }] },
-        else: { type: 'textarea' }
-      }
+        else: { type: 'textarea' },
+      },
     };
 
     const result = applyDynamicDefinition(step, { p4: 'Sí' });
@@ -326,8 +350,8 @@ describe('applyDynamicDefinition', () => {
         field: 'p4',
         when: { operator: 'oneOf', value: ['Sí', 'No'] },
         then: { type: 'radio', options: [{ label: 'Option', value: 'Option' }] },
-        else: { type: 'text' }
-      }
+        else: { type: 'text' },
+      },
     };
 
     const result = applyDynamicDefinition(step, { p4: 'No' });
@@ -343,12 +367,10 @@ describe('applyDynamicDefinition', () => {
       placeholder: 'Escribe aquí...',
       dynamicDefinition: {
         logic: 'and',
-        conditions: [
-          { field: 'p21', operator: 'equals', value: 'Perú' }
-        ],
+        conditions: [{ field: 'p21', operator: 'equals', value: 'Perú' }],
         then: { type: 'radio', options: [{ label: 'A', value: 'A' }] },
-        else: { type: 'text', placeholder: 'Escribe aquí...' }
-      }
+        else: { type: 'text', placeholder: 'Escribe aquí...' },
+      },
     };
 
     const result = applyDynamicDefinition(step, { p21: 'Perú' });
@@ -371,14 +393,14 @@ describe('parseQuestions', () => {
         question: 'Test?',
         type: 'radio',
         options: ['Opción A', 'Opción B'],
-        condition: { always: true }
-      }
+        condition: { always: true },
+      },
     ];
 
     const result = parseQuestions(raw, {});
     expect(result[0].options).toEqual([
       { label: 'Opción A', value: 'Opción A' },
-      { label: 'Opción B', value: 'Opción B' }
+      { label: 'Opción B', value: 'Opción B' },
     ]);
   });
 
@@ -389,14 +411,12 @@ describe('parseQuestions', () => {
         question: 'Test?',
         type: 'radio',
         options: [{ label: 'Custom', value: 'custom_val' }],
-        condition: { always: true }
-      }
+        condition: { always: true },
+      },
     ];
 
     const result = parseQuestions(raw, {});
-    expect(result[0].options).toEqual([
-      { label: 'Custom', value: 'custom_val' }
-    ]);
+    expect(result[0].options).toEqual([{ label: 'Custom', value: 'custom_val' }]);
   });
 
   it('handles empty options array', () => {
@@ -406,8 +426,8 @@ describe('parseQuestions', () => {
         question: 'Text question?',
         type: 'text',
         options: [],
-        condition: { always: true }
-      }
+        condition: { always: true },
+      },
     ];
 
     const result = parseQuestions(raw, {});
@@ -420,8 +440,8 @@ describe('parseQuestions', () => {
         id: 'p2',
         question: 'Conditional?',
         type: 'text',
-        condition: { field: 'p1', operator: 'equals', value: 'show' }
-      }
+        condition: { field: 'p1', operator: 'equals', value: 'show' },
+      },
     ];
 
     const result = parseQuestions(raw, {});
@@ -443,9 +463,9 @@ describe('parseQuestions', () => {
           field: 'p2',
           when: { operator: 'equals', value: 'Yes' },
           then: { type: 'radio', options: [{ label: 'A', value: 'A' }] },
-          else: { type: 'text' }
-        }
-      }
+          else: { type: 'text' },
+        },
+      },
     ];
 
     // Test with matching answers — parse with answers that match "then"
@@ -467,8 +487,8 @@ describe('parseQuestions', () => {
         id: 'p1',
         question: 'Static?',
         type: 'text',
-        condition: { always: true }
-      }
+        condition: { always: true },
+      },
     ];
 
     const result = parseQuestions(raw, {});
@@ -486,9 +506,9 @@ describe('parseQuestions', () => {
           field: 'p2',
           when: { operator: 'equals', value: 'X' },
           then: { type: 'radio' },
-          else: { type: 'text' }
-        }
-      }
+          else: { type: 'text' },
+        },
+      },
     ];
 
     const result = parseQuestions(raw, {});

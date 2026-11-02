@@ -171,13 +171,13 @@ No se introducen nuevas estructuras de datos. El spec agrega archivos de prueba 
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| `app.js` cambia comportamiento al extraer funciones | Verificar manualmente el flujo completo antes y después; las E2E lo capturarán |
-| E2E frágiles (dependen de timing del DOM) | Usar `waitForSelector`, `waitForLoadState` en lugar de `setTimeout` |
-| Mock de API en E2E no refleja comportamiento real | Las unitarias de `api/encuesta.js` cubren la lógica real; E2E solo validan el flujo del frontend |
-| Playwright consume muchos recursos en CI | Usar solo Chromium en CI (multi-navegador solo local si se desea) |
-| `lib/conditions.js` queda desincronizado con `app.js` | Las pruebas E2E ejecutan sobre el bundle completo y detectan discrepancias |
+| Risk                                                  | Mitigation                                                                                       |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `app.js` cambia comportamiento al extraer funciones   | Verificar manualmente el flujo completo antes y después; las E2E lo capturarán                   |
+| E2E frágiles (dependen de timing del DOM)             | Usar `waitForSelector`, `waitForLoadState` en lugar de `setTimeout`                              |
+| Mock de API en E2E no refleja comportamiento real     | Las unitarias de `api/encuesta.js` cubren la lógica real; E2E solo validan el flujo del frontend |
+| Playwright consume muchos recursos en CI              | Usar solo Chromium en CI (multi-navegador solo local si se desea)                                |
+| `lib/conditions.js` queda desincronizado con `app.js` | Las pruebas E2E ejecutan sobre el bundle completo y detectan discrepancias                       |
 
 ## What is **not** in this spec
 

@@ -1,139 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard — MegaRemates</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="/dashboard/config.js"></script>
-</head>
-<body>
-    <div class="dashboard-app" id="app" style="display:none;">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <div class="header-left">
-                <img src="/images/megaremates.svg" alt="MegaRemates" class="header-logo">
-                <h1>Panel Administrativo</h1>
-            </div>
-            <div class="header-right">
-                <span id="userEmail" class="user-email"></span>
-                <button id="exportBtn" class="btn btn-export" title="Exportar respuestas a CSV">📥 Exportar CSV</button>
-                <button id="logoutBtn" class="btn btn-logout">Cerrar sesión</button>
-            </div>
-        </header>
-
-        <div class="dashboard-content">
-            <!-- Sidebar -->
-            <aside class="dashboard-sidebar">
-                <div class="sidebar-section">
-                    <label class="sidebar-label">Tipo de encuesta</label>
-                    <select id="tipoSelect" class="sidebar-select">
-                        <option value="todos">Todas</option>
-                        <option value="compradores">Compradores</option>
-                        <option value="vendedores">Vendedores</option>
-                    </select>
-                </div>
-
-                <div class="sidebar-section">
-                    <label class="sidebar-label">Rango de fechas</label>
-                    <select id="dateRangeSelect" class="sidebar-select">
-                        <option value="7">Últimos 7 días</option>
-                        <option value="30" selected>Últimos 30 días</option>
-                        <option value="90">Últimos 90 días</option>
-                        <option value="all">Todo</option>
-                        <option value="custom">Personalizado</option>
-                    </select>
-                    <div id="customDateInputs" class="custom-dates" style="display:none;">
-                        <input type="date" id="dateFrom" class="date-input">
-                        <input type="date" id="dateTo" class="date-input">
-                    </div>
-                </div>
-
-                <div class="sidebar-section">
-                    <div class="kpi-card">
-                        <span class="kpi-value" id="kpiTotal">0</span>
-                        <span class="kpi-label">Total respuestas</span>
-                    </div>
-                    <div class="kpi-card">
-                        <span class="kpi-value" id="kpiHoy">0</span>
-                        <span class="kpi-label">Hoy</span>
-                    </div>
-                    <div class="kpi-card">
-                        <span class="kpi-value" id="kpiPromedio">--</span>
-                        <span class="kpi-label">Tiempo promedio</span>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main content -->
-            <main class="dashboard-main">
-                <!-- Tabs -->
-                <div class="dashboard-tabs">
-                    <button class="tab-btn active" data-tab="charts">📊 Gráficos</button>
-                    <button class="tab-btn" data-tab="responses">📋 Respuestas</button>
-                </div>
-
-                <!-- Charts tab -->
-                <div id="tabCharts" class="tab-content active">
-                    <div class="chart-grid">
-                        <div class="chart-container">
-                            <h3 class="chart-title">Respuestas por tipo</h3>
-                            <canvas id="chartTipo"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <h3 class="chart-title">Respuestas por día</h3>
-                            <canvas id="chartDia"></canvas>
-                        </div>
-                        <div class="chart-container chart-wide">
-                            <h3 class="chart-title">¿Qué compran/venden?</h3>
-                            <canvas id="chartP1"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <h3 class="chart-title">Fuente de tráfico</h3>
-                            <canvas id="chartFuente"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <h3 class="chart-title">Dispositivo</h3>
-                            <canvas id="chartDispositivo"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Responses tab -->
-                <div id="tabResponses" class="tab-content">
-                    <div class="responses-table-wrapper">
-                        <table class="responses-table" id="responsesTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Tipo</th>
-                                    <th>Fecha</th>
-                                    <th>Tiempo</th>
-                                    <th>Respuesta 1</th>
-                                </tr>
-                            </thead>
-                            <tbody id="responsesBody"></tbody>
-                        </table>
-                        <div id="pagination" class="pagination"></div>
-                    </div>
-                </div>
-
-                <div id="exportStatus" class="export-status" style="display:none;"></div>
-                <div id="loadingState" class="loading-state" style="display:none;">
-                    <div class="spinner"></div>
-                    <p>Cargando datos...</p>
-                </div>
-                <div id="emptyState" class="empty-state" style="display:none;">
-                    <p>No hay datos disponibles para este filtro.</p>
-                </div>
-            </main>
+  </head>
+  <body>
+    <div class="dashboard-app" id="app" style="display: none">
+      <!-- Header -->
+      <header class="dashboard-header">
+        <div class="header-left">
+          <img src="/images/megaremates.svg" alt="MegaRemates" class="header-logo" />
+          <h1>Panel Administrativo</h1>
         </div>
+        <div class="header-right">
+          <span id="userEmail" class="user-email"></span>
+          <button id="exportBtn" class="btn btn-export" title="Exportar respuestas a CSV">
+            📥 Exportar CSV
+          </button>
+          <button id="logoutBtn" class="btn btn-logout">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <div class="dashboard-content">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+          <div class="sidebar-section">
+            <label class="sidebar-label">Tipo de encuesta</label>
+            <select id="tipoSelect" class="sidebar-select">
+              <option value="todos">Todas</option>
+              <option value="compradores">Compradores</option>
+              <option value="vendedores">Vendedores</option>
+            </select>
+          </div>
+
+          <div class="sidebar-section">
+            <label class="sidebar-label">Rango de fechas</label>
+            <select id="dateRangeSelect" class="sidebar-select">
+              <option value="7">Últimos 7 días</option>
+              <option value="30" selected>Últimos 30 días</option>
+              <option value="90">Últimos 90 días</option>
+              <option value="all">Todo</option>
+              <option value="custom">Personalizado</option>
+            </select>
+            <div id="customDateInputs" class="custom-dates" style="display: none">
+              <input type="date" id="dateFrom" class="date-input" />
+              <input type="date" id="dateTo" class="date-input" />
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="kpi-card">
+              <span class="kpi-value" id="kpiTotal">0</span>
+              <span class="kpi-label">Total respuestas</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-value" id="kpiHoy">0</span>
+              <span class="kpi-label">Hoy</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-value" id="kpiPromedio">--</span>
+              <span class="kpi-label">Tiempo promedio</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="dashboard-main">
+          <!-- Tabs -->
+          <div class="dashboard-tabs">
+            <button class="tab-btn active" data-tab="charts">📊 Gráficos</button>
+            <button class="tab-btn" data-tab="responses">📋 Respuestas</button>
+          </div>
+
+          <!-- Charts tab -->
+          <div id="tabCharts" class="tab-content active">
+            <div class="chart-grid">
+              <div class="chart-container">
+                <h3 class="chart-title">Respuestas por tipo</h3>
+                <canvas id="chartTipo"></canvas>
+              </div>
+              <div class="chart-container">
+                <h3 class="chart-title">Respuestas por día</h3>
+                <canvas id="chartDia"></canvas>
+              </div>
+              <div class="chart-container chart-wide">
+                <h3 class="chart-title">¿Qué compran/venden?</h3>
+                <canvas id="chartP1"></canvas>
+              </div>
+              <div class="chart-container">
+                <h3 class="chart-title">Fuente de tráfico</h3>
+                <canvas id="chartFuente"></canvas>
+              </div>
+              <div class="chart-container">
+                <h3 class="chart-title">Dispositivo</h3>
+                <canvas id="chartDispositivo"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Responses tab -->
+          <div id="tabResponses" class="tab-content">
+            <div class="responses-table-wrapper">
+              <table class="responses-table" id="responsesTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Tiempo</th>
+                    <th>Respuesta 1</th>
+                  </tr>
+                </thead>
+                <tbody id="responsesBody"></tbody>
+              </table>
+              <div id="pagination" class="pagination"></div>
+            </div>
+          </div>
+
+          <div id="exportStatus" class="export-status" style="display: none"></div>
+          <div id="loadingState" class="loading-state" style="display: none">
+            <div class="spinner"></div>
+            <p>Cargando datos...</p>
+          </div>
+          <div id="emptyState" class="empty-state" style="display: none">
+            <p>No hay datos disponibles para este filtro.</p>
+          </div>
+        </main>
+      </div>
     </div>
 
     <script src="/dashboard/charts.js"></script>
     <script src="/dashboard/export.js"></script>
     <script src="/dashboard/dashboard.js"></script>
-</body>
+  </body>
 </html>

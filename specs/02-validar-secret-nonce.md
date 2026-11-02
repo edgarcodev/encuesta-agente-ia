@@ -67,11 +67,11 @@ This feature introduces no new data structures. It reuses the existing model:
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                                                                                  | Mitigation                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | El valor embebido en `index.html` no coincide con `SECRET_NONCE` del entorno → todos los envíos legítimos reciben 401 | Verificación curl local (paso 3) y smoke test en producción (paso 6) antes de marcar `Implemented`; rotar el secreto siempre en los tres lugares a la vez (`.env`, dashboard de Vercel, `index.html`) |
-| `SECRET_NONCE` no está definida en Vercel → fail closed devuelve 500 en producción | El paso 5 verifica/crea la variable en el dashboard antes del despliegue |
-| El secreto queda visible en el HTML público (view-source) y en el repo | Aceptado: el endpoint no maneja credenciales; la defensa de fondo llega con rate limiting (SPEC 03) |
+| `SECRET_NONCE` no está definida en Vercel → fail closed devuelve 500 en producción                                    | El paso 5 verifica/crea la variable en el dashboard antes del despliegue                                                                                                                              |
+| El secreto queda visible en el HTML público (view-source) y en el repo                                                | Aceptado: el endpoint no maneja credenciales; la defensa de fondo llega con rate limiting (SPEC 03)                                                                                                   |
 
 ## What is **not** in this spec
 

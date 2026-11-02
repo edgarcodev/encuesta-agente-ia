@@ -8,7 +8,11 @@ export default async function handler(req, res) {
   const { datos, token, tipo_encuesta } = req.body;
 
   const VALID_TIPOS = ['compradores', 'vendedores', 'proveedores'];
-  if (tipo_encuesta !== undefined && tipo_encuesta !== null && !VALID_TIPOS.includes(tipo_encuesta)) {
+  if (
+    tipo_encuesta !== undefined &&
+    tipo_encuesta !== null &&
+    !VALID_TIPOS.includes(tipo_encuesta)
+  ) {
     return res.status(400).json({ error: 'tipo_encuesta inválido' });
   }
 
@@ -16,7 +20,9 @@ export default async function handler(req, res) {
   // primera IP de x-forwarded-for → 'unknown'. Nunca se deja el endpoint sin contar.
   const ip =
     String(req.headers['x-real-ip'] || '').trim() ||
-    String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
+    String(req.headers['x-forwarded-for'] || '')
+      .split(',')[0]
+      .trim() ||
     'unknown';
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -36,10 +42,10 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`
+        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
       },
-      body: JSON.stringify({ p_ip: ip })
+      body: JSON.stringify({ p_ip: ip }),
     });
 
     if (rlResponse.ok) {
@@ -47,7 +53,7 @@ export default async function handler(req, res) {
       if (count > RATE_LIMIT_MAX) {
         res.setHeader('Retry-After', String(retry_after));
         return res.status(429).json({
-          error: 'Demasiados envíos desde esta conexión. Inténtalo de nuevo en unos minutos.'
+          error: 'Demasiados envíos desde esta conexión. Inténtalo de nuevo en unos minutos.',
         });
       }
     } else {
@@ -76,10 +82,10 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`
+        apikey: SUPABASE_SERVICE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_KEY}`,
       },
-      body: JSON.stringify({ datos, tipo_encuesta: tipo_encuesta || null })
+      body: JSON.stringify({ datos, tipo_encuesta: tipo_encuesta || null }),
     });
 
     if (!response.ok) {

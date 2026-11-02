@@ -97,11 +97,11 @@ El proyecto tiene tests automatizados (SPEC 23) pero no tiene linting ni formate
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Muchos errores de lint en código existente | `lint:fix` corrige la mayoría; revisar manualmente el resto |
+| Risk                                        | Mitigation                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Muchos errores de lint en código existente  | `lint:fix` corrige la mayoría; revisar manualmente el resto                          |
 | Husky no funciona en algunos entornos CI/CD | Husky se activa solo en pre-commit local; CI corre `npm run lint` independientemente |
-| Prettier cambia código de forma inesperada | Revisar diff antes de commitear; `.prettierrc` usa config estándar predecible |
+| Prettier cambia código de forma inesperada  | Revisar diff antes de commitear; `.prettierrc` usa config estándar predecible        |
 
 ## What is **not** in this spec
 

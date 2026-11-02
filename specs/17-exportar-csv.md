@@ -58,6 +58,7 @@ id,tipo_encuesta,created_at,tiempo_total_segundos,p1,p2,p3,...,_metadata.fuente,
 ```
 
 **Notas:**
+
 - Las respuestas de checkbox (arrays) se unen con `;` para facilitar análisis en Excel.
 - Los campos de `_metadata` y `_geo` se aplanan con notación punto.
 - Las columnas vacías se dejan en blanco.
@@ -84,8 +85,8 @@ id,tipo_encuesta,created_at,tiempo_total_segundos,p1,p2,p3,...,_metadata.fuente,
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Muchos registros hacen lento el export | Cargar de a bloques si supera 1000 registros |
-| Excel abre CSV con encoding incorrecto | Agregar BOM UTF-8 (`\uFEFF`) al inicio del archivo |
+| Risk                                             | Mitigation                                             |
+| ------------------------------------------------ | ------------------------------------------------------ |
+| Muchos registros hacen lento el export           | Cargar de a bloques si supera 1000 registros           |
+| Excel abre CSV con encoding incorrecto           | Agregar BOM UTF-8 (`\uFEFF`) al inicio del archivo     |
 | Campos con comas o saltos de línea rompen el CSV | Escapar correctamente con comillas dobles (`"` → `""`) |
