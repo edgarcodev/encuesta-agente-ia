@@ -13,9 +13,10 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'npm run build && npx serve dist -p 4173',
+    command: 'SUPABASE_URL=http://test SUPABASE_ANON_KEY=test npm run build && npx serve dist -p 4173',
     port: 4173,
     reuseExistingServer: !process.env.CI,
+    timeout: 60000,
   },
   projects: [
     {
