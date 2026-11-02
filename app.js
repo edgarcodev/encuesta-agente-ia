@@ -1,3 +1,6 @@
+import { evaluateCondition, applyDynamicDefinition, parseQuestions } from './lib/conditions.js';
+import { buildSendPayload, buildRequestBody, handleApiResponse, resolveNonce, sendSurveyResponse } from './lib/envio.js';
+
 (function() {
     'use strict';
 
@@ -37,96 +40,6 @@
             questionsUrl: '/config/preguntas/vendedores.json'
         }
     };
-
-    // ================================================================
-    // CONDITION ENGINE — evaluador declarativo sin eval()
-    // ================================================================
-
-    function evaluateCondition(cond, answers) {
-        if (cond.always) return true;
-
-        // AND logic
-        if (cond.logic === 'and' && Array.isArray(cond.conditions)) {
-            return cond.conditions.every(c => evaluateCondition(c, answers));
-        }
-        // OR logic
-        if (cond.logic === 'or' && Array.isArray(cond.conditions)) {
-            return cond.conditions.some(c => evaluateCondition(c, answers));
-        }
-
-        const val = answers[cond.field];
-
-        switch (cond.operator) {
-            case 'equals':
-                return val === cond.value;
-            case 'notEquals':
-                return val !== cond.value;
-            case 'oneOf':
-                return Array.isArray(cond.value) && cond.value.includes(val);
-            case 'includes':
-                return Array.isArray(val) && val.includes(cond.value);
-            case 'notIncludes':
-                return Array.isArray(val) && !val.includes(cond.value);
-            default:
-                return true;
-        }
-    }
-
-    // ================================================================
-    // DYNAMIC DEFINITION ENGINE
-    // ================================================================
-
-    function applyDynamicDefinition(rawStep, answers) {
-        if (!rawStep.dynamicDefinition) return rawStep;
-
-        const dd = rawStep.dynamicDefinition;
-        let match = false;
-
-        if (dd.logic === 'and' && Array.isArray(dd.conditions)) {
-            match = dd.conditions.every(c => evaluateCondition(c, answers));
-        } else if (dd.when) {
-            const fieldVal = answers[dd.field];
-            if (dd.when.operator === 'equals') {
-                match = fieldVal === dd.when.value;
-            } else if (dd.when.operator === 'oneOf') {
-                match = dd.when.value.includes(fieldVal);
-            }
-        }
-
-        const variant = match ? dd.then : dd.else;
-        return Object.assign({}, rawStep, variant);
-    }
-
-    // ================================================================
-    // PARSE QUESTIONS — JSON → steps con condition() y getDefinition()
-    // ================================================================
-
-    function parseQuestions(rawQuestions) {
-        return rawQuestions.map(raw => {
-            const step = Object.assign({}, raw);
-            delete step.condition;
-            delete step.dynamicDefinition;
-
-            // Wrap condition
-            step.condition = function() {
-                return evaluateCondition(raw.condition, answers);
-            };
-
-            // Wrap dynamicDefinition
-            if (raw.dynamicDefinition) {
-                step.getDefinition = function() {
-                    return applyDynamicDefinition(raw, answers);
-                };
-            }
-
-            // Normalize options: convert string arrays to {label, value} objects
-            if (Array.isArray(raw.options) && raw.options.length > 0 && typeof raw.options[0] === 'string') {
-                step.options = raw.options.map(label => ({ label, value: label }));
-            }
-
-            return step;
-        });
-    }
 
     // ================================================================
     // ESTADO GLOBAL
@@ -212,62 +125,29 @@
     // ENVÍO
     // ================================================================
     function enviarRespuestas(geo, allowMetadata) {
-        const dataToSend = {};
-        for (const key in answers) {
-            if (answers[key] !== undefined && answers[key] !== null && answers[key] !== '') {
-                dataToSend[key] = answers[key];
-            }
-        }
-
         const fin = new Date();
-        const tiempoTotal = Math.round((fin - inicioEncuesta) / 1000);
+        const nonce = resolveNonce(encuestaActiva, sessionStorage);
 
-        if (allowMetadata) {
-            dataToSend._metadata = {
-                fuente, dispositivo,
-                inicio: inicioEncuesta.toISOString(),
-                fin: fin.toISOString(),
-                tiempo_total_segundos: tiempoTotal,
-                tiempos_por_pregunta: tiemposPorPregunta,
-                conexion,
-                navegador: navigator.userAgent,
-                plataforma: navigator.platform || 'desconocida'
-            };
-            if (geo) dataToSend._geo = geo;
-        } else {
-            // Solo tiempo total — no identifica al usuario
-            dataToSend._metadata = { tiempo_total_segundos: tiempoTotal };
-        }
+        const metadata = {
+            fuente,
+            dispositivo,
+            inicio: inicioEncuesta,
+            fin,
+            tiempos_por_pregunta: tiemposPorPregunta,
+            conexion,
+            navegador: navigator.userAgent,
+            plataforma: navigator.platform || 'desconocida'
+        };
 
-        const nonce = encuestaActiva.NONCE_KEY
-            ? (sessionStorage.getItem(encuestaActiva.NONCE_KEY) || '')
-            : (encuestaActiva.NONCE || '');
-
-        return fetch(encuestaActiva.endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ datos: dataToSend, token: nonce, tipo_encuesta: encuestaActiva.tipo })
-        })
-        .then(async res => {
-            if (!res.ok) {
-                const t = await res.text();
-                let msg;
-                try { msg = JSON.parse(t).error || `Error ${res.status}`; }
-                catch (e) { msg = `Error ${res.status}: ${t || res.statusText}`; }
-                throw new Error(msg);
-            }
-            const t = await res.text();
-            if (!t) return {};
-            try { return JSON.parse(t); } catch (e) { return { success: true }; }
-        })
-        .then(data => {
-            datosEnviados = true;
-            try { localStorage.setItem(encuestaActiva.STORAGE_KEY, 'true'); } catch (e) {}
-            return { success: true, data };
-        })
-        .catch(error => {
-            console.error('❌ Error al enviar:', error);
-            return { success: false, error: error.message };
+        return sendSurveyResponse({
+            answers,
+            allowMetadata,
+            metadata,
+            geo,
+            startTime: inicioEncuesta.getTime(),
+            encuestaActiva,
+            nonce,
+            localStorage
         });
     }
 
@@ -635,7 +515,7 @@
                 return r.json();
             })
             .then(rawQuestions => {
-                steps = parseQuestions(rawQuestions);
+                steps = parseQuestions(rawQuestions, answers);
                 showApp();
             })
             .catch(err => {
