@@ -1,6 +1,6 @@
 # SPEC 23 — Pruebas unitarias y E2E para flujo de envío y pasos condicionales
 
-> **Status:** Draft
+> **Status:** Aprobado
 > **Depends on:** SPEC 02, SPEC 03, SPEC 09, SPEC 10, SPEC 19
 > **Date:** 2026-11-02
 > **Objective:** Agregar pruebas unitarias (Vitest) para el motor de condiciones, definiciones dinámicas, envío y API, más pruebas E2E (Playwright) que automatizan el flujo completo de encuesta incluyendo pasos condicionales, validaciones y consentimiento de privacidad, con ejecución en local y CI/CD.
