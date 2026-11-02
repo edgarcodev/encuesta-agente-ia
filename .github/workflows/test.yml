@@ -7,10 +7,31 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    needs: lint
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +55,7 @@ jobs:
     name: E2E Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs: lint
     steps:
       - name: Checkout
         uses: actions/checkout@v4
