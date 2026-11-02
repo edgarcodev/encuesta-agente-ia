@@ -9,7 +9,16 @@
     "test:unit:watch": "vitest",
     "test:e2e": "playwright test",
     "test": "npm run test:unit && npm run test:e2e",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  },
+  "lint-staged": {
+    "*.{js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
