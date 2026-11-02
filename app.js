@@ -1,4 +1,5 @@
 import { evaluateCondition, applyDynamicDefinition, parseQuestions } from './lib/conditions.js';
+import { buildSendPayload, buildRequestBody, handleApiResponse, resolveNonce, sendSurveyResponse } from './lib/envio.js';
 
 (function() {
     'use strict';
@@ -124,62 +125,29 @@ import { evaluateCondition, applyDynamicDefinition, parseQuestions } from './lib
     // ENVÍO
     // ================================================================
     function enviarRespuestas(geo, allowMetadata) {
-        const dataToSend = {};
-        for (const key in answers) {
-            if (answers[key] !== undefined && answers[key] !== null && answers[key] !== '') {
-                dataToSend[key] = answers[key];
-            }
-        }
-
         const fin = new Date();
-        const tiempoTotal = Math.round((fin - inicioEncuesta) / 1000);
+        const nonce = resolveNonce(encuestaActiva, sessionStorage);
 
-        if (allowMetadata) {
-            dataToSend._metadata = {
-                fuente, dispositivo,
-                inicio: inicioEncuesta.toISOString(),
-                fin: fin.toISOString(),
-                tiempo_total_segundos: tiempoTotal,
-                tiempos_por_pregunta: tiemposPorPregunta,
-                conexion,
-                navegador: navigator.userAgent,
-                plataforma: navigator.platform || 'desconocida'
-            };
-            if (geo) dataToSend._geo = geo;
-        } else {
-            // Solo tiempo total — no identifica al usuario
-            dataToSend._metadata = { tiempo_total_segundos: tiempoTotal };
-        }
+        const metadata = {
+            fuente,
+            dispositivo,
+            inicio: inicioEncuesta,
+            fin,
+            tiempos_por_pregunta: tiemposPorPregunta,
+            conexion,
+            navegador: navigator.userAgent,
+            plataforma: navigator.platform || 'desconocida'
+        };
 
-        const nonce = encuestaActiva.NONCE_KEY
-            ? (sessionStorage.getItem(encuestaActiva.NONCE_KEY) || '')
-            : (encuestaActiva.NONCE || '');
-
-        return fetch(encuestaActiva.endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ datos: dataToSend, token: nonce, tipo_encuesta: encuestaActiva.tipo })
-        })
-        .then(async res => {
-            if (!res.ok) {
-                const t = await res.text();
-                let msg;
-                try { msg = JSON.parse(t).error || `Error ${res.status}`; }
-                catch (e) { msg = `Error ${res.status}: ${t || res.statusText}`; }
-                throw new Error(msg);
-            }
-            const t = await res.text();
-            if (!t) return {};
-            try { return JSON.parse(t); } catch (e) { return { success: true }; }
-        })
-        .then(data => {
-            datosEnviados = true;
-            try { localStorage.setItem(encuestaActiva.STORAGE_KEY, 'true'); } catch (e) {}
-            return { success: true, data };
-        })
-        .catch(error => {
-            console.error('❌ Error al enviar:', error);
-            return { success: false, error: error.message };
+        return sendSurveyResponse({
+            answers,
+            allowMetadata,
+            metadata,
+            geo,
+            startTime: inicioEncuesta.getTime(),
+            encuestaActiva,
+            nonce,
+            localStorage
         });
     }
 
