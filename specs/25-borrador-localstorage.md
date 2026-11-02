@@ -1,6 +1,6 @@
 # SPEC 25 — Guardar borrador en `localStorage` para retomar encuesta
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 23
 > **Date:** 2026-11-02
 > **Objective:** Guardar respuestas y progreso de la encuesta en `localStorage` para que el usuario pueda retomar donde lo dejó si cierra o recarga la página.
