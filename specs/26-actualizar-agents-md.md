@@ -1,6 +1,6 @@
 # SPEC 26 — Actualizar `AGENTS.md` con comandos de test y lint
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 23, SPEC 24
 > **Date:** 2026-11-02
 > **Objective:** Documentar en `AGENTS.md` los comandos de testing (Vitest, Playwright) y linting (ESLint, Prettier) agregados en los specs anteriores, incluyendo scripts de `package.json`, estructura de tests, y configuración de CI/CD.

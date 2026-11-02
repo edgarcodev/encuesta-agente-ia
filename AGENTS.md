@@ -90,11 +90,69 @@ Está implementado en `index.html` con el elemento `#splashScreen` (oculto por d
 ## Commands
 
 - **`npm run build`** — generates `dist/` locally.
-- **`npm install`** — installs `esbuild` (only devDependency).
-- There are **no test/lint scripts**. Verification is manual:
-  - Open `index.html` in a browser to test the survey frontend (source files, no build needed).
-  - Open `dist/index.html` to test the bundled output.
-  - Deploy to Vercel (or use Vercel CLI) to test `api/encuesta.js`; local execution of the serverless function requires the Vercel runtime or a compatible fetch shim.
+- **`npm install`** — installs all dependencies (dev + prod).
+- **`npm run test`** — runs all tests (unit + E2E).
+- **`npm run test:unit`** — runs Vitest unit tests only (frontend logic + API).
+- **`npm run test:unit:watch`** — runs Vitest in watch mode.
+- **`npm run test:e2e`** — runs Playwright E2E tests only (starts local server automatically).
+- **`npm run lint`** — runs ESLint on all `*.js` and `*.mjs` files.
+- **`npm run lint:fix`** — runs ESLint with `--fix` to auto-correct issues.
+- **`npm run format`** — runs Prettier to format all files.
+
+## Testing
+
+### Frameworks
+
+| Framework  | Purpose      | Config files                          | Test files              |
+| ---------- | ------------ | ------------------------------------- | ----------------------- |
+| **Vitest** | Unit tests   | `vitest.config.js` (jsdom), `vitest-api.config.js` (node) | `tests/unit/*.test.js`  |
+| **Playwright** | E2E tests | `playwright.config.js` (serves `dist/` on port 4173) | `tests/e2e/*.spec.js`   |
+
+### Unit tests (`tests/unit/`)
+
+- **`conditions.test.js`** — `evaluateCondition()`, `applyDynamicDefinition()`, `parseQuestions()` from `lib/conditions.js`.
+- **`enviar.test.js`** — `buildSendPayload()`, `buildRequestBody()`, `handleApiResponse()`, `resolveNonce()`, `sendSurveyResponse()` from `lib/envio.js`.
+- **`api.test.js`** — `api/encuesta.js` handler: token validation, rate limiting, payload validation, IP extraction, Supabase insert.
+- **`draft.test.js`** — `getDraftKey()`, `saveDraft()`, `loadDraft()`, `clearDraft()` from `lib/draft.js`.
+
+Vitest uses `jsdom` environment for frontend tests and `node` for API tests. Each test file uses mock `fetch` and mock `localStorage`.
+
+### E2E tests (`tests/e2e/`)
+
+- **`survey.spec.js`** — Full survey flows (compradores, vendedores), conditional steps, field validation, privacy consent, invalid type, already-submitted check, proveedores coming soon.
+- **`draft.spec.js`** — Draft save/restore after reload, discard draft, no prompt after submission, type isolation.
+
+E2E tests intercept the API with `page.route()` to mock responses — no Supabase dependency. The Playwright web server builds and serves `dist/` automatically.
+
+### CI/CD
+
+GitHub Actions workflow (`.github/workflows/test.yml`) runs on push/PR to `main`:
+
+1. **`lint`** job — `npm ci` → `npm run lint` (blocks further jobs if fails).
+2. **`unit-tests`** job — depends on `lint` → `npm ci` → build → `npm run test:unit`.
+3. **`e2e-tests`** job — depends on `lint` → `npm ci` → install Playwright → build → `npm run test:e2e`.
+
+On E2E failure, test results (screenshots) are uploaded as artifacts.
+
+## Linting & Formatting
+
+### ESLint
+
+- Flat config in `eslint.config.js` (ESLint v9+).
+- Separate rule sets for browser files (`app.js`, `lib/*.js`, `tests/e2e/`), Node files (`api/*.js`, `build.mjs`, `tests/unit/api.test.js`), and Vitest test files.
+- Dashboard files have `Chart` as a global (loaded via CDN).
+- Ignores `dist/`, `node_modules/`, `playwright-report/`, `test-results/`, `references/`, and non-JS files.
+
+### Prettier
+
+- Config in `.prettierrc`: `printWidth: 100`, `semi: true`, `singleQuote: true`, `tabWidth: 2`, `trailingComma: 'es5'`.
+- Ignores `dist/`, `node_modules/`, `package-lock.json`, `playwright-report/`, `test-results/`.
+
+### Husky + lint-staged
+
+- Pre-commit hook in `.husky/pre-commit` runs `npx lint-staged`.
+- Lints and formats only staged `*.js` and `*.mjs` files before each commit.
+- The hook auto-fixes with `eslint --fix` and `prettier --write`.
 
 ## Data model
 
@@ -263,6 +321,12 @@ select policyname, roles, cmd from pg_policies where tablename = 'respuestas_enc
 ├── app.js                        ← Survey engine (loads JSON, renders, sends)
 ├── build.mjs                     ← Build script (esbuild + copy)
 ├── vercel.json                   ← Vercel routing config
+├── eslint.config.js              ← ESLint flat config
+├── vitest.config.js              ← Vitest config (jsdom, frontend tests)
+├── vitest-api.config.js          ← Vitest config (node, API tests)
+├── playwright.config.js          ← Playwright E2E config
+├── .prettierrc                   ← Prettier config
+├── .prettierignore               ← Prettier ignore patterns
 ├── api/
 │   └── encuesta.js               ← Serverless function (POST to Supabase)
 ├── config/
@@ -270,6 +334,10 @@ select policyname, roles, cmd from pg_policies where tablename = 'respuestas_enc
 │       ├── compradores.json      ← 41 questions
 │       ├── vendedores.json       ← 38 questions
 │       └── .gitkeep
+├── lib/                          ← Pure function modules (testable)
+│   ├── conditions.js             ← Condition engine + dynamic definitions
+│   ├── envio.js                  ← Payload construction + API send
+│   └── draft.js                  ← localStorage draft save/restore
 ├── login/                        ← Login page + Supabase Auth
 │   ├── index.html
 │   └── auth.js
@@ -279,6 +347,17 @@ select policyname, roles, cmd from pg_policies where tablename = 'respuestas_enc
 │   ├── charts.js                 ← Chart.js configuration
 │   ├── config.js                 ← Env vars (injected by build)
 │   └── export.js                 ← CSV export functionality
+├── tests/                        ← Test files
+│   ├── unit/                     ← Vitest unit tests
+│   │   ├── conditions.test.js
+│   │   ├── enviar.test.js
+│   │   ├── api.test.js
+│   │   └── draft.test.js
+│   └── e2e/                      ← Playwright E2E tests
+│       ├── survey.spec.js
+│       └── draft.spec.js
+├── .husky/                       ← Git hooks
+│   └── pre-commit                ← Runs lint-staged
 ├── references/
 │   └── vendedores/               ← Standalone survey template
 │       ├── index.html
@@ -286,6 +365,9 @@ select policyname, roles, cmd from pg_policies where tablename = 'respuestas_enc
 │       ├── vercel.json
 │       └── README.md
 ├── specs/                        ← Spec documents
+├── .github/
+│   └── workflows/
+│       └── test.yml              ← CI/CD (lint → unit → e2e)
 └── supabase/
     └── migrations/               ← SQL migrations
 ```
