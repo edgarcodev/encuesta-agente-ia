@@ -26,16 +26,17 @@ Actualmente `respuestas_encuesta` tiene RLS habilitado pero **sin políticas** �
 
 ## Políticas propuestas
 
-| Política | Tabla | Rol | Operación | Condición |
-|----------|-------|-----|-----------|-----------|
-| `Dashboard puede leer respuestas` | `respuestas_encuesta` | `authenticated` | SELECT | `auth.uid() IS NOT NULL` |
-| `Dashboard puede leer respuestas vendedores` | `respuestas_encuesta_vendedores` | `authenticated` | SELECT | `auth.uid() IS NOT NULL` |
+| Política                                     | Tabla                            | Rol             | Operación | Condición                |
+| -------------------------------------------- | -------------------------------- | --------------- | --------- | ------------------------ |
+| `Dashboard puede leer respuestas`            | `respuestas_encuesta`            | `authenticated` | SELECT    | `auth.uid() IS NOT NULL` |
+| `Dashboard puede leer respuestas vendedores` | `respuestas_encuesta_vendedores` | `authenticated` | SELECT    | `auth.uid() IS NOT NULL` |
 
 **Nota:** `service_role` bypass RLS automáticamente — no necesita políticas explícitas para INSERT.
 
 ## Implementation plan
 
 1. **Crear `supabase/migrations/0003_rls_respuestas_encuesta.sql`**:
+
    ```sql
    -- Política: usuarios autenticados pueden leer todas las respuestas
    create policy "authenticated_read" on public.respuestas_encuesta
@@ -75,8 +76,8 @@ Actualmente `respuestas_encuesta` tiene RLS habilitado pero **sin políticas** �
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Política muy permisiva (todos los auth leen todo) | Roles diferenciados vienen en SPEC futuro |
-| API deja de funcionar | `service_role` bypass RLS — no se ve afectado |
-| Migración falla si ya existe | Seguir convención: sin `IF NOT EXISTS` — el error indica que ya existe |
+| Risk                                              | Mitigation                                                             |
+| ------------------------------------------------- | ---------------------------------------------------------------------- |
+| Política muy permisiva (todos los auth leen todo) | Roles diferenciados vienen en SPEC futuro                              |
+| API deja de funcionar                             | `service_role` bypass RLS — no se ve afectado                          |
+| Migración falla si ya existe                      | Seguir convención: sin `IF NOT EXISTS` — el error indica que ya existe |

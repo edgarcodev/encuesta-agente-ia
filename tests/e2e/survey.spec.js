@@ -45,10 +45,10 @@ async function answerCurrentStep(page) {
   await page.waitForSelector('.question-area', { state: 'visible' });
 
   // Determine step type by looking at the inputs
-  const hasRadio = await page.locator('input[type="radio"]').count() > 0;
-  const hasCheckbox = await page.locator('input[type="checkbox"]').count() > 0;
-  const hasText = await page.locator('input[type="text"]').count() > 0;
-  const hasTextarea = await page.locator('textarea').count() > 0;
+  const hasRadio = (await page.locator('input[type="radio"]').count()) > 0;
+  const hasCheckbox = (await page.locator('input[type="checkbox"]').count()) > 0;
+  const hasText = (await page.locator('input[type="text"]').count()) > 0;
+  const hasTextarea = (await page.locator('textarea').count()) > 0;
 
   if (hasRadio) {
     // Click the first radio option
@@ -86,7 +86,7 @@ async function completeSurveySteps(page) {
 
     // Check if we got to the summary (no more question-area)
     const questionArea = page.locator('.question-area');
-    if (await questionArea.count() === 0) break;
+    if ((await questionArea.count()) === 0) break;
   }
 }
 
@@ -95,14 +95,13 @@ async function completeSurveySteps(page) {
 // ================================================================
 
 test.describe('Survey E2E', () => {
-
   test('completes full buyers survey flow', async ({ page }) => {
     // Intercept API call
     await page.route('**/api/encuesta', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ success: true }),
       });
     });
 
@@ -129,7 +128,9 @@ test.describe('Survey E2E', () => {
     await page.getByRole('button', { name: /Confirmar y enviar/ }).click();
 
     // Should show success message
-    await expect(page.getByText('¡Encuesta enviada correctamente!')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('¡Encuesta enviada correctamente!')).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('completes full sellers survey flow', async ({ page }) => {
@@ -137,7 +138,7 @@ test.describe('Survey E2E', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ success: true }),
       });
     });
 
@@ -159,7 +160,9 @@ test.describe('Survey E2E', () => {
     await page.getByRole('button', { name: /Confirmar y enviar/ }).click();
 
     // Should show success message
-    await expect(page.getByText('¡Encuesta enviada correctamente!')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('¡Encuesta enviada correctamente!')).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('conditional steps appear/disappear based on answers', async ({ page }) => {
@@ -167,7 +170,7 @@ test.describe('Survey E2E', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ success: true }),
       });
     });
 
@@ -218,7 +221,7 @@ test.describe('Survey E2E', () => {
 
   test('prevents advancing without answering required fields', async ({ page }) => {
     let alertMessage = '';
-    page.on('dialog', async dialog => {
+    page.on('dialog', async (dialog) => {
       alertMessage = dialog.message();
       await dialog.accept();
     });
@@ -248,7 +251,7 @@ test.describe('Survey E2E', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ success: true }),
       });
     });
 
@@ -292,7 +295,7 @@ test.describe('Survey E2E', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ success: true })
+        body: JSON.stringify({ success: true }),
       });
     });
 
@@ -301,7 +304,9 @@ test.describe('Survey E2E', () => {
     await page.locator('#startSurveyBtn').click();
     await completeSurveySteps(page);
     await page.getByRole('button', { name: /Confirmar y enviar/ }).click();
-    await expect(page.getByText('¡Encuesta enviada correctamente!')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('¡Encuesta enviada correctamente!')).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify localStorage was set
     const stored = await page.evaluate(() => localStorage.getItem('megaremates_encuesta_enviada'));

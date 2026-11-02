@@ -30,16 +30,16 @@ Actualmente `/?` sin parámetro carga la encuesta de compradores por defecto (`|
 
 ## Rutas objetivo
 
-| URL | Comportamiento |
-|-----|---------------|
-| `/` | Landing page pública (placeholder hasta que se defina contenido) |
-| `/?tipo=compradores` | Splash → Encuesta compradores (41 preguntas) |
-| `/?tipo=vendedores` | Splash → Encuesta vendedores (38 preguntas) |
-| `/?tipo=proveedores` | Mensaje "Encuesta no disponible aún" |
-| `/?tipo=<inválido>` | Mensaje de error con tipos válidos |
-| `/login` | *(Fase 3)* Página de autenticación con Supabase Auth |
-| `/dashboard` | *(Fase 3)* Dashboard protegido con sesión válida |
-| `/dashboard?tipo=compradores\|vendedores\|proveedores` | *(Fase 3)* Dashboard filtrado por tipo |
+| URL                                                    | Comportamiento                                                   |
+| ------------------------------------------------------ | ---------------------------------------------------------------- |
+| `/`                                                    | Landing page pública (placeholder hasta que se defina contenido) |
+| `/?tipo=compradores`                                   | Splash → Encuesta compradores (41 preguntas)                     |
+| `/?tipo=vendedores`                                    | Splash → Encuesta vendedores (38 preguntas)                      |
+| `/?tipo=proveedores`                                   | Mensaje "Encuesta no disponible aún"                             |
+| `/?tipo=<inválido>`                                    | Mensaje de error con tipos válidos                               |
+| `/login`                                               | _(Fase 3)_ Página de autenticación con Supabase Auth             |
+| `/dashboard`                                           | _(Fase 3)_ Dashboard protegido con sesión válida                 |
+| `/dashboard?tipo=compradores\|vendedores\|proveedores` | _(Fase 3)_ Dashboard filtrado por tipo                           |
 
 ## Estructura de archivos (futuro)
 
@@ -116,8 +116,8 @@ Actualmente `/?` sin parámetro carga la encuesta de compradores por defecto (`|
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| `vercel.json` intercepta `/login` con el catch-all | Agregar rewrite explícito antes del catch-all |
-| Splash screen se muestra sin `?tipo=` | Condicional en `init()`: solo splash si hay `tipo` válido |
-| Landing page sin contenido útil | Placeholder con links a encuestas; contenido real en spec futuro |
+| Risk                                               | Mitigation                                                       |
+| -------------------------------------------------- | ---------------------------------------------------------------- |
+| `vercel.json` intercepta `/login` con el catch-all | Agregar rewrite explícito antes del catch-all                    |
+| Splash screen se muestra sin `?tipo=`              | Condicional en `init()`: solo splash si hay `tipo` válido        |
+| Landing page sin contenido útil                    | Placeholder con links a encuestas; contenido real en spec futuro |

@@ -73,8 +73,8 @@ El dashboard actual muestra KPIs, 3 gráficos básicos y export CSV. Para análi
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Muchos registros hacen lenta la tabla | Paginación + limit en query a Supabase |
+| Risk                                      | Mitigation                                       |
+| ----------------------------------------- | ------------------------------------------------ |
+| Muchos registros hacen lenta la tabla     | Paginación + limit en query a Supabase           |
 | Filtro de fechas no funciona con timezone | Usar `created_at` directamente de Supabase (UTC) |
-| UI se sobrecarga con tantas features | Tabs para separar gráficos de tabla |
+| UI se sobrecarga con tantas features      | Tabs para separar gráficos de tabla              |

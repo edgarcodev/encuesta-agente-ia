@@ -44,21 +44,21 @@ No se introducen nuevas estructuras de datos. Se reusa el modelo existente (`ans
 ## Acceptance criteria
 
 - [x] `index.html` no contiene ningún bloque `<style>` ni `<script>` en línea (solo `<link rel="stylesheet" href="styles.css">` y `<script src="app.js" defer></script>`).
-  → Verificado: `grep -c '<style>' index.html` = 0, `grep -c '<script>' index.html` (sin src) = 0. Tiene `<link rel="stylesheet" href="styles.css">` (línea 7) y `<script src="app.js" defer></script>` (línea 28).
+      → Verificado: `grep -c '<style>' index.html` = 0, `grep -c '<script>' index.html` (sin src) = 0. Tiene `<link rel="stylesheet" href="styles.css">` (línea 7) y `<script src="app.js" defer></script>` (línea 28).
 - [x] Existen los archivos `styles.css` y `app.js` en la raíz del repositorio.
-  → `styles.css`: 158 líneas, `app.js`: 1199 líneas. Ambos en raíz, confirmados por `git diff --name-status main`.
+      → `styles.css`: 158 líneas, `app.js`: 1199 líneas. Ambos en raíz, confirmados por `git diff --name-status main`.
 - [x] `styles.css` incluye `#splashScreen` con `background: #fff100`, `.splash-logo`, `.splash-title` y la media query `@media (max-width: 480px)`.
-  → Verificado: `#splashScreen` (línea 131), `background: #fff100` (línea 134), `.splash-logo` (línea 144), `.splash-title` (línea 149), `@media (max-width: 480px)` (línea 153).
+      → Verificado: `#splashScreen` (línea 131), `background: #fff100` (línea 134), `.splash-logo` (línea 144), `.splash-title` (línea 149), `@media (max-width: 480px)` (línea 153).
 - [x] `app.js` incluye `const NONCE = "f8fc62c3199a7c297b576ac9aadb9a52";`, `steps`, `renderStep()`, `showSummary()`, `init()` y `window.addEventListener('load', init)`.
-  → Verificado: `NONCE` línea 4, `window.addEventListener('load', init)` línea 1198, `function init` línea 1146, `function renderStep` línea 958, `function showSummary` línea 1079. 41 `steps.push`. Sin duplicación (`grep -c` = 1 para init y load).
+      → Verificado: `NONCE` línea 4, `window.addEventListener('load', init)` línea 1198, `function init` línea 1146, `function renderStep` línea 958, `function showSummary` línea 1079. 41 `steps.push`. Sin duplicación (`grep -c` = 1 para init y load).
 - [x] Abrir `index.html` en el navegador muestra la splash (fondo amarillo, logo MegaRemates, texto "Encuesta realizada por MegaRemates", botón "Comenzar encuesta").
-  → Markup verificado en `index.html` líneas 11-14: splashScreen con logo, título, botón. Todos los assets referenciados existen (`images/megaremates.svg`, `styles.css`, `app.js`).
+      → Markup verificado en `index.html` líneas 11-14: splashScreen con logo, título, botón. Todos los assets referenciados existen (`images/megaremates.svg`, `styles.css`, `app.js`).
 - [x] Clic en "Comenzar encuesta" oculta el splash y muestra el formulario del paso 1.
-  → Verificado en `app.js`: `startSurveyBtn` click handler en `init()` oculta splash, muestra app, llama `renderStep()`.
+      → Verificado en `app.js`: `startSurveyBtn` click handler en `init()` oculta splash, muestra app, llama `renderStep()`.
 - [x] La navegación (Anterior/Siguiente), validaciones, envío a `/api/encuesta` y pantalla de resumen funcionan igual que antes del refactor.
-  → Contenido JS idéntico al original (`diff -w` sin diferencias). Endpoint `/api/encuesta` presente (línea 842). Contrato de envío intacto.
+      → Contenido JS idéntico al original (`diff -w` sin diferencias). Endpoint `/api/encuesta` presente (línea 842). Contrato de envío intacto.
 - [x] Consola del navegador sin errores de carga de `styles.css` ni `app.js` (ni 404).
-  → Todos los archivos referenciados existen. Rutas relativas desde raíz. `vercel.json` tiene API rewrite antes del catch-all, sirviendo assets estáticos correctamente.
+      → Todos los archivos referenciados existen. Rutas relativas desde raíz. `vercel.json` tiene API rewrite antes del catch-all, sirviendo assets estáticos correctamente.
 
 ## Checklist de verificación completo
 
@@ -83,12 +83,12 @@ No se introducen nuevas estructuras de datos. Se reusa el modelo existente (`ans
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Al extraer el CSS/JS se rompe algún selector o se pierde un estilo | Copiar bloques tal cual, sin reescribir; verificar visualmente contra el `index.html` original |
-| Las rutas relativas de assets fallan en algún despliegue | Rutas relativas desde la raíz funcionan en `file://` y en Vercel (servido desde `/`) |
-| `defer` retría la ejecución y el splash parpadea | El splash se controla por JS en `init` (oculto/mostrado), igual que antes; `defer` no cambia el comportamiento observable |
-| Perder el valor de `NONCE` al moverlo | Se copia exactamente `f8fc62c3199a7c297b576ac9aadb9a52`; se verifica en acceptance criteria |
+| Risk                                                               | Mitigation                                                                                                                |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Al extraer el CSS/JS se rompe algún selector o se pierde un estilo | Copiar bloques tal cual, sin reescribir; verificar visualmente contra el `index.html` original                            |
+| Las rutas relativas de assets fallan en algún despliegue           | Rutas relativas desde la raíz funcionan en `file://` y en Vercel (servido desde `/`)                                      |
+| `defer` retría la ejecución y el splash parpadea                   | El splash se controla por JS en `init` (oculto/mostrado), igual que antes; `defer` no cambia el comportamiento observable |
+| Perder el valor de `NONCE` al moverlo                              | Se copia exactamente `f8fc62c3199a7c297b576ac9aadb9a52`; se verifica en acceptance criteria                               |
 
 ## What is **not** in this spec
 

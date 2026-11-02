@@ -13,6 +13,7 @@ El proyecto tiene dos patrones de encuestas:
 2. **Encuestas independientes** (`references/<tipo>/`) — cada una con su propio `index.html`, `api/encuesta.js` y `vercel.json`, para despliegue separado (otro dominio, otro proyecto Vercel).
 
 `references/vendedores/` existe pero no está actualizado con:
+
 - Campo `tipo_encuesta` en el POST (SPEC 08)
 - Pantalla splash de bienvenida
 - Consistencia con la arquitectura actual
@@ -82,7 +83,7 @@ references/<tipo>/
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                              | Mitigation                                                            |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------- |
 | Duplicación de preguntas entre `index.html` y `config/preguntas/` | Documentar que son independientes; SPEC 10 ya centralizó la principal |
-| Olvidar actualizar `references/` al cambiar preguntas | No es obligatorio — son patrones distintos |
+| Olvidar actualizar `references/` al cambiar preguntas             | No es obligatorio — son patrones distintos                            |

@@ -65,12 +65,12 @@ This feature introduces no new data structures. It reuses the existing model:
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                                                                                        | Mitigation                                                                                                                        |
+| --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | El valor de `SECRET_NONCE` en Vercel no coincide con `const NONCE` en `index.html` → todos los envíos legítimos reciben 401 | Verificación conductual en producción (paso 4) antes de marcar Implementado; rotar siempre en los 3 lugares a la vez si se rotara |
-| Alguien sube `.env` por error al repo → exposición de `SUPABASE_SERVICE_KEY` | `.env` está en `.gitignore`; revisar antes de commitear |
-| Desarrollo local roto si falta `.env` y no se traen las variables con `vercel env pull` | Documentar en `AGENTS.md` que `.env` es conveniencia local y cómo poblarlo desde el dashboard |
-| Las variables no existen realmente en Vercel (asunción del usuario) | Paso 1 las confirma; si faltan, se crean antes de continuar (fuera de esta spec) |
+| Alguien sube `.env` por error al repo → exposición de `SUPABASE_SERVICE_KEY`                                                | `.env` está en `.gitignore`; revisar antes de commitear                                                                           |
+| Desarrollo local roto si falta `.env` y no se traen las variables con `vercel env pull`                                     | Documentar en `AGENTS.md` que `.env` es conveniencia local y cómo poblarlo desde el dashboard                                     |
+| Las variables no existen realmente en Vercel (asunción del usuario)                                                         | Paso 1 las confirma; si faltan, se crean antes de continuar (fuera de esta spec)                                                  |
 
 ## What is **not** in this spec
 

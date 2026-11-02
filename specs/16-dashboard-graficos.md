@@ -122,9 +122,9 @@ select datos->>'p1' as respuesta, count(*)
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Muchos datos hacen lento el dashboard | Limitar a últimos 30 días, agregar índices si necesario |
-| Chart.js CDN falla | Incluir fallback o mensaje de error |
-| RLS bloquea queries del dashboard | Ya verificado en SPEC 15 — `authenticated` puede SELECT |
-| `datos` JSONB es complejo de parsear | Usar PostgREST con `select=id,datos,tipo_encuesta,created_at` y parsear en JS |
+| Risk                                  | Mitigation                                                                    |
+| ------------------------------------- | ----------------------------------------------------------------------------- |
+| Muchos datos hacen lento el dashboard | Limitar a últimos 30 días, agregar índices si necesario                       |
+| Chart.js CDN falla                    | Incluir fallback o mensaje de error                                           |
+| RLS bloquea queries del dashboard     | Ya verificado en SPEC 15 — `authenticated` puede SELECT                       |
+| `datos` JSONB es complejo de parsear  | Usar PostgREST con `select=id,datos,tipo_encuesta,created_at` y parsear en JS |

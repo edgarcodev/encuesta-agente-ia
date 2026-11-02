@@ -20,7 +20,7 @@ function mockRes(extra = {}) {
     status: vi.fn().mockReturnThis(),
     json: vi.fn().mockReturnThis(),
     setHeader: vi.fn(),
-    ...extra
+    ...extra,
   };
   return res;
 }
@@ -31,12 +31,12 @@ function mockReq(overrides = {}) {
     body: {
       datos: validAnswers(),
       token: VALID_TOKEN,
-      tipo_encuesta: 'compradores'
+      tipo_encuesta: 'compradores',
     },
     headers: {
       'x-real-ip': '192.168.1.100',
-      'x-forwarded-for': '192.168.1.100'
-    }
+      'x-forwarded-for': '192.168.1.100',
+    },
   };
   return { ...defaults, ...overrides };
 }
@@ -50,14 +50,14 @@ function createMockApi(rlOk, rlBody, insertOk, insertStatus) {
       return {
         ok: rlOk,
         status: rlOk ? 200 : 500,
-        json: () => Promise.resolve(rlBody || { count: 1, retry_after: 60 })
+        json: () => Promise.resolve(rlBody || { count: 1, retry_after: 60 }),
       };
     }
     if (url.includes('respuestas_encuesta')) {
       return {
         ok: insertOk,
         status: insertStatus || (insertOk ? 201 : 500),
-        text: () => Promise.resolve(insertOk ? '{"inserted": true}' : 'Supabase error')
+        text: () => Promise.resolve(insertOk ? '{"inserted": true}' : 'Supabase error'),
       };
     }
     return { ok: false, status: 404, text: () => Promise.resolve('') };
@@ -110,7 +110,7 @@ describe('api/encuesta.js', () => {
     expect(res.json).toHaveBeenCalledWith({ success: true });
 
     // Verify insert call
-    const insertCall = fetchFn.mock.calls.find(c => c[0].includes('respuestas_encuesta'));
+    const insertCall = fetchFn.mock.calls.find((c) => c[0].includes('respuestas_encuesta'));
     expect(insertCall).toBeDefined();
     const body = JSON.parse(insertCall[1].body);
     expect(body.datos.p1).toBe('answer 1');
@@ -123,14 +123,16 @@ describe('api/encuesta.js', () => {
     const { fn: fetchFn } = createMockApi(true, { count: 1, retry_after: 60 }, false, 500);
     globalThis.fetch = fetchFn;
 
-    const req = mockReq({ body: { datos: validAnswers(), token: 'wrong_token', tipo_encuesta: 'compradores' } });
+    const req = mockReq({
+      body: { datos: validAnswers(), token: 'wrong_token', tipo_encuesta: 'compradores' },
+    });
     const res = mockRes();
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
     // No insert attempted
-    const insertCall = fetchFn.mock.calls.find(c => c[0].includes('respuestas_encuesta'));
+    const insertCall = fetchFn.mock.calls.find((c) => c[0].includes('respuestas_encuesta'));
     expect(insertCall).toBeUndefined();
   });
 
@@ -138,7 +140,9 @@ describe('api/encuesta.js', () => {
     const { fn: fetchFn } = createMockApi(true, { count: 1, retry_after: 60 }, false, 500);
     globalThis.fetch = fetchFn;
 
-    const req = mockReq({ body: { datos: validAnswers(), token: undefined, tipo_encuesta: 'compradores' } });
+    const req = mockReq({
+      body: { datos: validAnswers(), token: undefined, tipo_encuesta: 'compradores' },
+    });
     const res = mockRes();
     await handler(req, res);
 
@@ -158,11 +162,11 @@ describe('api/encuesta.js', () => {
 
     expect(res.status).toHaveBeenCalledWith(429);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Demasiados envíos desde esta conexión. Inténtalo de nuevo en unos minutos.'
+      error: 'Demasiados envíos desde esta conexión. Inténtalo de nuevo en unos minutos.',
     });
     expect(res.setHeader).toHaveBeenCalledWith('Retry-After', '120');
     // No insert attempted
-    const insertCall = fetchFn.mock.calls.find(c => c[0].includes('respuestas_encuesta'));
+    const insertCall = fetchFn.mock.calls.find((c) => c[0].includes('respuestas_encuesta'));
     expect(insertCall).toBeUndefined();
   });
 
@@ -209,7 +213,9 @@ describe('api/encuesta.js', () => {
     const { fn: fetchFn } = createMockApi(true, { count: 1, retry_after: 60 }, false, 500);
     globalThis.fetch = fetchFn;
 
-    const req = mockReq({ body: { datos: { p1: 'a', p2: 'b' }, token: VALID_TOKEN, tipo_encuesta: 'compradores' } });
+    const req = mockReq({
+      body: { datos: { p1: 'a', p2: 'b' }, token: VALID_TOKEN, tipo_encuesta: 'compradores' },
+    });
     const res = mockRes();
     await handler(req, res);
 
@@ -233,7 +239,9 @@ describe('api/encuesta.js', () => {
     const { fn: fetchFn } = createMockApi(true, { count: 1, retry_after: 60 }, false, 500);
     globalThis.fetch = fetchFn;
 
-    const req = mockReq({ body: { datos: 'not an object', token: VALID_TOKEN, tipo_encuesta: 'compradores' } });
+    const req = mockReq({
+      body: { datos: 'not an object', token: VALID_TOKEN, tipo_encuesta: 'compradores' },
+    });
     const res = mockRes();
     await handler(req, res);
 
@@ -246,12 +254,14 @@ describe('api/encuesta.js', () => {
     const { fn: fetchFn } = createMockApi(true, { count: 1, retry_after: 60 }, true, 201);
     globalThis.fetch = fetchFn;
 
-    const req = mockReq({ body: { datos: validAnswers(), token: VALID_TOKEN, tipo_encuesta: null } });
+    const req = mockReq({
+      body: { datos: validAnswers(), token: VALID_TOKEN, tipo_encuesta: null },
+    });
     const res = mockRes();
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(201);
-    const insertCall = fetchFn.mock.calls.find(c => c[0].includes('respuestas_encuesta'));
+    const insertCall = fetchFn.mock.calls.find((c) => c[0].includes('respuestas_encuesta'));
     const body = JSON.parse(insertCall[1].body);
     expect(body.tipo_encuesta).toBeNull();
   });
@@ -260,7 +270,9 @@ describe('api/encuesta.js', () => {
     const { fn: fetchFn } = createMockApi(true, { count: 1, retry_after: 60 }, false, 500);
     globalThis.fetch = fetchFn;
 
-    const req = mockReq({ body: { datos: validAnswers(), token: VALID_TOKEN, tipo_encuesta: 'invalido' } });
+    const req = mockReq({
+      body: { datos: validAnswers(), token: VALID_TOKEN, tipo_encuesta: 'invalido' },
+    });
     const res = mockRes();
     await handler(req, res);
 
@@ -272,12 +284,14 @@ describe('api/encuesta.js', () => {
     const { fn: fetchFn } = createMockApi(true, { count: 1, retry_after: 60 }, true, 201);
     globalThis.fetch = fetchFn;
 
-    const req = mockReq({ body: { datos: validAnswers(), token: VALID_TOKEN, tipo_encuesta: 'vendedores' } });
+    const req = mockReq({
+      body: { datos: validAnswers(), token: VALID_TOKEN, tipo_encuesta: 'vendedores' },
+    });
     const res = mockRes();
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(201);
-    const insertCall = fetchFn.mock.calls.find(c => c[0].includes('respuestas_encuesta'));
+    const insertCall = fetchFn.mock.calls.find((c) => c[0].includes('respuestas_encuesta'));
     const body = JSON.parse(insertCall[1].body);
     expect(body.tipo_encuesta).toBe('vendedores');
   });
@@ -292,7 +306,7 @@ describe('api/encuesta.js', () => {
     const res = mockRes();
     await handler(req, res);
 
-    const rlCall = calls.find(c => c.url.includes('rpc/increment_rate_limit'));
+    const rlCall = calls.find((c) => c.url.includes('rpc/increment_rate_limit'));
     expect(JSON.parse(rlCall.options.body)).toEqual({ p_ip: '10.0.0.5' });
   });
 
@@ -304,7 +318,7 @@ describe('api/encuesta.js', () => {
     const res = mockRes();
     await handler(req, res);
 
-    const rlCall = calls.find(c => c.url.includes('rpc/increment_rate_limit'));
+    const rlCall = calls.find((c) => c.url.includes('rpc/increment_rate_limit'));
     expect(JSON.parse(rlCall.options.body)).toEqual({ p_ip: '10.0.0.5' });
   });
 
@@ -316,7 +330,7 @@ describe('api/encuesta.js', () => {
     const res = mockRes();
     await handler(req, res);
 
-    const rlCall = calls.find(c => c.url.includes('rpc/increment_rate_limit'));
+    const rlCall = calls.find((c) => c.url.includes('rpc/increment_rate_limit'));
     expect(JSON.parse(rlCall.options.body)).toEqual({ p_ip: 'unknown' });
   });
 
@@ -385,7 +399,7 @@ describe('api/encuesta.js', () => {
     const res = mockRes();
     await handler(req, res);
 
-    const insertCall = fetchFn.mock.calls.find(c => c[0].includes('respuestas_encuesta'));
+    const insertCall = fetchFn.mock.calls.find((c) => c[0].includes('respuestas_encuesta'));
     const headers = insertCall[1].headers;
     expect(headers['apikey']).toBe('test-service-key');
     expect(headers['Authorization']).toBe('Bearer test-service-key');

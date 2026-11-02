@@ -89,8 +89,8 @@ const ENCUESTAS = {
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
-| `app.js` crece mucho con dos sets de preguntas | Temporal — SPEC 10 extraerá a JSON |
+| Risk                                                                | Mitigation                                                              |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `app.js` crece mucho con dos sets de preguntas                      | Temporal — SPEC 10 extraerá a JSON                                      |
 | Preguntas de vendedores inline en HTML vs estructuradas en `app.js` | Reescribir en formato `steps.push()` compatible con la lógica existente |
-| Conflicto de STORAGE_KEY entre tipos | Cada tipo tiene su propia clave |
+| Conflicto de STORAGE_KEY entre tipos                                | Cada tipo tiene su propia clave                                         |

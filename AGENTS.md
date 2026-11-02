@@ -39,21 +39,21 @@
 
 ## Route architecture
 
-| URL | Behavior |
-|-----|----------|
-| `/` | Landing page (public, placeholder) |
-| `/?tipo=compradores` | Splash → Buyers survey (41 questions) |
-| `/?tipo=vendedores` | Splash → Sellers survey (38 questions) |
-| `/?tipo=proveedores` | "Coming soon" message (slot prepared) |
-| `/?tipo=<invalid>` | Error with available survey links |
-| `/login` | Admin login con Supabase Auth (email/password) |
-| `/dashboard` | Dashboard protegido con gráficos, filtros y tabla de respuestas |
-| `/dashboard?tipo=compradores\|vendedores\|proveedores` | Dashboard filtrado por tipo |
+| URL                                                    | Behavior                                                        |
+| ------------------------------------------------------ | --------------------------------------------------------------- |
+| `/`                                                    | Landing page (public, placeholder)                              |
+| `/?tipo=compradores`                                   | Splash → Buyers survey (41 questions)                           |
+| `/?tipo=vendedores`                                    | Splash → Sellers survey (38 questions)                          |
+| `/?tipo=proveedores`                                   | "Coming soon" message (slot prepared)                           |
+| `/?tipo=<invalid>`                                     | Error with available survey links                               |
+| `/login`                                               | Admin login con Supabase Auth (email/password)                  |
+| `/dashboard`                                           | Dashboard protegido con gráficos, filtros y tabla de respuestas |
+| `/dashboard?tipo=compradores\|vendedores\|proveedores` | Dashboard filtrado por tipo                                     |
 
 ## Security gotchas (do not ignore)
 
 - `api/encuesta.js` uses `SUPABASE_SERVICE_KEY` which **bypasses RLS** (full admin access). It validates `token` by **exact equality against `process.env.SECRET_NONCE`** and fails closed (500, nothing saved) if that variable is missing or empty. The secret's value is embedded in `index.html` as `const NONCE` (public by design, SPEC 02); rotating it requires updating three places at once: `.env`, the Vercel dashboard, and `index.html`.
-- **Rate limiting: 5 POST / 10 min per IP** (SPEC 03). Every POST — including invalid tokens and bad payloads — calls the PostgREST RPC `increment_rate_limit(p_ip)` *before* the token check; a persistent counter lives in the `rate_limits` table (one row per IP, fixed window). When `count > 5` the API answers `429` with a `Retry-After` header. The limit itself is `const RATE_LIMIT_MAX = 5` in `api/encuesta.js`; the SQL function only counts. The RPC fails **open** (`console.error` and continue) because `SECRET_NONCE` remains the real gate. IP source: `x-real-ip` (set by Vercel, not spoofable) → first entry of `x-forwarded-for` → `'unknown'`. No CAPTCHA, no schema validation on `datos`.
+- **Rate limiting: 5 POST / 10 min per IP** (SPEC 03). Every POST — including invalid tokens and bad payloads — calls the PostgREST RPC `increment_rate_limit(p_ip)` _before_ the token check; a persistent counter lives in the `rate_limits` table (one row per IP, fixed window). When `count > 5` the API answers `429` with a `Retry-After` header. The limit itself is `const RATE_LIMIT_MAX = 5` in `api/encuesta.js`; the SQL function only counts. The RPC fails **open** (`console.error` and continue) because `SECRET_NONCE` remains the real gate. IP source: `x-real-ip` (set by Vercel, not spoofable) → first entry of `x-forwarded-for` → `'unknown'`. No CAPTCHA, no schema validation on `datos`.
 - Frontend calls `https://ipapi.co/json/` on load without user consent (privacy/GDPR concern). SPEC 19 added privacy consent checkbox — if unchecked, geo and metadata are NOT sent.
 
 ## Git / file conventions
@@ -100,12 +100,12 @@ Está implementado en `index.html` con el elemento `#splashScreen` (oculto por d
 
 Table `public.respuestas_encuesta`:
 
-| Column | Type | Nullable | Notes |
-|--------|------|----------|-------|
-| `id` | bigint | no | PK (auto) |
-| `datos` | jsonb | no | Survey answers + metadata |
-| `tipo_encuesta` | text | yes | CHECK IN ('compradores', 'vendedores', 'proveedores'). Hardcoded by each survey frontend, validated by the API. Historical records may have NULL (no backfill). |
-| `created_at` | timestamptz | no | Auto-inserted |
+| Column          | Type        | Nullable | Notes                                                                                                                                                           |
+| --------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | bigint      | no       | PK (auto)                                                                                                                                                       |
+| `datos`         | jsonb       | no       | Survey answers + metadata                                                                                                                                       |
+| `tipo_encuesta` | text        | yes      | CHECK IN ('compradores', 'vendedores', 'proveedores'). Hardcoded by each survey frontend, validated by the API. Historical records may have NULL (no backfill). |
+| `created_at`    | timestamptz | no       | Auto-inserted                                                                                                                                                   |
 
 POST body format: `{ datos, token, tipo_encuesta }`.
 
@@ -197,11 +197,11 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 
 ### Variables de entorno
 
-| Variable | Uso | Dónde |
-|----------|-----|-------|
-| `SUPABASE_URL` | URL del proyecto | `api/encuesta.js` (server), `login/auth.js` (client), `dashboard/dashboard.js` (client) |
-| `SUPABASE_ANON_KEY` | Publishable key | `login/auth.js` (client), `dashboard/dashboard.js` (client) |
-| `SUPABASE_SERVICE_KEY` | Service role key (bypasses RLS) | `api/encuesta.js` (server only) |
+| Variable               | Uso                             | Dónde                                                                                   |
+| ---------------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
+| `SUPABASE_URL`         | URL del proyecto                | `api/encuesta.js` (server), `login/auth.js` (client), `dashboard/dashboard.js` (client) |
+| `SUPABASE_ANON_KEY`    | Publishable key                 | `login/auth.js` (client), `dashboard/dashboard.js` (client)                             |
+| `SUPABASE_SERVICE_KEY` | Service role key (bypasses RLS) | `api/encuesta.js` (server only)                                                         |
 
 **Important:** `SUPABASE_ANON_KEY` is injected during build from environment variables (SPEC 14). In local dev, create `.env` with both `SUPABASE_URL` and `SUPABASE_ANON_KEY`. In Vercel, set them in Settings → Environment Variables (mark for Production, Preview, and Development).
 
@@ -235,19 +235,21 @@ Operators: `equals`, `notEquals`, `oneOf`, `includes`, `notIncludes`.
 
 RLS is enabled on `respuestas_encuesta` and `respuestas_encuesta_vendedores`.
 
-| Policy | Table | Role | Operation | Condition |
-|--------|-------|------|-----------|-----------|
-| `authenticated_read` | `respuestas_encuesta` | `authenticated` | SELECT | `auth.uid() IS NOT NULL` |
-| `authenticated_read` | `respuestas_encuesta_vendedores` | `authenticated` | SELECT | `auth.uid() IS NOT NULL` |
-| `Permitir inserciones publicas` | `respuestas_encuesta` | `anon` | INSERT | *(existing — survey submissions)* |
+| Policy                          | Table                            | Role            | Operation | Condition                         |
+| ------------------------------- | -------------------------------- | --------------- | --------- | --------------------------------- |
+| `authenticated_read`            | `respuestas_encuesta`            | `authenticated` | SELECT    | `auth.uid() IS NOT NULL`          |
+| `authenticated_read`            | `respuestas_encuesta_vendedores` | `authenticated` | SELECT    | `auth.uid() IS NOT NULL`          |
+| `Permitir inserciones publicas` | `respuestas_encuesta`            | `anon`          | INSERT    | _(existing — survey submissions)_ |
 
 **Key points:**
+
 - `service_role` bypasses RLS automatically — `api/encuesta.js` is unaffected.
 - `anon` can only INSERT (submit surveys), cannot SELECT.
 - `authenticated` users can SELECT (read dashboard data).
 - No UPDATE/DELETE policies yet — coming in future specs.
 
 **Verify policies:**
+
 ```sql
 select policyname, roles, cmd from pg_policies where tablename = 'respuestas_encuesta';
 ```

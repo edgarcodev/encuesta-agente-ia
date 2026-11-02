@@ -1,5 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { buildSendPayload, buildRequestBody, handleApiResponse, resolveNonce, sendSurveyResponse } from '../../lib/envio.js';
+import {
+  buildSendPayload,
+  buildRequestBody,
+  handleApiResponse,
+  resolveNonce,
+  sendSurveyResponse,
+} from '../../lib/envio.js';
 
 // ================================================================
 // buildSendPayload()
@@ -21,7 +27,7 @@ describe('buildSendPayload', () => {
     tiempos_por_pregunta: { p1: 5, p2: 10 },
     conexion: { effectiveType: '4g' },
     navegador: 'Mozilla/5.0',
-    plataforma: 'linux'
+    plataforma: 'linux',
   };
 
   const geo = {
@@ -30,7 +36,7 @@ describe('buildSendPayload', () => {
     region: 'Lima',
     pais: 'Peru',
     lat: -12.0464,
-    lon: -77.0428
+    lon: -77.0428,
   };
 
   describe('with allowMetadata = true', () => {
@@ -57,7 +63,10 @@ describe('buildSendPayload', () => {
 
     it('calculates tiempo_total_segundos correctly', () => {
       const result = buildSendPayload(
-        { p1: 'x' }, true, metadata, null,
+        { p1: 'x' },
+        true,
+        metadata,
+        null,
         '2026-01-01T10:00:00.000Z'
       );
       expect(result._metadata.tiempo_total_segundos).toBe(330);
@@ -115,7 +124,7 @@ describe('handleApiResponse', () => {
   it('returns parsed JSON on success', async () => {
     const res = {
       ok: true,
-      text: () => Promise.resolve(JSON.stringify({ inserted: true }))
+      text: () => Promise.resolve(JSON.stringify({ inserted: true })),
     };
     const result = await handleApiResponse(res);
     expect(result).toEqual({ inserted: true });
@@ -138,7 +147,7 @@ describe('handleApiResponse', () => {
       ok: false,
       status: 429,
       statusText: 'Too Many Requests',
-      text: () => Promise.resolve(JSON.stringify({ error: 'Rate limit exceeded' }))
+      text: () => Promise.resolve(JSON.stringify({ error: 'Rate limit exceeded' })),
     };
     await expect(handleApiResponse(res)).rejects.toThrow('Rate limit exceeded');
   });
@@ -148,7 +157,7 @@ describe('handleApiResponse', () => {
       ok: false,
       status: 500,
       statusText: 'Internal Server Error',
-      text: () => Promise.resolve('Server crashed')
+      text: () => Promise.resolve('Server crashed'),
     };
     await expect(handleApiResponse(res)).rejects.toThrow('Error 500: Server crashed');
   });
@@ -158,7 +167,7 @@ describe('handleApiResponse', () => {
       ok: false,
       status: 403,
       statusText: 'Forbidden',
-      text: () => Promise.resolve(JSON.stringify({}))
+      text: () => Promise.resolve(JSON.stringify({})),
     };
     await expect(handleApiResponse(res)).rejects.toThrow('Error 403');
   });
@@ -177,7 +186,7 @@ describe('resolveNonce', () => {
 
   it('returns value from sessionStorage when NONCE_KEY exists', () => {
     const config = { NONCE_KEY: 'nonce_key', NONCE: 'fallback' };
-    const mockStorage = { getItem: (key) => key === 'nonce_key' ? 'dynamic456' : null };
+    const mockStorage = { getItem: (key) => (key === 'nonce_key' ? 'dynamic456' : null) };
     expect(resolveNonce(config, mockStorage)).toBe('dynamic456');
   });
 
@@ -208,13 +217,13 @@ describe('sendSurveyResponse', () => {
     tiempos_por_pregunta: {},
     conexion: {},
     navegador: 'test',
-    plataforma: 'test'
+    plataforma: 'test',
   };
   const geo = { ciudad: 'Lima' };
   const encuestaActiva = {
     tipo: 'compradores',
     endpoint: '/api/encuesta',
-    STORAGE_KEY: 'test_storage_key'
+    STORAGE_KEY: 'test_storage_key',
   };
 
   function createMockFetch(responseOk, responseBody, responseStatus) {
@@ -222,7 +231,10 @@ describe('sendSurveyResponse', () => {
       ok: responseOk,
       status: responseStatus || 200,
       statusText: responseOk ? 'OK' : 'Error',
-      text: () => Promise.resolve(typeof responseBody === 'string' ? responseBody : JSON.stringify(responseBody))
+      text: () =>
+        Promise.resolve(
+          typeof responseBody === 'string' ? responseBody : JSON.stringify(responseBody)
+        ),
     });
   }
 
@@ -230,8 +242,10 @@ describe('sendSurveyResponse', () => {
     const store = {};
     return {
       getItem: (key) => store[key] || null,
-      setItem: (key, val) => { store[key] = val; },
-      _store: store
+      setItem: (key, val) => {
+        store[key] = val;
+      },
+      _store: store,
     };
   }
 
@@ -248,7 +262,7 @@ describe('sendSurveyResponse', () => {
       encuestaActiva,
       nonce: 'test_nonce',
       fetchFn: mockFetch,
-      localStorage: mockStorage
+      localStorage: mockStorage,
     });
 
     expect(result.success).toBe(true);
@@ -279,7 +293,7 @@ describe('sendSurveyResponse', () => {
       encuestaActiva,
       nonce: 'test_nonce',
       fetchFn: mockFetch,
-      localStorage: mockStorage
+      localStorage: mockStorage,
     });
 
     const callArgs = mockFetch.mock.calls[0];
@@ -301,7 +315,7 @@ describe('sendSurveyResponse', () => {
       encuestaActiva,
       nonce: 'test',
       fetchFn: mockFetch,
-      localStorage: mockStorage
+      localStorage: mockStorage,
     });
 
     expect(mockStorage._store['test_storage_key']).toBe('true');
@@ -320,7 +334,7 @@ describe('sendSurveyResponse', () => {
       encuestaActiva,
       nonce: 'test',
       fetchFn: mockFetch,
-      localStorage: mockStorage
+      localStorage: mockStorage,
     });
 
     expect(result.success).toBe(false);
@@ -342,7 +356,7 @@ describe('sendSurveyResponse', () => {
       encuestaActiva,
       nonce: 'test',
       fetchFn: mockFetch,
-      localStorage: mockStorage
+      localStorage: mockStorage,
     });
 
     expect(result.success).toBe(false);
@@ -362,7 +376,7 @@ describe('sendSurveyResponse', () => {
       encuestaActiva,
       nonce: 'test',
       fetchFn: mockFetch,
-      localStorage: mockStorage
+      localStorage: mockStorage,
     });
 
     expect(result.success).toBe(true);

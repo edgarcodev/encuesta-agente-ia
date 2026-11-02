@@ -103,13 +103,13 @@ Convenciones:
 
 ## Risks
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                                                             | Mitigation                                                                                                                           |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
 | Usuarios móviles detrás de CGNAT comparten IP pública → un tercero puede agotar la cuota de otro | Cuota holgada (5) y ventana corta (10 min); el frontend guarda respuestas en `localStorage` y `Retry-After` indica cuándo reintentar |
-| Cliente falsifica `x-forwarded-for` para evadir el límite | Priorizar `x-real-ip` (lo pone Vercel); smoke test en producción con cabecera falsa (paso 5) |
-| RPC caído (outage de Supabase) → sin rate limiting | Fail open documentado en Decisions + `console.error` para detectarlo en logs; el token sigue validando |
-| Migración aplicada dos veces | `create table` sin `if not exists` falla en voz alta; paso 2 la aplica exactamente una vez |
-| +1 llamada PostgREST por envío suma latencia | Despreciable sobre un envío único por usuario (<100 ms añadidos) |
+| Cliente falsifica `x-forwarded-for` para evadir el límite                                        | Priorizar `x-real-ip` (lo pone Vercel); smoke test en producción con cabecera falsa (paso 5)                                         |
+| RPC caído (outage de Supabase) → sin rate limiting                                               | Fail open documentado en Decisions + `console.error` para detectarlo en logs; el token sigue validando                               |
+| Migración aplicada dos veces                                                                     | `create table` sin `if not exists` falla en voz alta; paso 2 la aplica exactamente una vez                                           |
+| +1 llamada PostgREST por envío suma latencia                                                     | Despreciable sobre un envío único por usuario (<100 ms añadidos)                                                                     |
 
 ## What is **not** in esta spec
 
