@@ -730,6 +730,32 @@ import { saveDraft, loadDraft, clearDraft } from './lib/draft.js';
       // localStorage might be disabled
     }
 
+    // Check for saved draft
+    const draft = loadDraft(encuestaActiva.tipo);
+    if (draft && draft.answers && Object.keys(draft.answers).length > 0) {
+      const resume = confirm(
+        `Tienes un borrador de la encuesta de ${encuestaActiva.tipo} guardado.\n¿Deseas continuar donde lo dejaste?\n\nRespuestas guardadas: ${Object.keys(draft.answers).length}`
+      );
+
+      if (resume) {
+        // Restore draft
+        Object.assign(answers, draft.answers);
+        currentStepIndex = draft.currentStepIndex ?? 0;
+        Object.assign(tiemposPorPregunta, draft.tiemposPorPregunta || {});
+        if (draft.inicioEncuesta) {
+          inicioEncuesta.setTime(new Date(draft.inicioEncuesta).getTime());
+        }
+        preguntaActualId = null;
+        inicioPregunta = new Date();
+        datosEnviados = false;
+        renderStep();
+        return;
+      } else {
+        // Discard draft
+        clearDraft(encuestaActiva.tipo);
+      }
+    }
+
     fuente = obtenerFuente();
     dispositivo = detectarDispositivo();
     conexion = obtenerConexion();
