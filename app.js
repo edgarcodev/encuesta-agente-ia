@@ -1,5 +1,6 @@
 import { parseQuestions } from './lib/conditions.js';
 import { sendSurveyResponse, resolveNonce } from './lib/envio.js';
+import { saveDraft, loadDraft, clearDraft } from './lib/draft.js';
 
 (function () {
   'use strict';
@@ -62,7 +63,7 @@ import { sendSurveyResponse, resolveNonce } from './lib/envio.js';
   let encuestaActiva = null;
   let steps = [];
   const answers = {};
-  // eslint-disable-next-line no-unused-vars
+
   let datosEnviados = false;
   let geoData = null;
   const inicioEncuesta = new Date();
@@ -171,6 +172,11 @@ import { sendSurveyResponse, resolveNonce } from './lib/envio.js';
       encuestaActiva,
       nonce,
       localStorage,
+    }).then((result) => {
+      if (result.success) {
+        clearDraft(encuestaActiva.tipo);
+      }
+      return result;
     });
   }
 
@@ -230,6 +236,16 @@ import { sendSurveyResponse, resolveNonce } from './lib/envio.js';
       value = inp ? inp.value : '';
     }
     if (value !== undefined) answers[step.id] = value;
+    // Auto-save draft after each answer
+    if (encuestaActiva) {
+      saveDraft({
+        answers,
+        currentStepIndex,
+        tiemposPorPregunta,
+        inicioEncuesta,
+        tipo: encuestaActiva.tipo,
+      });
+    }
   }
 
   function loadAnswer(step) {
@@ -719,6 +735,32 @@ import { sendSurveyResponse, resolveNonce } from './lib/envio.js';
       // localStorage might be disabled
     }
 
+    // Check for saved draft
+    const draft = loadDraft(encuestaActiva.tipo);
+    if (draft && draft.answers && Object.keys(draft.answers).length > 0) {
+      const resume = confirm(
+        `Tienes un borrador de la encuesta de ${encuestaActiva.tipo} guardado.\n¿Deseas continuar donde lo dejaste?\n\nRespuestas guardadas: ${Object.keys(draft.answers).length}`
+      );
+
+      if (resume) {
+        // Restore draft
+        Object.assign(answers, draft.answers);
+        currentStepIndex = draft.currentStepIndex ?? 0;
+        Object.assign(tiemposPorPregunta, draft.tiemposPorPregunta || {});
+        if (draft.inicioEncuesta) {
+          inicioEncuesta.setTime(new Date(draft.inicioEncuesta).getTime());
+        }
+        preguntaActualId = null;
+        inicioPregunta = new Date();
+        datosEnviados = false;
+        renderStep();
+        return;
+      } else {
+        // Discard draft
+        clearDraft(encuestaActiva.tipo);
+      }
+    }
+
     fuente = obtenerFuente();
     dispositivo = detectarDispositivo();
     conexion = obtenerConexion();
@@ -733,6 +775,19 @@ import { sendSurveyResponse, resolveNonce } from './lib/envio.js';
     datosEnviados = false;
     renderStep();
   }
+
+  // Save draft on page close/reload
+  window.addEventListener('beforeunload', function () {
+    if (encuestaActiva && !datosEnviados) {
+      saveDraft({
+        answers,
+        currentStepIndex,
+        tiemposPorPregunta,
+        inicioEncuesta,
+        tipo: encuestaActiva.tipo,
+      });
+    }
+  });
 
   window.addEventListener('load', init);
 })();
