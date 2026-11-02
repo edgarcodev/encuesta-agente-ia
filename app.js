@@ -172,6 +172,11 @@ import { saveDraft, loadDraft, clearDraft } from './lib/draft.js';
       encuestaActiva,
       nonce,
       localStorage,
+    }).then((result) => {
+      if (result.success) {
+        clearDraft(encuestaActiva.tipo);
+      }
+      return result;
     });
   }
 
